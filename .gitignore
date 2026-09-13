@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+backend/venv/
+*/__pycache__/
+*.pyc
+
+# Environment & Secrets
+.env
+backend/.env
+*.pem
+serviceAccountKey.json
+firebase-key.json
+backend/firebase-key.json
+
+
+# Build outputs
+dist/
+frontend/dist/
+build/
+
+# Database files
+*.db
+*.sqlite3
+
+# IDE / System
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
