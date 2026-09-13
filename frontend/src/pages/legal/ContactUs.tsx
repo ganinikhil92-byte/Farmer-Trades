@@ -61,8 +61,8 @@ export default function ContactUs() {
             <h3 style={{ margin: 0, color: '#1e293b' }}>Customer Helpline</h3>
           </div>
           <p style={{ margin: 0, color: '#475569', lineHeight: 1.6 }}>
-            Direct Line: <strong>+91 98765 43210</strong><br />
-            WhatsApp Support: +91 98765 43211
+            Direct Line: <strong>+91 86604 16257</strong><br />
+            WhatsApp Support: +91 86604 16257
           </p>
         </div>
 
@@ -72,8 +72,8 @@ export default function ContactUs() {
             <h3 style={{ margin: 0, color: '#1e293b' }}>Electronic Mail</h3>
           </div>
           <p style={{ margin: 0, color: '#475569', lineHeight: 1.6 }}>
-            General Inquiries: hello@agrotrades.in<br />
-            Disputes & Refunds: support@agrotrades.in
+            General Inquiries: nikhilgani987@gmail.com<br />
+            Disputes & Refunds: nikhilgani987@gmail.com
           </p>
         </div>
 

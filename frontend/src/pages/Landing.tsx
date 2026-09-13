@@ -577,14 +577,14 @@ export default function Landing() {
                 <Phone size={20} />
                 <div>
                   <h4>Phone</h4>
-                  <p>+91 98765 43210</p>
+                  <p>+91 86604 16257</p>
                 </div>
               </div>
               <div className="contact-item">
                 <Mail size={20} />
                 <div>
                   <h4>Email</h4>
-                  <p>hello@agrotrades.in</p>
+                  <p>nikhilgani987@gmail.com</p>
                 </div>
               </div>
               <div className="contact-item">
