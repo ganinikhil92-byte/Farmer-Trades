@@ -40,7 +40,7 @@ export default function AdminProfile() {
             </div>
             <div>
               <h3 style={{ margin: 0 }}>{user?.name || 'Administrator'}</h3>
-              <p style={{ margin: 0, color: 'var(--text-muted)' }}>{user?.email || 'admin@agro.com'}</p>
+              <p style={{ margin: 0, color: 'var(--text-muted)' }}>{user?.email || 'nikhilgani987@gmail.com'}</p>
               <span className="badge badge-green" style={{ marginTop: '0.25rem', display: 'inline-block' }}>
                 Full System Super-Admin
               </span>
@@ -54,7 +54,7 @@ export default function AdminProfile() {
             </div>
             <div>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Official Email</span>
-              <p style={{ margin: '0.2rem 0 0', fontWeight: 600 }}>admin@agro.com</p>
+              <p style={{ margin: '0.2rem 0 0', fontWeight: 600 }}>{user?.email || 'nikhilgani987@gmail.com'}</p>
             </div>
             <div>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Security Level</span>

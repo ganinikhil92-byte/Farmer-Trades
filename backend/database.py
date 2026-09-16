@@ -40,6 +40,19 @@ def init_db():
         if db.query(db_models.User).count() == 0:
             seed_users = [
                 db_models.User(
+                    email="nikhilgani987@gmail.com",
+                    name="Nikhil Gani",
+                    password_hash=auth.hash_password("Admin@123"),
+                    role="admin",
+                    district="Bengaluru Urban",
+                    taluk="Bengaluru South",
+                    village="Jayanagar",
+                    pincode="560041",
+                    phone="8660416257",
+                    status="Verified",
+                    registered_at="2026-08-01"
+                ),
+                db_models.User(
                     email="admin@agro.com",
                     name="Admin Officer",
                     password_hash=auth.hash_password("Admin@123"),

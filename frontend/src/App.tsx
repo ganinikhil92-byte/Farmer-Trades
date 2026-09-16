@@ -12,6 +12,7 @@ import CustomersList from './pages/admin/CustomersList';
 import MasterStocks from './pages/admin/MasterStocks';
 import QueriesList from './pages/admin/QueriesList';
 import AdminProfile from './pages/admin/AdminProfile';
+import AdminLogin from './pages/admin/AdminLogin';
 
 // Farmer pages
 import FarmerDashboard from './pages/farmer/FarmerDashboard';
@@ -55,6 +56,8 @@ function AppRoutes() {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/refund-policy" element={<RefundPolicy />} />
         <Route path="/contact" element={<ContactUs />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
         <Route path="*" element={<Landing />} />
       </Routes>
     );
@@ -122,6 +125,9 @@ function AppRoutes() {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/refund-policy" element={<RefundPolicy />} />
         <Route path="/contact" element={<ContactUs />} />
+
+        {/* Redirect admin login if already logged in */}
+        <Route path="/admin/login" element={<Navigate to={home} replace />} />
 
         {/* Catch‑all: redirect to user's home */}
         <Route path="*" element={<Navigate to={home} replace />} />

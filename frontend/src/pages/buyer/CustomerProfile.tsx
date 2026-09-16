@@ -39,8 +39,8 @@ export default function CustomerProfile() {
               {user?.name.charAt(0) || 'S'}
             </div>
             <div>
-              <h3 style={{ margin: 0 }}>{user?.name || 'Suresh Traders'}</h3>
-              <p style={{ margin: 0, color: 'var(--text-muted)' }}>{user?.email || 'buyer@agro.com'}</p>
+              <h3 style={{ margin: 0 }}>{user?.name || 'Buyer'}</h3>
+              <p style={{ margin: 0, color: 'var(--text-muted)' }}>{user?.email || ''}</p>
               <span className="badge badge-green" style={{ marginTop: '0.25rem', display: 'inline-block' }}>
                 <ShieldCheck size={12} style={{ marginRight: '4px' }} /> Verified Wholesale Buyer
               </span>

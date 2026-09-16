@@ -5,6 +5,9 @@ from email.mime.multipart import MIMEMultipart
 import os
 import random
 import time
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+load_dotenv()
 from fastapi import APIRouter, HTTPException, Depends, status
 from sqlalchemy.orm import Session
 from typing import List, Optional, Dict, Any
@@ -121,6 +124,11 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
+class ResetPasswordRequest(BaseModel):
+    email: str
+    otp: str
+    new_password: str
+
 class UserStatusUpdate(BaseModel):
     status: str
 
@@ -140,11 +148,6 @@ def send_otp(req: SendOtpRequest, db: Session = Depends(get_db)):
     if not email_clean or "@" not in email_clean:
         raise HTTPException(status_code=400, detail="Please enter a valid email address.")
 
-    # Check if user already exists
-    existing = db.query(db_models.User).filter(db_models.User.email == email_clean).first()
-    if existing:
-        raise HTTPException(status_code=400, detail="An account with this email address already exists. Please sign in.")
-
     # Generate 6-digit random OTP
     otp = f"{random.randint(100000, 999999)}"
     otp_store[email_clean] = {
@@ -153,20 +156,13 @@ def send_otp(req: SendOtpRequest, db: Session = Depends(get_db)):
         "verified": False
     }
 
+    # Dispatch email
     email_sent = send_email_otp(email_clean, otp)
 
-    smtp_user = os.environ.get("SMTP_USER")
-    smtp_pass = os.environ.get("SMTP_PASSWORD")
-
-    if smtp_user and smtp_pass:
-        if not email_sent:
-            raise HTTPException(
-                status_code=500,
-                detail="Could not send email to your Gmail address. Please ensure your Gmail App Password is correct."
-            )
+    if email_sent:
         return {
             "success": True,
-            "message": f"Verification code sent to your Gmail ({email_clean})! Please check your inbox or spam folder."
+            "message": f"Verification code sent to your email ({email_clean})! Please check your inbox or spam folder."
         }
 
     return {
@@ -262,6 +258,38 @@ def login(req: UserLogin, db: Session = Depends(get_db)):
         "token": token,
         "user": user.to_dict()
     }
+
+@router.post("/auth/reset-password")
+def reset_password(req: ResetPasswordRequest, db: Session = Depends(get_db)):
+    email_clean = req.email.strip().lower()
+    otp_clean = req.otp.strip()
+
+    entry = otp_store.get(email_clean)
+    if not entry or not entry.get("verified"):
+        if not entry or entry.get("otp") != otp_clean or time.time() > entry.get("expires_at", 0):
+            raise HTTPException(status_code=400, detail="Invalid or expired verification code.")
+
+    if len(req.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters.")
+
+    user = db.query(db_models.User).filter(db_models.User.email == email_clean).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="No registered account found with this email address.")
+
+    new_hash = auth.hash_password(req.new_password)
+    user.password_hash = new_hash
+    db.commit()
+
+    if is_firebase_active() and firestore_db:
+        try:
+            firestore_db.create_or_update_user(email_clean, {"password_hash": new_hash})
+        except Exception as fe:
+            print(f"[Firestore Reset Sync] Notice: {fe}")
+
+    if email_clean in otp_store:
+        del otp_store[email_clean]
+
+    return {"success": True, "message": "Password reset successfully! You can now log in with your new password."}
 
 @router.get("/auth/me")
 def get_me(payload: Optional[dict] = Depends(auth.get_current_user_payload), db: Session = Depends(get_db)):

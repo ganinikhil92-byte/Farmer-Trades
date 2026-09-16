@@ -3,16 +3,17 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import type { UserRole } from '../context/AuthContext';
 import api from '../utils/api';
-import { Sprout, Mail, Lock, User, ChevronRight, Leaf, Phone, MessageSquare, MapPin, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Sprout, Mail, Lock, User, ChevronRight, Leaf, Phone, MessageSquare, MapPin, CheckCircle2, ShieldCheck, KeyRound } from 'lucide-react';
 import { districtTaluks } from '../data/karnatakaLocations';
 import './Landing.css';
 
 export default function Landing() {
-  const { login, signup, sendOtp, verifyOtp } = useAuth();
-  const [view, setView] = useState<'landing' | 'login' | 'signup'>('landing');
+  const { login, signup, sendOtp, verifyOtp, resetPassword, loginWithGoogle } = useAuth();
+  const [view, setView] = useState<'landing' | 'login' | 'signup' | 'forgot-password'>('landing');
   const [error, setError] = useState('');
 
   // Login state
+  const [loginRole, setLoginRole] = useState<UserRole>('farmer');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPw, setLoginPw] = useState('');
 
@@ -36,7 +37,6 @@ export default function Landing() {
   const [otpError, setOtpError] = useState('');
   const [otpSuccessMsg, setOtpSuccessMsg] = useState('');
   const [resendTimer, setResendTimer] = useState(0);
-  const [demoOtp, setDemoOtp] = useState<string | null>(null);
 
   useEffect(() => {
     if (resendTimer > 0) {
@@ -44,6 +44,26 @@ export default function Landing() {
       return () => clearTimeout(timer);
     }
   }, [resendTimer]);
+
+  // Forgot Password state
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [loginSuccessMsg, setLoginSuccessMsg] = useState('');
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotOtpSent, setForgotOtpSent] = useState(false);
+  const [forgotOtp, setForgotOtp] = useState('');
+  const [forgotNewPw, setForgotNewPw] = useState('');
+  const [forgotConfirmPw, setForgotConfirmPw] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState('');
+  const [forgotSuccess, setForgotSuccess] = useState('');
+  const [forgotTimer, setForgotTimer] = useState(0);
+
+  useEffect(() => {
+    if (forgotTimer > 0) {
+      const timer = setTimeout(() => setForgotTimer((t) => t - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [forgotTimer]);
 
   // Contact form state
   const [contactName, setContactName] = useState('');
@@ -54,8 +74,64 @@ export default function Landing() {
   async function handleLogin(e: FormEvent) {
     e.preventDefault();
     setError('');
-    const res = await login(loginEmail, loginPw);
-    if (!res.success) setError(res.error || 'Login failed');
+    setLoginSuccessMsg('');
+    const res = await login(loginEmail, loginPw, loginRole);
+    if (!res.success) {
+      setError(res.error || 'Invalid email or password. Please verify your credentials.');
+      setShowForgotPassword(true);
+    } else {
+      setShowForgotPassword(false);
+    }
+  }
+
+  async function handleSendForgotOtp(e?: FormEvent) {
+    if (e) e.preventDefault();
+    setForgotError('');
+    setForgotSuccess('');
+    if (!forgotEmail.trim() || !forgotEmail.includes('@')) {
+      setForgotError('Please enter a valid email address.');
+      return;
+    }
+    setForgotLoading(true);
+    const res = await sendOtp(forgotEmail.trim());
+    setForgotLoading(false);
+    if (res.success) {
+      setForgotOtpSent(true);
+      setForgotSuccess('A 6-digit verification code has been sent to your email.');
+      setForgotTimer(60);
+    } else {
+      setForgotError(res.error || 'Failed to send verification code.');
+    }
+  }
+
+  async function handleResetPasswordSubmit(e: FormEvent) {
+    e.preventDefault();
+    setForgotError('');
+    if (forgotOtp.trim().length !== 6) {
+      setForgotError('Please enter the full 6-digit verification code.');
+      return;
+    }
+    if (forgotNewPw.length < 8) {
+      setForgotError('New password must be at least 8 characters long.');
+      return;
+    }
+    if (forgotNewPw !== forgotConfirmPw) {
+      setForgotError('Passwords do not match. Please re-enter.');
+      return;
+    }
+    setForgotLoading(true);
+    const res = await resetPassword(forgotEmail.trim(), forgotOtp.trim(), forgotNewPw);
+    setForgotLoading(false);
+    if (res.success) {
+      setLoginEmail(forgotEmail.trim());
+      setLoginPw('');
+      setShowForgotPassword(false);
+      setError('');
+      setLoginSuccessMsg('Password updated successfully! Please sign in with your new password.');
+      setView('login');
+    } else {
+      setForgotError(res.error || 'Failed to reset password. Please check your verification code.');
+    }
   }
 
   async function handleSendOtp() {
@@ -71,7 +147,6 @@ export default function Landing() {
     if (res.success) {
       setOtpSent(true);
       setOtpSuccessMsg(res.message || 'Verification code sent to your email!');
-      if (res.otp) setDemoOtp(res.otp);
       setResendTimer(60);
     } else {
       setOtpError(res.error || 'Failed to send OTP.');
@@ -131,32 +206,42 @@ export default function Landing() {
             <p>Sign in to your Agro Trades account</p>
           </div>
           {error && <div className="auth-error">{error}</div>}
+          {loginSuccessMsg && (
+            <div
+              style={{
+                background: '#dcfce7',
+                color: '#15803d',
+                padding: '0.75rem 1rem',
+                borderRadius: 'var(--radius-md)',
+                fontSize: '0.875rem',
+                marginBottom: '1.25rem',
+                textAlign: 'center',
+                fontWeight: 600,
+              }}
+            >
+              {loginSuccessMsg}
+            </div>
+          )}
 
-          {/* Account Role Selector / Autofill */}
+          {/* Account Role Selector - NO DEMO CREDENTIALS AUTOFILL */}
           <div style={{ marginBottom: '1.25rem' }}>
-            <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block', textAlign: 'center' }}>Select Role to Sign In:</label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem' }}>
+            <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block', textAlign: 'center' }}>
+              Select Role to Sign In:
+            </label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
               <button
                 type="button"
-                className={`btn btn-sm ${loginEmail === 'admin@agro.com' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ padding: '0.5rem 0.25rem', fontSize: '0.8rem' }}
-                onClick={() => { setLoginEmail('admin@agro.com'); setLoginPw(''); setError(''); }}
-              >
-                👨‍💼 Admin
-              </button>
-              <button
-                type="button"
-                className={`btn btn-sm ${loginEmail === 'farmer@agro.com' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ padding: '0.5rem 0.25rem', fontSize: '0.8rem' }}
-                onClick={() => { setLoginEmail('farmer@agro.com'); setLoginPw(''); setError(''); }}
+                className={`btn btn-sm ${loginRole === 'farmer' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ padding: '0.5rem 0.25rem', fontSize: '0.85rem', fontWeight: 600 }}
+                onClick={() => { setLoginRole('farmer'); setLoginEmail(''); setLoginPw(''); setError(''); setShowForgotPassword(false); }}
               >
                 🌾 Farmer
               </button>
               <button
                 type="button"
-                className={`btn btn-sm ${loginEmail === 'buyer@agro.com' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ padding: '0.5rem 0.25rem', fontSize: '0.8rem' }}
-                onClick={() => { setLoginEmail('buyer@agro.com'); setLoginPw(''); setError(''); }}
+                className={`btn btn-sm ${loginRole === 'buyer' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ padding: '0.5rem 0.25rem', fontSize: '0.85rem', fontWeight: 600 }}
+                onClick={() => { setLoginRole('buyer'); setLoginEmail(''); setLoginPw(''); setError(''); setShowForgotPassword(false); }}
               >
                 🛒 Buyer
               </button>
@@ -169,20 +254,73 @@ export default function Landing() {
             <div style={{ flex: 1, height: '1px', background: 'var(--border)' }}></div>
           </div>
 
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleLogin} autoComplete="off">
             <div className="form-group">
               <label className="form-label">Email</label>
               <div className="input-with-icon">
                 <Mail size={18} />
-                <input className="input" type="email" placeholder="you@example.com" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required />
+                <input
+                  className="input"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  autoComplete="off"
+                  name="agro_user_email"
+                  required
+                />
               </div>
             </div>
             <div className="form-group">
               <label className="form-label">Password</label>
               <div className="input-with-icon">
                 <Lock size={18} />
-                <input className="input" type="password" placeholder="••••••••" value={loginPw} onChange={(e) => setLoginPw(e.target.value)} required />
+                <input
+                  className="input"
+                  type="password"
+                  placeholder="••••••••"
+                  value={loginPw}
+                  onChange={(e) => {
+                    setLoginPw(e.target.value);
+                  }}
+                  autoComplete="new-password"
+                  name="agro_user_password"
+                  required
+                />
               </div>
+              {/* FORGOT PASSWORD BUTTON - APPEARS ONLY WHEN USER ENTERS WRONG PASSWORD */}
+              {showForgotPassword && (
+                <div style={{ marginTop: '0.5rem', textAlign: 'right' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotEmail(loginEmail);
+                      setForgotError('');
+                      setForgotSuccess('');
+                      setForgotOtpSent(false);
+                      setForgotOtp('');
+                      setForgotNewPw('');
+                      setForgotConfirmPw('');
+                      setView('forgot-password');
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      color: '#dc2626',
+                      fontWeight: 600,
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.25rem',
+                    }}
+                  >
+                    <KeyRound size={14} /> Forgot Password? Reset via Email
+                  </button>
+                </div>
+              )}
             </div>
             <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%' }}>
               Sign In <ChevronRight size={18} />
@@ -190,17 +328,184 @@ export default function Landing() {
           </form>
           <p className="auth-switch">
             Don't have an account?{' '}
-            <button onClick={() => { setView('signup'); setError(''); }}>Sign Up</button>
+            <button onClick={() => { setView('signup'); setSignupEmail(''); setSignupPw(''); setSignupConfirmPw(''); setLoginEmail(''); setLoginPw(''); setError(''); setShowForgotPassword(false); }}>Sign Up</button>
           </p>
           <p className="auth-switch">
-            <button onClick={() => { setView('landing'); setError(''); }}>← Back to Home</button>
+            <button onClick={() => { setView('landing'); setLoginEmail(''); setLoginPw(''); setError(''); setShowForgotPassword(false); }}>← Back to Home</button>
           </p>
-          <div className="demo-creds">
-            <h4>Demo Account Credentials</h4>
-            <p><strong>Admin:</strong> <code>admin@agro.com</code> / <code>Admin@123</code></p>
-            <p><strong>Farmer:</strong> <code>farmer@agro.com</code> / <code>Farmer@123</code></p>
-            <p><strong>Buyer:</strong> <code>buyer@agro.com</code> / <code>Buyer@123</code></p>
+        </div>
+      </div>
+    );
+  }
+
+  // ===== Forgot Password View =====
+  if (view === 'forgot-password') {
+    return (
+      <div className="auth-page">
+        <div className="auth-card animate-scaleIn">
+          <div className="auth-header">
+            <div
+              style={{
+                width: '56px',
+                height: '56px',
+                borderRadius: '50%',
+                background: '#fee2e2',
+                color: '#dc2626',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 1rem auto',
+              }}
+            >
+              <KeyRound size={28} />
+            </div>
+            <h2>Reset Password</h2>
+            <p>Verify your registered email address to set a new password</p>
           </div>
+
+          {forgotError && <div className="auth-error">{forgotError}</div>}
+          {forgotSuccess && (
+            <div
+              style={{
+                background: '#dcfce7',
+                color: '#15803d',
+                padding: '0.75rem 1rem',
+                borderRadius: 'var(--radius-md)',
+                fontSize: '0.875rem',
+                marginBottom: '1.25rem',
+                textAlign: 'center',
+                fontWeight: 600,
+              }}
+            >
+              {forgotSuccess}
+            </div>
+          )}
+
+          {!forgotOtpSent ? (
+            <form onSubmit={handleSendForgotOtp}>
+              <div className="form-group">
+                <label className="form-label">Registered Email Address</label>
+                <div className="input-with-icon">
+                  <Mail size={18} />
+                  <input
+                    className="input"
+                    type="email"
+                    placeholder="Enter your registered email"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    required
+                    autoComplete="off"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={forgotLoading}
+                className="btn btn-primary btn-lg"
+                style={{ width: '100%', marginTop: '0.5rem' }}
+              >
+                {forgotLoading ? 'Sending Code…' : 'Send Verification Code'}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleResetPasswordSubmit}>
+              <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '0.75rem', padding: '1rem', marginBottom: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#0f172a', fontWeight: 600, fontSize: '0.88rem', marginBottom: '0.35rem' }}>
+                  <ShieldCheck size={18} style={{ color: 'var(--color-primary-600)' }} />
+                  Enter 6-Digit Email Verification Code
+                </div>
+                <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.75rem' }}>
+                  A verification code has been sent to <strong>{forgotEmail}</strong>.
+                </p>
+
+                <div className="form-group" style={{ marginBottom: '1rem' }}>
+                  <input
+                    className="input"
+                    type="text"
+                    maxLength={6}
+                    placeholder="6-digit verification code"
+                    value={forgotOtp}
+                    onChange={(e) => setForgotOtp(e.target.value.replace(/\D/g, ''))}
+                    style={{ letterSpacing: '0.25em', fontWeight: 700, fontSize: '1.1rem', textAlign: 'center' }}
+                    required
+                  />
+                </div>
+
+                <div className="form-group" style={{ marginBottom: '1rem' }}>
+                  <label className="form-label">New Password (min 8 characters)</label>
+                  <div className="input-with-icon">
+                    <Lock size={18} />
+                    <input
+                      className="input"
+                      type="password"
+                      placeholder="Enter new secure password"
+                      value={forgotNewPw}
+                      onChange={(e) => setForgotNewPw(e.target.value)}
+                      required
+                      autoComplete="new-password"
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group" style={{ marginBottom: '0.5rem' }}>
+                  <label className="form-label">Confirm New Password</label>
+                  <div className="input-with-icon">
+                    <Lock size={18} />
+                    <input
+                      className="input"
+                      type="password"
+                      placeholder="Confirm new password"
+                      value={forgotConfirmPw}
+                      onChange={(e) => setForgotConfirmPw(e.target.value)}
+                      required
+                      autoComplete="new-password"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={forgotLoading}
+                className="btn btn-primary btn-lg"
+                style={{ width: '100%', marginBottom: '0.75rem' }}
+              >
+                {forgotLoading ? 'Updating Password…' : 'Set New Password & Sign In'}
+              </button>
+
+              <div style={{ textAlign: 'center' }}>
+                <button
+                  type="button"
+                  disabled={forgotTimer > 0 || forgotLoading}
+                  onClick={handleSendForgotOtp}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: forgotTimer > 0 ? '#94a3b8' : 'var(--color-primary-600)',
+                    fontSize: '0.82rem',
+                    cursor: forgotTimer > 0 ? 'default' : 'pointer',
+                    fontWeight: 600,
+                  }}
+                >
+                  {forgotTimer > 0 ? `Resend code in ${forgotTimer}s` : 'Resend verification code'}
+                </button>
+              </div>
+            </form>
+          )}
+
+          <p className="auth-switch" style={{ marginTop: '1.25rem' }}>
+            <button
+              onClick={() => {
+                setView('login');
+                setError('');
+                setForgotError('');
+                setShowForgotPassword(false);
+              }}
+            >
+              ← Back to Sign In
+            </button>
+          </p>
         </div>
       </div>
     );
@@ -262,6 +567,8 @@ export default function Landing() {
                     placeholder="you@example.com"
                     value={signupEmail}
                     disabled={isEmailVerified}
+                    autoComplete="off"
+                    name="agro_signup_email"
                     onChange={(e) => {
                       setSignupEmail(e.target.value);
                       if (otpSent) { setOtpSent(false); setIsEmailVerified(false); }
@@ -288,7 +595,6 @@ export default function Landing() {
                       setIsEmailVerified(false);
                       setOtpSent(false);
                       setOtpValue('');
-                      setDemoOtp(null);
                     }}
                     style={{ fontSize: '0.78rem', whiteSpace: 'nowrap' }}
                   >
@@ -308,19 +614,6 @@ export default function Landing() {
                 <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.6rem' }}>
                   A verification code has been sent to <strong>{signupEmail}</strong>.
                 </p>
-
-                {demoOtp && (
-                  <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '0.5rem', padding: '0.4rem 0.75rem', fontSize: '0.82rem', color: '#1e40af', marginBottom: '0.6rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span>Testing Code: <strong>{demoOtp}</strong></span>
-                    <button
-                      type="button"
-                      style={{ border: 'none', background: '#3b82f6', color: '#fff', padding: '0.2rem 0.5rem', borderRadius: '0.25rem', cursor: 'pointer', fontSize: '0.75rem' }}
-                      onClick={() => setOtpValue(demoOtp)}
-                    >
-                      Use Code
-                    </button>
-                  </div>
-                )}
 
                 {otpError && <div style={{ color: '#ef4444', fontSize: '0.82rem', marginBottom: '0.5rem' }}>{otpError}</div>}
                 {otpSuccessMsg && <div style={{ color: '#16a34a', fontSize: '0.82rem', marginBottom: '0.5rem' }}>{otpSuccessMsg}</div>}
@@ -495,10 +788,10 @@ export default function Landing() {
           </form>
           <p className="auth-switch">
             Already have an account?{' '}
-            <button onClick={() => { setView('login'); setError(''); }}>Sign In</button>
+            <button onClick={() => { setView('login'); setLoginEmail(''); setLoginPw(''); setError(''); }}>Sign In</button>
           </p>
           <p className="auth-switch">
-            <button onClick={() => { setView('landing'); setError(''); }}>← Back to Home</button>
+            <button onClick={() => { setView('landing'); setSignupEmail(''); setSignupPw(''); setError(''); }}>← Back to Home</button>
           </p>
         </div>
       </div>
@@ -516,11 +809,6 @@ export default function Landing() {
             <Sprout size={28} />
             <span>Agro Trades</span>
           </div>
-          <div className="nav-actions">
-            <button className="btn btn-secondary btn-sm" onClick={() => { setView('login'); setLoginEmail('admin@agro.com'); setLoginPw(''); setError(''); }}>👨‍💼 Admin Portal</button>
-            <button className="btn btn-secondary btn-sm" onClick={() => { setView('login'); setError(''); }}>Sign In</button>
-            <button className="btn btn-primary btn-sm" onClick={() => { setView('signup'); setError(''); }}>Get Started</button>
-          </div>
         </nav>
         <div className="hero-content container animate-fadeIn">
           <div className="hero-badge badge badge-green">
@@ -531,10 +819,10 @@ export default function Landing() {
             Connect directly with farmers and buyers across Karnataka. Fair prices, transparent transactions, and AI‑powered insights for smarter agriculture.
           </p>
           <div className="hero-cta">
-            <button className="btn btn-primary btn-lg" onClick={() => setView('signup')}>
+            <button className="btn btn-primary btn-lg" onClick={() => { setView('signup'); setSignupEmail(''); setSignupPw(''); setSignupConfirmPw(''); setError(''); }}>
               Start Trading <ChevronRight size={20} />
             </button>
-            <button className="btn btn-secondary btn-lg" onClick={() => setView('login')}>
+            <button className="btn btn-secondary btn-lg" onClick={() => { setView('login'); setLoginEmail(''); setLoginPw(''); setError(''); }}>
               Sign In
             </button>
           </div>
@@ -664,6 +952,8 @@ export default function Landing() {
             <Link to="/refund-policy" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>Refund & Cancellation Policy</Link>
             <span style={{ color: 'var(--color-border)' }}>•</span>
             <Link to="/contact" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>Contact Us</Link>
+            <span style={{ color: 'var(--color-border)' }}>•</span>
+            <Link to="/admin/login" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>Admin Login</Link>
           </div>
           <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', margin: 0 }}>
             © 2026 Karnataka Agro Trades Pvt. Ltd. — Empowering Karnataka's Agriculture & APMC Mandis

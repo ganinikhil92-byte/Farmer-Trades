@@ -39,8 +39,8 @@ export default function FarmerProfile() {
               {user?.name.charAt(0) || 'R'}
             </div>
             <div>
-              <h3 style={{ margin: 0 }}>{user?.name || 'Ramesh Gowda'}</h3>
-              <p style={{ margin: 0, color: 'var(--text-muted)' }}>{user?.email || 'farmer@agro.com'}</p>
+              <h3 style={{ margin: 0 }}>{user?.name || 'Farmer'}</h3>
+              <p style={{ margin: 0, color: 'var(--text-muted)' }}>{user?.email || ''}</p>
               <span className="badge badge-green" style={{ marginTop: '0.25rem', display: 'inline-block' }}>
                 <CheckCircle size={12} style={{ marginRight: '4px' }} /> Verified Karnataka Farmer
               </span>

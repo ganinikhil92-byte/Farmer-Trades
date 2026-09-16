@@ -96,20 +96,7 @@
 }
 
 .demo-creds {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: var(--color-primary-50);
-  border-radius: var(--radius-md);
-  font-size: 0.8125rem;
-}
-.demo-creds h4 {
-  font-size: 0.8125rem;
-  margin-bottom: 0.5rem;
-  color: var(--color-primary-700);
-}
-.demo-creds p {
-  margin-bottom: 0.25rem;
-  color: var(--color-text-muted);
+  display: none !important;
 }
 
 /* ===== Landing Page ===== */
