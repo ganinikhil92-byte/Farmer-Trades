@@ -3,7 +3,7 @@ import api from '../../utils/api';
 import { Salad } from 'lucide-react';
 
 interface Listing {
-  id: number;
+  id: number | string;
   category: string;
   crop_name: string;
   crop_type: string;
@@ -18,14 +18,7 @@ export default function VegetableStocks() {
 
   useEffect(() => {
     api.get('/listings?category=vegetable').then((res) => {
-      // Deduplicate by crop_name — keep only the first listing for each unique vegetable
-      const seen = new Set<string>();
-      const unique = (res.data as Listing[]).filter((l) => {
-        if (seen.has(l.crop_name)) return false;
-        seen.add(l.crop_name);
-        return true;
-      });
-      setListings(unique);
+      setListings(res.data as Listing[]);
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
