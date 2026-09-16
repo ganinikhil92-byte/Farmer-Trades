@@ -1,5 +1,5 @@
 export interface Listing {
-  id: number;
+  id: number | string;
   category: string;
   crop_name: string;
   crop_type: string;

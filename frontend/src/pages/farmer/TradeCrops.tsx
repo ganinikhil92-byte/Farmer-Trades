@@ -1,9 +1,47 @@
-import React, { useState, useRef, FormEvent } from 'react';
+import React, { useState, useEffect, useRef, FormEvent } from 'react';
 import api from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import { ArrowLeft, Upload, CheckCircle, Wheat, Salad, Apple } from 'lucide-react';
 
 type Category = 'crop' | 'vegetable' | 'fruit';
+
+const DRAFT_KEY = 'agro_trade_draft';
+
+interface TradeDraft {
+  category: Category | null;
+  name: string;
+  type: string;
+  quantity: string;
+  price: string;
+  photoPreview: string | null;
+}
+
+function getStoredDraft(): TradeDraft {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        category: parsed.category || null,
+        name: parsed.name || '',
+        type: parsed.type || '',
+        quantity: parsed.quantity || '',
+        price: parsed.price || '',
+        photoPreview: parsed.photoPreview || null,
+      };
+    }
+  } catch (e) {
+    console.error('Failed to load trade draft', e);
+  }
+  return {
+    category: null,
+    name: '',
+    type: '',
+    quantity: '',
+    price: '',
+    photoPreview: null,
+  };
+}
 
 const CATEGORY_META: Record<
   Category,
@@ -40,18 +78,53 @@ const CATEGORY_META: Record<
 
 export default function TradeCrops() {
   const { user } = useAuth();
-  const [category, setCategory] = useState<Category | null>(null);
+  const [draft] = useState<TradeDraft>(getStoredDraft);
+
+  const [category, setCategory] = useState<Category | null>(draft.category);
 
   // Form fields
   const [photo, setPhoto] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [name, setName] = useState('');
-  const [type, setType] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [price, setPrice] = useState('');
+  const [photoPreview, setPhotoPreview] = useState<string | null>(draft.photoPreview);
+  const [name, setName] = useState(draft.name);
+  const [type, setType] = useState(draft.type);
+  const [quantity, setQuantity] = useState(draft.quantity);
+  const [price, setPrice] = useState(draft.price);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Auto-persist draft across page refreshes
+  useEffect(() => {
+    if (category || name || type || quantity || price || photoPreview) {
+      try {
+        localStorage.setItem(
+          DRAFT_KEY,
+          JSON.stringify({
+            category,
+            name,
+            type,
+            quantity,
+            price,
+            photoPreview,
+          })
+        );
+      } catch {
+        try {
+          localStorage.setItem(
+            DRAFT_KEY,
+            JSON.stringify({
+              category,
+              name,
+              type,
+              quantity,
+              price,
+              photoPreview: null,
+            })
+          );
+        } catch {}
+      }
+    }
+  }, [category, name, type, quantity, price, photoPreview]);
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
@@ -65,6 +138,12 @@ export default function TradeCrops() {
     }
   }
 
+  function clearDraft() {
+    try {
+      localStorage.removeItem(DRAFT_KEY);
+    } catch {}
+  }
+
   function resetForm() {
     setPhoto(null);
     setPhotoPreview(null);
@@ -72,6 +151,7 @@ export default function TradeCrops() {
     setType('');
     setQuantity('');
     setPrice('');
+    clearDraft();
   }
 
   function handleBack() {
@@ -93,6 +173,7 @@ export default function TradeCrops() {
         quantity_kg: parseFloat(quantity),
         price_per_kg: parseFloat(price),
         farmer_id: user?.email || 'unknown',
+        image_url: photoPreview || undefined,
       });
       setSuccess(true);
       resetForm();

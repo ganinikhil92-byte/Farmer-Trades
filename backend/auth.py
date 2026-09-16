@@ -86,5 +86,26 @@ def get_current_user_payload(credentials: Optional[HTTPAuthorizationCredentials]
             pass
 
     # 2. Fall back to local JWT decode
-    return decode_access_token(token)
+    jwt_payload = decode_access_token(token)
+    if jwt_payload:
+        return jwt_payload
+
+    # 3. Support dev/offline base64 tokens (e.g. dev-token-...)
+    if token.startswith("dev-token-"):
+        try:
+            import base64
+            import json
+            raw_b64 = token[len("dev-token-"):]
+            data = json.loads(base64.b64decode(raw_b64).decode("utf-8"))
+            return {
+                "sub": data.get("email"),
+                "email": data.get("email"),
+                "role": data.get("role", "farmer"),
+                "name": data.get("name", data.get("email", "").split("@")[0]),
+                "dev": True
+            }
+        except Exception:
+            pass
+
+    return None
 

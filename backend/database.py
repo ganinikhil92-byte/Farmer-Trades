@@ -1,6 +1,6 @@
 import os
 import json
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 # Database configuration
@@ -33,6 +33,41 @@ def init_db():
     import auth
 
     Base.metadata.create_all(bind=engine)
+
+    try:
+        with engine.connect() as conn:
+            res = conn.execute(text("PRAGMA table_info(soil_test_requests)")).fetchall()
+            existing_cols = {row[1] for row in res}
+            cols_to_add = [
+                ('farmer_id', 'TEXT DEFAULT ""'),
+                ('field_name', 'TEXT DEFAULT ""'),
+                ('land_unit', 'TEXT DEFAULT "Acres"'),
+                ('preferred_date', 'TEXT DEFAULT ""'),
+                ('provider_name', 'TEXT DEFAULT ""'),
+                ('provider_contact', 'TEXT DEFAULT ""'),
+                ('sample_id', 'TEXT DEFAULT ""'),
+                ('sample_collected_date', 'TEXT DEFAULT ""'),
+                ('attachment_filename', 'TEXT DEFAULT ""'),
+                ('attachment_path', 'TEXT DEFAULT ""'),
+                ('is_farmer_upload', 'INTEGER DEFAULT 0'),
+                ('review_status', 'TEXT DEFAULT ""'),
+                ('reviewer_name', 'TEXT DEFAULT ""'),
+                ('review_date', 'TEXT DEFAULT ""')
+            ]
+            for c_name, c_type in cols_to_add:
+                if c_name not in existing_cols:
+                    conn.execute(text(f"ALTER TABLE soil_test_requests ADD COLUMN {c_name} {c_type}"))
+            conn.commit()
+
+            # Ensure orders has payment_id column
+            res_orders = conn.execute(text("PRAGMA table_info(orders)")).fetchall()
+            existing_order_cols = {row[1] for row in res_orders}
+            if "payment_id" not in existing_order_cols:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN payment_id TEXT DEFAULT ''"))
+                conn.commit()
+    except Exception as ex:
+        print(f"[DB migration note] {ex}")
+
     db = SessionLocal()
 
     try:
@@ -42,7 +77,7 @@ def init_db():
                 db_models.User(
                     email="nikhilgani987@gmail.com",
                     name="Nikhil Gani",
-                    password_hash=auth.hash_password("Admin@123"),
+                    password_hash=auth.hash_password("Nikhil@2005"),
                     role="admin",
                     district="Bengaluru Urban",
                     taluk="Bengaluru South",

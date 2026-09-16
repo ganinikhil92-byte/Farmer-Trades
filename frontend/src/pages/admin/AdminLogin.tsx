@@ -8,8 +8,8 @@ export default function AdminLogin() {
   const { user, login } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('nikhilgani987@gmail.com');
+  const [password, setPassword] = useState('Nikhil@2005');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 

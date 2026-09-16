@@ -38,6 +38,7 @@ const navMap: Record<string, NavItem[]> = {
     { label: 'Admin Dashboard', path: '/admin', icon: <LayoutDashboard size={18} /> },
     { label: 'Manage Farmers', path: '/admin/farmers', icon: <Users size={18} /> },
     { label: 'Manage Buyers', path: '/admin/customers', icon: <ShoppingBag size={18} /> },
+    { label: 'Soil Test Requests', path: '/admin/soil-tests', icon: <FlaskConical size={18} /> },
     { label: 'Admin Profile', path: '/admin/profile', icon: <Shield size={18} /> },
   ],
   farmer: [
@@ -51,8 +52,6 @@ const navMap: Record<string, NavItem[]> = {
     { label: 'Soil Test', path: '/farmer/soil-test', icon: <FlaskConical size={18} /> },
     { label: 'Crop Prediction', path: '/farmer/predict-crop', icon: <Brain size={18} /> },
     { label: 'Yield Prediction', path: '/farmer/predict-yield', icon: <BarChart3 size={18} /> },
-    { label: 'Rainfall Prediction', path: '/farmer/predict-rainfall', icon: <CloudRain size={18} /> },
-    { label: 'Crop Recommendation', path: '/farmer/recommend-crop', icon: <Sprout size={18} /> },
     { label: 'Fertilizer Guide', path: '/farmer/recommend-fertilizer', icon: <TrendingUp size={18} /> },
     { label: 'Agri Chat Bot', path: '/farmer/chatbot', icon: <Bot size={18} /> },
     { label: 'Weather Forecast', path: '/farmer/weather', icon: <CloudRain size={18} /> },

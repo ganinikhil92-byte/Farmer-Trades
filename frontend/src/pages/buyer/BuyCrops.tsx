@@ -86,8 +86,8 @@ export default function BuyCrops() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
-  const [addedId, setAddedId] = useState<number | null>(null);
-  const [quantities, setQuantities] = useState<Record<number, number>>({});
+  const [addedId, setAddedId] = useState<string | number | null>(null);
+  const [quantities, setQuantities] = useState<Record<string | number, number>>({});
 
   useEffect(() => {
     if (!category) return;
@@ -104,7 +104,7 @@ export default function BuyCrops() {
         });
         setListings(unique);
         // Initialize quantities to 5 kg each
-        const initQty: Record<number, number> = {};
+        const initQty: Record<string | number, number> = {};
         unique.forEach((l) => { initQty[l.id] = 5; });
         setQuantities(initQty);
       })
@@ -123,7 +123,7 @@ export default function BuyCrops() {
     (l) => l.crop_name.toLowerCase().includes(search.toLowerCase()) && l.quantity_kg > 0
   );
 
-  function changeQty(id: number, delta: number, maxKg: number) {
+  function changeQty(id: string | number, delta: number, maxKg: number) {
     setQuantities((prev) => {
       const current = prev[id] || 5;
       const next = Math.max(1, Math.min(maxKg, current + delta));

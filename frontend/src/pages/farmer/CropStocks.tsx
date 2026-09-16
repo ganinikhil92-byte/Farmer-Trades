@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../../utils/api';
 import { Wheat } from 'lucide-react';
+import { getProduceImage, FALLBACK_PHOTOS } from '../../utils/producePhoto';
 
 interface Listing {
   id: number | string;
@@ -10,6 +11,7 @@ interface Listing {
   quantity_kg: number;
   price_per_kg: number;
   farmer_id: string;
+  image_url?: string;
 }
 
 export default function CropStocks() {
@@ -40,6 +42,7 @@ export default function CropStocks() {
             <thead>
               <tr>
                 <th>#</th>
+                <th>Photo</th>
                 <th>Crop Name</th>
                 <th>Type</th>
                 <th>Quantity (kg)</th>
@@ -50,11 +53,29 @@ export default function CropStocks() {
             </thead>
             <tbody>
               {listings.length === 0 ? (
-                <tr><td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)' }}>No crop listings yet.</td></tr>
+                <tr><td colSpan={8} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)' }}>No crop listings yet.</td></tr>
               ) : (
                 listings.map((l, i) => (
                   <tr key={l.id}>
                     <td>{i + 1}</td>
+                    <td style={{ width: '70px', padding: '0.4rem 0.6rem' }}>
+                      <img
+                        src={getProduceImage(l.crop_name, l.category, l.image_url)}
+                        alt={l.crop_name}
+                        style={{
+                          width: '52px',
+                          height: '52px',
+                          objectFit: 'cover',
+                          borderRadius: '8px',
+                          border: '1px solid #e2e8f0',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                          display: 'block',
+                        }}
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = FALLBACK_PHOTOS.crop;
+                        }}
+                      />
+                    </td>
                     <td style={{ fontWeight: 600 }}>{l.crop_name}</td>
                     <td>{l.crop_type || '—'}</td>
                     <td>{l.quantity_kg}</td>

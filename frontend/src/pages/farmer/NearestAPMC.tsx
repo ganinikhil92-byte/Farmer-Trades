@@ -104,6 +104,22 @@ const allApmcs = Object.entries(districtApmcs).flatMap(([district, list]) =>
   list.map((a) => ({ ...a, district }))
 );
 
+function getDirectionsUrl(market: { name?: string; address?: string; district?: string }): string | null {
+  const parts = [
+    market.name,
+    market.address,
+    market.district,
+    'Karnataka',
+    'India',
+  ].filter(Boolean);
+
+  if (!market.name && !market.address) {
+    return null;
+  }
+
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(parts.join(', '))}`;
+}
+
 export default function NearestAPMC() {
   const { user } = useAuth();
   const userDistrict = user?.district || '';
@@ -129,11 +145,11 @@ export default function NearestAPMC() {
   return (
     <div>
       <div className="page-header">
-        <h1>Nearest APMC Mandi</h1>
+        <h1>APMC Markets in Your District</h1>
         <p>
           {isPersonalized
-            ? `Showing APMC markets near ${locationLabel}${userPincode ? ` – ${userPincode}` : ''}`
-            : 'Find the closest agricultural produce markets in Karnataka'}
+            ? `Showing registered APMC markets in ${userDistrict}${userPincode ? ` (${userPincode})` : ''}`
+            : 'Directory of registered APMC markets across Karnataka by district'}
         </p>
       </div>
 
@@ -169,61 +185,107 @@ export default function NearestAPMC() {
         </div>
       )}
 
-      {/* Mock map */}
-      <div className="card" style={{
-        height: 240,
-        background: 'linear-gradient(135deg, #d1fae5, #a7f3d0)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        marginBottom: '1.5rem', borderRadius: 'var(--radius-lg)',
-        position: 'relative', overflow: 'hidden',
+      {/* Honest data notice */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '0.5rem',
+        marginBottom: '1.25rem', fontSize: '0.8rem', color: '#64748b',
+        flexWrap: 'wrap'
       }}>
-        <div style={{
-          position: 'absolute', inset: 0, opacity: 0.1,
-          backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 30px,#065f46 30px,#065f46 31px),repeating-linear-gradient(90deg,transparent,transparent 30px,#065f46 30px,#065f46 31px)',
-        }} />
-        <div style={{ textAlign: 'center', zIndex: 1 }}>
-          <MapPin size={44} style={{ color: 'var(--color-primary-700)', marginBottom: '0.5rem' }} />
-          <p style={{ fontWeight: 600, color: 'var(--color-primary-800)' }}>
-            Karnataka Map — Google Maps integration will appear here
-          </p>
-          <p style={{ color: 'var(--color-primary-600)', fontSize: '0.875rem' }}>
-            {isPersonalized ? `Centred on ${userDistrict}` : 'Provide a Google Maps API key to enable'}
-          </p>
-        </div>
+        <span className="badge badge-gray" style={{ fontSize: '0.7rem' }}>Sample market data</span>
+        <span>Commodity prices and timings shown below are illustrative and not live mandi rates.</span>
       </div>
 
       {/* APMC cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
-        {localApmcs.map((m) => (
-          <div key={m.name} className="card animate-fadeIn" style={{ borderLeft: '4px solid var(--color-primary-400)' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem', marginBottom: '0.75rem' }}>
-              <MapPin size={18} style={{ color: 'var(--color-primary-600)', marginTop: 2, flexShrink: 0 }} />
+        {localApmcs.map((m) => {
+          const directionsUrl = getDirectionsUrl(m);
+          return (
+            <div
+              key={m.name}
+              className="card animate-fadeIn"
+              style={{
+                borderLeft: '4px solid var(--color-primary-400)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+              }}
+            >
               <div>
-                <h4 style={{ fontSize: '1rem', marginBottom: '0.15rem' }}>{m.name}</h4>
-                <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>{m.district}, Karnataka</p>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem', marginBottom: '0.75rem' }}>
+                  <MapPin size={18} style={{ color: 'var(--color-primary-600)', marginTop: 2, flexShrink: 0 }} />
+                  <div>
+                    <h4 style={{ fontSize: '1rem', marginBottom: '0.15rem' }}>{m.name}</h4>
+                    <p style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>{m.district}, Karnataka</p>
+                  </div>
+                </div>
+
+                <p style={{ fontSize: '0.82rem', color: '#475569', marginBottom: '0.5rem' }}>
+                  📍 {m.address || 'Address not available'}
+                </p>
+
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginBottom: '0.75rem', fontSize: '0.82rem', color: '#475569' }}>
+                  {m.phone && (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <Phone size={13} /> {m.phone}
+                    </span>
+                  )}
+                  {m.timing && (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <Clock size={13} /> {m.timing}
+                    </span>
+                  )}
+                </div>
+
+                {m.topCrops && m.topCrops.length > 0 && (
+                  <div style={{ marginBottom: '0.875rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                      <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Indicative crops & prices</span>
+                      <span className="badge badge-gray" style={{ fontSize: '0.65rem', padding: '0.1rem 0.35rem' }}>Sample market data</span>
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                      {m.topCrops.map((crop) => (
+                        <span key={crop} className="badge badge-amber" style={{ fontSize: '0.75rem' }}>{crop}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Navigation & Directions */}
+              <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #f1f5f9' }}>
+                {directionsUrl ? (
+                  <>
+                    <a
+                      href={directionsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-secondary btn-sm"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        width: '100%',
+                        justifyContent: 'center',
+                        color: 'var(--color-primary-700)',
+                        fontWeight: 600,
+                        textDecoration: 'none'
+                      }}
+                    >
+                      <Navigation size={14} /> Get Directions
+                    </a>
+                    <p style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '0.35rem', marginBottom: 0, textAlign: 'center' }}>
+                      Confirm the market location in Maps before travelling.
+                    </p>
+                  </>
+                ) : (
+                  <div style={{ fontSize: '0.8rem', color: '#94a3b8', fontStyle: 'italic', textAlign: 'center', padding: '0.35rem 0' }}>
+                    Directions unavailable
+                  </div>
+                )}
               </div>
             </div>
-
-            <p style={{ fontSize: '0.82rem', color: '#475569', marginBottom: '0.5rem' }}>
-              📍 {m.address}
-            </p>
-
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.75rem', fontSize: '0.82rem', color: '#475569' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                <Phone size={13} /> {m.phone}
-              </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                <Clock size={13} /> {m.timing}
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-              {m.topCrops.map((crop) => (
-                <span key={crop} className="badge badge-amber" style={{ fontSize: '0.75rem' }}>{crop}</span>
-              ))}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

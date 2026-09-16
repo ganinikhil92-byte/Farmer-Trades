@@ -13,6 +13,7 @@ import MasterStocks from './pages/admin/MasterStocks';
 import QueriesList from './pages/admin/QueriesList';
 import AdminProfile from './pages/admin/AdminProfile';
 import AdminLogin from './pages/admin/AdminLogin';
+import SoilTestAdmin from './pages/admin/SoilTestAdmin';
 
 // Farmer pages
 import FarmerDashboard from './pages/farmer/FarmerDashboard';
@@ -81,6 +82,7 @@ function AppRoutes() {
             <Route path="/admin/crops" element={<ManageList title="Crops" endpoint="crops" icon={<Wheat size={18} />} />} />
             <Route path="/admin/vegetables" element={<ManageList title="Vegetables" endpoint="vegetables" icon={<Carrot size={18} />} />} />
             <Route path="/admin/fruits" element={<ManageList title="Fruits" endpoint="fruits" icon={<Apple size={18} />} />} />
+            <Route path="/admin/soil-tests" element={<SoilTestAdmin />} />
             <Route path="/admin/profile" element={<AdminProfile />} />
           </>
         )}
@@ -98,8 +100,8 @@ function AppRoutes() {
             <Route path="/farmer/soil-test" element={<SoilTest />} />
             <Route path="/farmer/predict-crop" element={<Predictions type="crop" />} />
             <Route path="/farmer/predict-yield" element={<Predictions type="yield" />} />
-            <Route path="/farmer/predict-rainfall" element={<Predictions type="rainfall" />} />
-            <Route path="/farmer/recommend-crop" element={<Predictions type="recommend-crop" />} />
+            <Route path="/farmer/predict-rainfall" element={<Navigate to="/farmer/weather" replace />} />
+            <Route path="/farmer/recommend-crop" element={<Navigate to="/farmer/predict-crop" replace />} />
             <Route path="/farmer/recommend-fertilizer" element={<Predictions type="recommend-fertilizer" />} />
             <Route path="/farmer/chatbot" element={<ChatBot />} />
             <Route path="/farmer/weather" element={<WeatherForecast />} />

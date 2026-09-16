@@ -50,7 +50,8 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 // Initial default seed users across Karnataka
 const DEFAULT_USERS: StoredUser[] = [
-  { email: 'nikhilgani987@gmail.com', password: 'Admin@123', name: 'Nikhil Gani', role: 'admin', district: 'Bengaluru Urban', taluk: 'Bengaluru South', village: 'Jayanagar', pincode: '560041', phone: '8660416257', status: 'Verified', registeredAt: '2026-08-01' },
+  { email: 'nikhilgani987@gmail.com', password: 'Nikhil@2005', name: 'Nikhil Gani', role: 'admin', district: 'Bengaluru Urban', taluk: 'Bengaluru South', village: 'Jayanagar', pincode: '560041', phone: '8660416257', status: 'Verified', registeredAt: '2026-08-01' },
+  { email: 'nikhilgani293@gmail.com', password: 'Nikhil@2005', name: 'Nikhil Farmer', role: 'farmer', district: 'Vijayapura', taluk: 'Vijayapura', village: 'Tikota', pincode: '586130', phone: '8660416257', status: 'Verified', registeredAt: '2026-08-01' },
   { email: 'admin@agro.com', password: 'Admin@123', name: 'Admin Officer', role: 'admin', status: 'Verified', registeredAt: '2026-08-01' },
   { email: 'farmer@agro.com', password: 'Farmer@123', name: 'Ramesh Gowda', role: 'farmer', district: 'Bengaluru Urban', taluk: 'Bengaluru North', village: 'Jakkur', pincode: '560064', phone: '9845012345', status: 'Verified', registeredAt: '2026-08-15' },
   { email: 'patil@agro.com', password: 'Farmer@123', name: 'Basavaraj Patil', role: 'farmer', district: 'Belagavi', taluk: 'Athani', village: 'Hulagabal', pincode: '591304', phone: '9845023456', status: 'Pending', registeredAt: '2026-09-02' },
@@ -66,8 +67,19 @@ function getStoredUsers(): StoredUser[] {
     if (raw) {
       const parsed: StoredUser[] = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        if (!parsed.some((u) => u.email.toLowerCase() === 'nikhilgani987@gmail.com')) {
+        const adminIdx = parsed.findIndex((u) => u.email.toLowerCase() === 'nikhilgani987@gmail.com');
+        if (adminIdx === -1) {
           parsed.unshift(DEFAULT_USERS[0]);
+        } else {
+          parsed[adminIdx].password = 'Nikhil@2005';
+          parsed[adminIdx].role = 'admin';
+        }
+        const farmerIdx = parsed.findIndex((u) => u.email.toLowerCase() === 'nikhilgani293@gmail.com');
+        if (farmerIdx === -1) {
+          parsed.push(DEFAULT_USERS[1]);
+        } else {
+          parsed[farmerIdx].password = 'Nikhil@2005';
+          parsed[farmerIdx].role = 'farmer';
         }
         return parsed;
       }
@@ -233,7 +245,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // 3. Offline fallback
     const found = usersList.find((u) => u.email.toLowerCase() === cleanEmail && u.password === password);
     if (!found) {
-      if (cleanEmail === 'nikhilgani987@gmail.com') {
+      if (cleanEmail === 'nikhilgani987@gmail.com' && (password === 'Nikhil@2005' || password === 'Admin@123')) {
         const adminUser: AuthUser = {
           email: cleanEmail,
           name: 'Nikhil Gani',
@@ -248,6 +260,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
         setUser(adminUser);
         localStorage.setItem('agro_user', JSON.stringify(adminUser));
+        localStorage.setItem('agro_auth_token', 'dev-token-' + btoa(JSON.stringify({ email: cleanEmail, role: adminUser.role, name: adminUser.name })));
         return { success: true };
       }
       return { success: false, error: 'Invalid email or password. Please verify your credentials.' };
@@ -267,6 +280,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(authUser);
     try {
       localStorage.setItem('agro_user', JSON.stringify(authUser));
+      localStorage.setItem('agro_auth_token', 'dev-token-' + btoa(JSON.stringify({ email: authUser.email, role: authUser.role, name: authUser.name })));
     } catch (e) {
       console.error(e);
     }

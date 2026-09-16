@@ -6,7 +6,8 @@ import {
   ShoppingBag,
   ShieldCheck,
   Building2,
-  MapPin
+  MapPin,
+  FlaskConical
 } from 'lucide-react';
 import { KARNATAKA_DISTRICTS } from '../../data/karnatakaLocations';
 
@@ -109,6 +110,23 @@ export default function AdminDashboard() {
             </span>
           </div>
         </div>
+
+        {/* Soil Testing Card */}
+        <Link to="/admin/soil-tests" className="card stat-card animate-fadeIn" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <div className="stat-card-icon green">
+            <FlaskConical size={26} />
+          </div>
+          <div className="stat-card-info">
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
+              <h3 style={{ fontSize: '1.75rem', margin: 0, fontWeight: 700 }}>Lab Portal</h3>
+              <span style={{ fontSize: '0.82rem', color: '#16a34a', fontWeight: 600 }}>Active</span>
+            </div>
+            <p style={{ margin: '0.2rem 0 0.4rem', fontWeight: 600 }}>Soil Tests & Reports</p>
+            <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+              Manage appointments & lab entries →
+            </span>
+          </div>
+        </Link>
       </div>
 
       {/* District Coverage Summary */}
