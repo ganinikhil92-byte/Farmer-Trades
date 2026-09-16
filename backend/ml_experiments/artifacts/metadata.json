@@ -36,6 +36,15 @@
       "rainfall"
     ],
     "feature_count": 7,
+    "training_data_ranges": {
+      "N": { "min": 0.0, "max": 140.0 },
+      "P": { "min": 5.0, "max": 145.0 },
+      "K": { "min": 5.0, "max": 205.0 },
+      "temperature": { "min": 8.825674745, "max": 43.36051537 },
+      "humidity": { "min": 14.25803981, "max": 99.98187601 },
+      "ph": { "min": 3.504752314, "max": 9.93509073 },
+      "rainfall": { "min": 20.21126747, "max": 298.5601175 }
+    },
     "target_column": "label",
     "crop_labels": [
       "apple",

@@ -1086,6 +1086,34 @@ def predict_crop_ml_demo(req: CropDemoRequest):
         ]
     }
 
+@router.get("/ml/crop-metadata")
+def get_crop_ml_metadata():
+    model, version, err = load_crop_demo_model()
+    if err or model is None:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Crop classification metadata service is unavailable. Reason: {err or 'Pipeline not loaded'}"
+        )
+    
+    ranges = {}
+    ordered_features = ["N", "P", "K", "temperature", "humidity", "ph", "rainfall"]
+    if os.path.isfile(ML_CROP_METADATA_PATH):
+        try:
+            with open(ML_CROP_METADATA_PATH, "r", encoding="utf-8") as f:
+                meta = json.load(f)
+                ranges = meta.get("features", {}).get("training_data_ranges", {})
+                ordered_features = meta.get("features", {}).get("ordered_input_features", ordered_features)
+        except Exception:
+            pass
+
+    return {
+        "model_version": version or "crop_classifier_v1.0",
+        "ordered_features": ordered_features,
+        "training_data_ranges": ranges,
+        "educational_demo": True,
+        "disclaimer": "These ranges describe the examples used for training. They are not recommended farming conditions or a guarantee of reliable predictions."
+    }
+
 # --- Support Queries ---
 @router.get("/queries")
 def get_queries(db: Session = Depends(get_db)):

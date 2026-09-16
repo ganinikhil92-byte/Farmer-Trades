@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import api from '../../utils/api';
-import { Brain, BarChart3, TrendingUp, FlaskConical, Sparkles, AlertCircle, Info } from 'lucide-react';
+import { Brain, BarChart3, TrendingUp, FlaskConical, Sparkles, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 
 export type PredictionType = 'crop' | 'yield' | 'recommend-fertilizer';
 
@@ -41,16 +41,21 @@ interface CropMlResult {
   limitations: string[];
 }
 
+interface FeatureRange {
+  min: number;
+  max: number;
+}
+
 const EXAMPLE_CROP_INPUTS = ['90', '42', '43', '20.8', '82', '6.5', '202.9'];
 
-const CROP_FIELD_HELPERS: Record<string, string> = {
-  'Nitrogen (N)': 'Undocumented unit in dataset (relative soil ratio).',
-  'Phosphorus (P)': 'Undocumented unit in dataset (relative soil ratio).',
-  'Potassium (K)': 'Undocumented unit in dataset (relative soil ratio).',
-  'Temperature (°C)': 'Degrees Celsius (sub-zero / negative temperatures supported).',
-  'Humidity (%)': 'Relative humidity percentage (0 to 100%).',
-  'pH Level': 'Soil pH (0.0 to 14.0).',
-  'Rainfall (mm)': 'Rainfall in millimeters. (Undocumented time period: unknown if annual, seasonal, or monthly).',
+const FIELD_TO_FEATURE_KEY: Record<string, string> = {
+  'Nitrogen (N)': 'N',
+  'Phosphorus (P)': 'P',
+  'Potassium (K)': 'K',
+  'Temperature (°C)': 'temperature',
+  'Humidity (%)': 'humidity',
+  'pH Level': 'ph',
+  'Rainfall (mm)': 'rainfall',
 };
 
 const config: Record<PredictionType, {
@@ -125,6 +130,43 @@ function getFieldInputAttributes(type: PredictionType, fieldName: string) {
   return {};
 }
 
+function formatRangeText(
+  fieldName: string,
+  ranges: Record<string, FeatureRange> | null,
+  metaError: boolean
+): string {
+  const key = FIELD_TO_FEATURE_KEY[fieldName];
+  let rangePrefix = '';
+  if (metaError) {
+    rangePrefix = 'Training ranges unavailable.';
+  } else if (!ranges || !ranges[key]) {
+    rangePrefix = 'Loading training range…';
+  } else {
+    const { min, max } = ranges[key];
+    const minStr = Number.isInteger(min) ? min.toString() : min.toFixed(1);
+    const maxStr = Number.isInteger(max) ? max.toString() : max.toFixed(1);
+    rangePrefix = `Training-data range: ${minStr}–${maxStr}.`;
+  }
+
+  // Unit and time-period notes
+  if (fieldName.startsWith('Nitrogen') || fieldName.startsWith('Phosphorus') || fieldName.startsWith('Potassium')) {
+    return `${rangePrefix} Unit not documented.`;
+  }
+  if (fieldName.startsWith('Temperature')) {
+    return `${rangePrefix} °C (Supports negative temperatures).`;
+  }
+  if (fieldName.startsWith('Humidity')) {
+    return `${rangePrefix} %.`;
+  }
+  if (fieldName.startsWith('pH')) {
+    return `${rangePrefix}`;
+  }
+  if (fieldName.startsWith('Rainfall')) {
+    return `${rangePrefix} mm. (Time period not documented: unknown if annual, seasonal, or monthly).`;
+  }
+  return rangePrefix;
+}
+
 export default function Predictions({ type }: PredictionPageProps) {
   const cfg = config[type] || config.crop;
   const location = useLocation();
@@ -134,10 +176,32 @@ export default function Predictions({ type }: PredictionPageProps) {
   const [values, setValues] = useState<string[]>(initial.values);
   const [result, setResult] = useState('');
   const [cropMlResult, setCropMlResult] = useState<CropMlResult | null>(null);
+  const [submissionOutOfRange, setSubmissionOutOfRange] = useState(false);
   const [yieldDetails, setYieldDetails] = useState<YieldResultDetails | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isPrefilled, setIsPrefilled] = useState(initial.isPrefilled);
+
+  // Model training range guidance state
+  const [trainingRanges, setTrainingRanges] = useState<Record<string, FeatureRange> | null>(null);
+  const [metadataLoadingError, setMetadataLoadingError] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (type === 'crop') {
+      api.get('/ml/crop-metadata')
+        .then((res) => {
+          if (res.data && res.data.training_data_ranges) {
+            setTrainingRanges(res.data.training_data_ranges);
+            setMetadataLoadingError(false);
+          } else {
+            setMetadataLoadingError(true);
+          }
+        })
+        .catch(() => {
+          setMetadataLoadingError(true);
+        });
+    }
+  }, [type]);
 
   if (prevType !== type || prevState !== location.state) {
     setPrevType(type);
@@ -147,6 +211,7 @@ export default function Predictions({ type }: PredictionPageProps) {
     setIsPrefilled(next.isPrefilled);
     setResult('');
     setCropMlResult(null);
+    setSubmissionOutOfRange(false);
     setYieldDetails(null);
     setErrorMessage(null);
   }
@@ -155,9 +220,10 @@ export default function Predictions({ type }: PredictionPageProps) {
     const next = [...values];
     next[index] = val;
     setValues(next);
-    // Clear stale results and errors whenever any input changes
+    // Clear outdated results and errors whenever any input changes
     setResult('');
     setCropMlResult(null);
+    setSubmissionOutOfRange(false);
     setYieldDetails(null);
     setErrorMessage(null);
   }
@@ -166,14 +232,26 @@ export default function Predictions({ type }: PredictionPageProps) {
     setValues([...EXAMPLE_CROP_INPUTS]);
     setResult('');
     setCropMlResult(null);
+    setSubmissionOutOfRange(false);
     setYieldDetails(null);
     setErrorMessage(null);
+  }
+
+  function isFieldOutOfRange(fieldName: string, valStr: string): boolean {
+    if (!trainingRanges) return false;
+    const key = FIELD_TO_FEATURE_KEY[fieldName];
+    if (!key || !trainingRanges[key]) return false;
+    const num = parseFloat(valStr);
+    if (isNaN(num) || !isFinite(num)) return false;
+    const { min, max } = trainingRanges[key];
+    return num < min || num > max;
   }
 
   async function handlePredict(e: React.FormEvent) {
     e.preventDefault();
     setResult('');
     setCropMlResult(null);
+    setSubmissionOutOfRange(false);
     setYieldDetails(null);
     setErrorMessage(null);
     setLoading(true);
@@ -209,6 +287,15 @@ export default function Predictions({ type }: PredictionPageProps) {
           return;
         }
         // Note: Temperature is permitted to be negative
+
+        // Check if any input is outside training range (do not clamp values)
+        const isAnyOutside = numValues.some((val, idx) => {
+          const fName = cfg.fields[idx];
+          const key = FIELD_TO_FEATURE_KEY[fName];
+          if (!trainingRanges || !trainingRanges[key]) return false;
+          return val < trainingRanges[key].min || val > trainingRanges[key].max;
+        });
+        setSubmissionOutOfRange(isAnyOutside);
 
         const cropPayload = {
           N: n,
@@ -289,6 +376,7 @@ export default function Predictions({ type }: PredictionPageProps) {
     } catch (err: any) {
       setResult('');
       setCropMlResult(null);
+      setSubmissionOutOfRange(false);
       setYieldDetails(null);
       const detail = err.response?.data?.detail;
       setErrorMessage(
@@ -382,36 +470,38 @@ export default function Predictions({ type }: PredictionPageProps) {
         </div>
       )}
 
-      {/* Load Example Inputs for Crop ML Demo */}
+      {/* Load Example Inputs and Training Range Guidance Explanation */}
       {type === 'crop' && (
         <div
           style={{
             marginBottom: '1.25rem',
-            padding: '0.75rem 1rem',
+            padding: '0.85rem 1.15rem',
             background: '#ffffff',
             border: '1px solid #e2e8f0',
             borderRadius: 8,
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '0.75rem',
           }}
         >
-          <div>
-            <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#0f172a' }}>Demonstration Inputs</span>
-            <p style={{ margin: '0.15rem 0 0', fontSize: '0.78rem', color: '#64748b' }}>
-              These are demonstration inputs, not recommended farming conditions.
-            </p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.5rem' }}>
+            <div>
+              <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#0f172a' }}>Demonstration Inputs</span>
+              <p style={{ margin: '0.15rem 0 0', fontSize: '0.78rem', color: '#64748b' }}>
+                These are demonstration inputs, not recommended farming conditions.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={handleLoadExampleInputs}
+              disabled={loading}
+            >
+              Load example inputs
+            </button>
           </div>
-          <button
-            type="button"
-            className="btn btn-secondary btn-sm"
-            onClick={handleLoadExampleInputs}
-            disabled={loading}
-          >
-            Load example inputs
-          </button>
+
+          <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.5rem', fontSize: '0.8rem', color: '#475569', lineHeight: 1.45 }}>
+            <span style={{ fontWeight: 600, color: '#334155' }}>Range Guidance: </span>
+            These ranges describe the examples used for training. They are not recommended farming conditions or a guarantee of reliable predictions.
+          </div>
         </div>
       )}
 
@@ -534,7 +624,9 @@ export default function Predictions({ type }: PredictionPageProps) {
           ) : (
             cfg.fields.map((f, i) => {
               const extraProps = getFieldInputAttributes(type, f);
-              const helperText = type === 'crop' ? CROP_FIELD_HELPERS[f] : null;
+              const helperText = type === 'crop' ? formatRangeText(f, trainingRanges, metadataLoadingError) : null;
+              const outOfRange = type === 'crop' && isFieldOutOfRange(f, values[i] || '');
+
               return (
                 <div className="form-group" key={f}>
                   <label className="form-label">{f}</label>
@@ -546,11 +638,17 @@ export default function Predictions({ type }: PredictionPageProps) {
                     onChange={(e) => handleValueChange(i, e.target.value)}
                     required
                     disabled={loading}
+                    style={outOfRange ? { borderColor: '#f59e0b', backgroundColor: '#fffdfa' } : undefined}
                     {...extraProps}
                   />
                   {helperText && (
                     <small style={{ color: '#64748b', fontSize: '0.78rem', marginTop: '0.2rem', display: 'block' }}>
                       {helperText}
+                    </small>
+                  )}
+                  {outOfRange && (
+                    <small style={{ color: '#b45309', fontSize: '0.76rem', marginTop: '0.15rem', display: 'block', fontWeight: 500 }}>
+                      ⚠️ Outside the training-data range; this prediction may be unreliable.
                     </small>
                   )}
                 </div>
@@ -606,6 +704,28 @@ export default function Predictions({ type }: PredictionPageProps) {
             </div>
           ) : type === 'crop' && cropMlResult ? (
             <div className="animate-fadeIn" style={{ textAlign: 'left' }}>
+              {/* Out of range alert banner in result card */}
+              {submissionOutOfRange && (
+                <div
+                  style={{
+                    background: '#fffbeb',
+                    border: '1px solid #fcd34d',
+                    borderRadius: 8,
+                    padding: '0.75rem 1rem',
+                    marginBottom: '1rem',
+                    color: '#92400e',
+                    fontSize: '0.84rem',
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <AlertTriangle size={18} style={{ color: '#d97706', flexShrink: 0 }} />
+                  <span>Outside the training-data range; this prediction may be unreliable.</span>
+                </div>
+              )}
+
               <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
                 <span className="badge badge-green" style={{ fontSize: '0.75rem', marginBottom: '0.5rem' }}>
                   ML Prototype Prediction
