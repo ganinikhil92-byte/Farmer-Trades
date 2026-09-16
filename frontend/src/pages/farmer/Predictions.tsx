@@ -34,6 +34,25 @@ interface YieldResultDetails {
   rainfallMm: number;
 }
 
+interface CropMlResult {
+  predictedCrop: string;
+  modelVersion: string;
+  educationalDemo: boolean;
+  limitations: string[];
+}
+
+const EXAMPLE_CROP_INPUTS = ['90', '42', '43', '20.8', '82', '6.5', '202.9'];
+
+const CROP_FIELD_HELPERS: Record<string, string> = {
+  'Nitrogen (N)': 'Undocumented unit in dataset (relative soil ratio).',
+  'Phosphorus (P)': 'Undocumented unit in dataset (relative soil ratio).',
+  'Potassium (K)': 'Undocumented unit in dataset (relative soil ratio).',
+  'Temperature (°C)': 'Degrees Celsius (sub-zero / negative temperatures supported).',
+  'Humidity (%)': 'Relative humidity percentage (0 to 100%).',
+  'pH Level': 'Soil pH (0.0 to 14.0).',
+  'Rainfall (mm)': 'Rainfall in millimeters. (Undocumented time period: unknown if annual, seasonal, or monthly).',
+};
+
 const config: Record<PredictionType, {
   title: string;
   desc: string;
@@ -43,11 +62,11 @@ const config: Record<PredictionType, {
   fields: string[];
 }> = {
   crop: {
-    title: 'Experimental rule-based crop suggestion',
-    desc: 'Uses predefined rules. These rules have not been validated for farming decisions.',
+    title: 'Crop Prediction — ML Prototype',
+    desc: 'Trained Random Forest classifier for educational crop suitability demonstration. Not field-validated farming advice.',
     icon: <Brain size={24} />,
-    endpoint: '/predict/crop',
-    resultKey: 'prediction',
+    endpoint: '/ml/crop-demo',
+    resultKey: 'predicted_crop',
     fields: ['Nitrogen (N)', 'Phosphorus (P)', 'Potassium (K)', 'Temperature (°C)', 'Humidity (%)', 'pH Level', 'Rainfall (mm)']
   },
   yield: {
@@ -69,6 +88,10 @@ const config: Record<PredictionType, {
 };
 
 function getInitialValues(type: PredictionType, locState: any, fields: string[]): { values: string[]; isPrefilled: boolean } {
+  // Do not automatically fill crop prediction from soil tests or weather data
+  if (type === 'crop') {
+    return { values: fields.map(() => ''), isPrefilled: false };
+  }
   if (locState?.prefill && Array.isArray(locState.prefill) && locState.prefill.length > 0) {
     return { values: locState.prefill.map(String), isPrefilled: true };
   }
@@ -110,6 +133,7 @@ export default function Predictions({ type }: PredictionPageProps) {
   const initial = getInitialValues(type, location.state, cfg.fields);
   const [values, setValues] = useState<string[]>(initial.values);
   const [result, setResult] = useState('');
+  const [cropMlResult, setCropMlResult] = useState<CropMlResult | null>(null);
   const [yieldDetails, setYieldDetails] = useState<YieldResultDetails | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -122,6 +146,7 @@ export default function Predictions({ type }: PredictionPageProps) {
     setValues(next.values);
     setIsPrefilled(next.isPrefilled);
     setResult('');
+    setCropMlResult(null);
     setYieldDetails(null);
     setErrorMessage(null);
   }
@@ -130,8 +155,17 @@ export default function Predictions({ type }: PredictionPageProps) {
     const next = [...values];
     next[index] = val;
     setValues(next);
-    // Clear stale results whenever any input changes
+    // Clear stale results and errors whenever any input changes
     setResult('');
+    setCropMlResult(null);
+    setYieldDetails(null);
+    setErrorMessage(null);
+  }
+
+  function handleLoadExampleInputs() {
+    setValues([...EXAMPLE_CROP_INPUTS]);
+    setResult('');
+    setCropMlResult(null);
     setYieldDetails(null);
     setErrorMessage(null);
   }
@@ -139,12 +173,66 @@ export default function Predictions({ type }: PredictionPageProps) {
   async function handlePredict(e: React.FormEvent) {
     e.preventDefault();
     setResult('');
+    setCropMlResult(null);
     setYieldDetails(null);
     setErrorMessage(null);
     setLoading(true);
 
     try {
       const numValues = values.map(Number);
+
+      if (type === 'crop') {
+        if (numValues.length !== 7 || numValues.some((v) => isNaN(v) || !isFinite(v))) {
+          setErrorMessage('Please fill in all 7 numeric parameters with valid finite values.');
+          setLoading(false);
+          return;
+        }
+        const [n, p, k, temp, humidity, ph, rainfall] = numValues;
+        if (n < 0 || p < 0 || k < 0) {
+          setErrorMessage('Soil nutrient values (N, P, K) cannot be negative.');
+          setLoading(false);
+          return;
+        }
+        if (ph < 0 || ph > 14) {
+          setErrorMessage('Soil pH must be between 0.0 and 14.0.');
+          setLoading(false);
+          return;
+        }
+        if (humidity < 0 || humidity > 100) {
+          setErrorMessage('Relative humidity must be between 0% and 100%.');
+          setLoading(false);
+          return;
+        }
+        if (rainfall < 0) {
+          setErrorMessage('Rainfall cannot be negative.');
+          setLoading(false);
+          return;
+        }
+        // Note: Temperature is permitted to be negative
+
+        const cropPayload = {
+          N: n,
+          P: p,
+          K: k,
+          temperature: temp,
+          humidity: humidity,
+          ph: ph,
+          rainfall: rainfall,
+        };
+
+        const res = await api.post(cfg.endpoint, cropPayload);
+        if (res.data && res.data.predicted_crop) {
+          setCropMlResult({
+            predictedCrop: res.data.predicted_crop,
+            modelVersion: res.data.model_version || 'crop_classifier_v1.0',
+            educationalDemo: Boolean(res.data.educational_demo),
+            limitations: Array.isArray(res.data.limitations) ? res.data.limitations : [],
+          });
+        } else {
+          setErrorMessage('Unable to generate crop prediction from the ML service. Please try again.');
+        }
+        return;
+      }
 
       if (type === 'yield') {
         const [area, season, crop, rainfall] = numValues;
@@ -170,6 +258,7 @@ export default function Predictions({ type }: PredictionPageProps) {
         }
       }
 
+      // Default handler for yield and recommend-fertilizer
       const res = await api.post(cfg.endpoint, { features: numValues });
       if (res.data && res.data[cfg.resultKey]) {
         setResult(res.data[cfg.resultKey]);
@@ -192,21 +281,20 @@ export default function Predictions({ type }: PredictionPageProps) {
         setResult('');
         setYieldDetails(null);
         setErrorMessage(
-          type === 'crop'
-            ? 'Unable to generate a suggestion. Please try again.'
-            : type === 'yield'
+          type === 'yield'
             ? 'Unable to generate a yield estimate. Please check your inputs and try again.'
-            : 'Unable to generate a prediction. Please try again.'
+            : 'Unable to generate a recommendation. Please try again.'
         );
       }
     } catch (err: any) {
       setResult('');
+      setCropMlResult(null);
       setYieldDetails(null);
       const detail = err.response?.data?.detail;
       setErrorMessage(
         detail ||
         (type === 'crop'
-          ? 'Unable to generate a suggestion. Please try again.'
+          ? 'Unable to generate crop prediction from the ML service. Please try again.'
           : type === 'yield'
           ? 'Unable to generate a yield estimate. Please check your inputs and try again.'
           : 'Unable to generate a prediction. Please try again.')
@@ -224,13 +312,15 @@ export default function Predictions({ type }: PredictionPageProps) {
             <h2>{cfg.title}</h2>
             <p>{cfg.desc}</p>
           </div>
-          <Link
-            to="/farmer/soil-test"
-            className="btn btn-secondary btn-sm"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
-          >
-            <FlaskConical size={15} /> Run Soil Test
-          </Link>
+          {type !== 'crop' && (
+            <Link
+              to="/farmer/soil-test"
+              className="btn btn-secondary btn-sm"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              <FlaskConical size={15} /> Run Soil Test
+            </Link>
+          )}
         </div>
       </div>
 
@@ -266,24 +356,67 @@ export default function Predictions({ type }: PredictionPageProps) {
         </div>
       )}
 
+      {/* Crop ML Prototype Explanation Section */}
       {type === 'crop' && (
         <div
           style={{
             background: '#f8fafc',
             border: '1px solid #cbd5e1',
             borderRadius: 8,
-            padding: '0.75rem 1rem',
+            padding: '1rem 1.25rem',
             marginBottom: '1.25rem',
-            fontSize: '0.85rem',
+            fontSize: '0.875rem',
             color: '#334155',
-            lineHeight: 1.5,
           }}
         >
-          <strong>Prototype limitation:</strong> Measurement units for Nitrogen (N), Phosphorus (P), and Potassium (K) are unspecified in the source rules. The time period for rainfall (e.g., annual vs. seasonal) is also unverified. Output is an experimental suggestion based on unvalidated rules.
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.4rem', color: '#0f172a' }}>
+            <Info size={18} style={{ color: 'var(--primary)' }} />
+            <h4 style={{ margin: 0, fontSize: '0.95rem' }}>Educational ML Prototype</h4>
+          </div>
+          <p style={{ margin: '0 0 0.5rem', lineHeight: 1.5 }}>
+            This feature uses a trained <strong>Random Forest classifier</strong> for educational demonstration of crop classification. It is trained on an open benchmark dataset and is <strong>not field-validated farming advice</strong>.
+          </p>
+          <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '0.5rem', marginTop: '0.5rem', fontSize: '0.82rem', color: '#64748b', lineHeight: 1.4 }}>
+            <strong>Documented Limitations:</strong> Soil nutrient units (N, P, K) and rainfall observation periods are undocumented in the source dataset. The model does not include regional Karnataka dryland staples (such as Ragi and Jowar) and has not undergone field trials on local farms.
+          </div>
         </div>
       )}
 
-      {isPrefilled && (
+      {/* Load Example Inputs for Crop ML Demo */}
+      {type === 'crop' && (
+        <div
+          style={{
+            marginBottom: '1.25rem',
+            padding: '0.75rem 1rem',
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: 8,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '0.75rem',
+          }}
+        >
+          <div>
+            <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#0f172a' }}>Demonstration Inputs</span>
+            <p style={{ margin: '0.15rem 0 0', fontSize: '0.78rem', color: '#64748b' }}>
+              These are demonstration inputs, not recommended farming conditions.
+            </p>
+          </div>
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={handleLoadExampleInputs}
+            disabled={loading}
+          >
+            Load example inputs
+          </button>
+        </div>
+      )}
+
+      {/* Soil Test Prefill Banner (only for non-crop pages) */}
+      {isPrefilled && type !== 'crop' && (
         <div
           style={{
             background: '#ecfdf5',
@@ -332,6 +465,7 @@ export default function Predictions({ type }: PredictionPageProps) {
                   value={values[0] || ''}
                   onChange={(e) => handleValueChange(0, e.target.value)}
                   required
+                  disabled={loading}
                 />
                 <small style={{ color: '#64748b', fontSize: '0.78rem', marginTop: '0.2rem', display: 'block' }}>
                   Total land area under cultivation in acres (must be greater than 0).
@@ -346,6 +480,7 @@ export default function Predictions({ type }: PredictionPageProps) {
                   value={values[1] || ''}
                   onChange={(e) => handleValueChange(1, e.target.value)}
                   required
+                  disabled={loading}
                 >
                   <option value="" disabled>Select cropping season...</option>
                   {YIELD_SEASONS.map((s) => (
@@ -365,6 +500,7 @@ export default function Predictions({ type }: PredictionPageProps) {
                   value={values[2] || ''}
                   onChange={(e) => handleValueChange(2, e.target.value)}
                   required
+                  disabled={loading}
                 >
                   <option value="" disabled>Select crop...</option>
                   {YIELD_CROPS.map((c) => (
@@ -388,6 +524,7 @@ export default function Predictions({ type }: PredictionPageProps) {
                   value={values[3] || ''}
                   onChange={(e) => handleValueChange(3, e.target.value)}
                   required
+                  disabled={loading}
                 />
                 <small style={{ color: '#64748b', fontSize: '0.78rem', marginTop: '0.2rem', display: 'block' }}>
                   Expected rainfall in millimeters. <em>(Limitation: The underlying formula does not document whether this represents annual or seasonal crop-cycle rainfall).</em>
@@ -397,6 +534,7 @@ export default function Predictions({ type }: PredictionPageProps) {
           ) : (
             cfg.fields.map((f, i) => {
               const extraProps = getFieldInputAttributes(type, f);
+              const helperText = type === 'crop' ? CROP_FIELD_HELPERS[f] : null;
               return (
                 <div className="form-group" key={f}>
                   <label className="form-label">{f}</label>
@@ -407,8 +545,14 @@ export default function Predictions({ type }: PredictionPageProps) {
                     value={values[i] || ''}
                     onChange={(e) => handleValueChange(i, e.target.value)}
                     required
+                    disabled={loading}
                     {...extraProps}
                   />
+                  {helperText && (
+                    <small style={{ color: '#64748b', fontSize: '0.78rem', marginTop: '0.2rem', display: 'block' }}>
+                      {helperText}
+                    </small>
+                  )}
                 </div>
               );
             })
@@ -421,9 +565,9 @@ export default function Predictions({ type }: PredictionPageProps) {
             disabled={loading}
           >
             {loading
-              ? 'Computing estimate…'
+              ? 'Predicting with ML Model…'
               : type === 'crop'
-              ? 'Get Crop Suggestion'
+              ? 'Predict Crop with ML'
               : type === 'yield'
               ? 'Calculate Yield Estimate'
               : `Compute ${cfg.title}`}
@@ -450,7 +594,7 @@ export default function Predictions({ type }: PredictionPageProps) {
               }}
             >
               <AlertCircle size={32} style={{ color: '#dc2626', margin: '0 auto 0.75rem', display: 'block' }} />
-              <h4 style={{ margin: '0 0 0.5rem', color: '#991b1b' }}>Estimation Error</h4>
+              <h4 style={{ margin: '0 0 0.5rem', color: '#991b1b' }}>Prediction Error</h4>
               <p style={{ margin: '0 0 1rem', fontSize: '0.92rem', fontWeight: 500 }}>{errorMessage}</p>
               <button
                 type="button"
@@ -459,6 +603,44 @@ export default function Predictions({ type }: PredictionPageProps) {
               >
                 Dismiss & Retry
               </button>
+            </div>
+          ) : type === 'crop' && cropMlResult ? (
+            <div className="animate-fadeIn" style={{ textAlign: 'left' }}>
+              <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+                <span className="badge badge-green" style={{ fontSize: '0.75rem', marginBottom: '0.5rem' }}>
+                  ML Prototype Prediction
+                </span>
+                <h3 style={{ margin: '0.25rem 0 0', color: 'var(--primary)', fontSize: '1.15rem' }}>
+                  Model-predicted crop
+                </h3>
+                <p style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-main)', margin: '0.5rem 0', textTransform: 'capitalize' }}>
+                  {cropMlResult.predictedCrop}
+                </p>
+                <span style={{ fontSize: '0.75rem', color: '#64748b', background: '#f1f5f9', padding: '0.2rem 0.5rem', borderRadius: 4, fontFamily: 'monospace' }}>
+                  Model: {cropMlResult.modelVersion}
+                </span>
+              </div>
+
+              <div
+                style={{
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: 8,
+                  padding: '1rem 1.25rem',
+                  marginBottom: '1rem',
+                }}
+              >
+                <h4 style={{ margin: '0 0 0.5rem', fontSize: '0.88rem', color: '#0f172a' }}>Model Limitations:</h4>
+                <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.8rem', color: '#475569', lineHeight: 1.5 }}>
+                  {cropMlResult.limitations.map((lim, idx) => (
+                    <li key={idx} style={{ marginBottom: '0.25rem' }}>{lim}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <p style={{ fontSize: '0.78rem', color: '#64748b', fontStyle: 'italic', margin: 0, textAlign: 'center' }}>
+                “This output is an educational ML benchmark prediction, not agricultural advice.”
+              </p>
             </div>
           ) : type === 'yield' && yieldDetails ? (
             <div className="animate-fadeIn" style={{ textAlign: 'left' }}>
@@ -512,10 +694,10 @@ export default function Predictions({ type }: PredictionPageProps) {
           ) : result ? (
             <div className="animate-fadeIn">
               <span className="badge badge-green" style={{ marginBottom: '0.75rem' }}>
-                {type === 'crop' ? 'Experimental Suggestion' : 'Prediction Output'}
+                Prediction Output
               </span>
               <h3 style={{ marginBottom: '0.5rem', color: 'var(--primary)' }}>
-                {type === 'crop' ? 'Suggested Crop' : 'Predicted Output'}
+                Predicted Output
               </h3>
               <p style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--text-main)', lineHeight: 1.4 }}>
                 {result}
@@ -526,7 +708,7 @@ export default function Predictions({ type }: PredictionPageProps) {
               <h3 style={{ margin: '0 0 0.5rem' }}>Ready</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                 {type === 'crop'
-                  ? 'Enter your soil and climate parameters to generate an experimental suggestion.'
+                  ? 'Enter your soil and climate parameters or click "Load example inputs" to generate an ML prediction.'
                   : type === 'yield'
                   ? 'Enter your plot area, season, target crop, and rainfall to calculate an estimated harvest.'
                   : 'Fill in your farm conditions and click compute to get an estimate.'}

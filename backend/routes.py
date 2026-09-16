@@ -967,6 +967,125 @@ def predict_yield(req: PredictionRequest):
 def recommend_fertilizer(req: PredictionRequest):
     return {"recommendation": "Urea (50 kg/acre) + DAP (25 kg/acre) + MOP (15 kg/acre) with Trichoderma bio-fertilizer"}
 
+# --- Educational ML Crop Model Demo ---
+class CropDemoRequest(BaseModel):
+    N: float
+    P: float
+    K: float
+    temperature: float
+    humidity: float
+    ph: float
+    rainfall: float
+
+ML_EXPERIMENTS_ARTIFACTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ml_experiments", "artifacts")
+ML_CROP_MODEL_PATH = os.path.join(ML_EXPERIMENTS_ARTIFACTS_DIR, "crop_classifier.joblib")
+ML_CROP_METADATA_PATH = os.path.join(ML_EXPERIMENTS_ARTIFACTS_DIR, "metadata.json")
+
+_crop_model_cache = None
+_crop_model_init_attempted = False
+_crop_model_error = None
+_crop_model_version = None
+
+def load_crop_demo_model():
+    global _crop_model_cache, _crop_model_init_attempted, _crop_model_error, _crop_model_version
+    if _crop_model_init_attempted:
+        return _crop_model_cache, _crop_model_version, _crop_model_error
+    _crop_model_init_attempted = True
+    try:
+        if not os.path.isfile(ML_CROP_MODEL_PATH):
+            _crop_model_error = f"Model artifact file not found at fixed path: {ML_CROP_MODEL_PATH}"
+            return None, None, _crop_model_error
+        import joblib
+        import hashlib
+        _crop_model_cache = joblib.load(ML_CROP_MODEL_PATH)
+        # Calculate SHA-256 directly from crop_classifier.joblib itself
+        h = hashlib.sha256()
+        with open(ML_CROP_MODEL_PATH, "rb") as mf:
+            while chunk := mf.read(8192):
+                h.update(chunk)
+        model_sha256 = h.hexdigest()
+        _crop_model_version = f"crop_classifier_sha256:{model_sha256[:16]}"
+    except Exception as e:
+        _crop_model_error = f"Failed to load crop classifier artifact: {str(e)}"
+        _crop_model_cache = None
+    return _crop_model_cache, _crop_model_version, _crop_model_error
+
+@router.post("/ml/crop-demo")
+def predict_crop_ml_demo(req: CropDemoRequest):
+    # 1. Check model availability
+    model, version, err = load_crop_demo_model()
+    if err or model is None:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Crop classification demo service is unavailable. Reason: {err or 'Pipeline not loaded'}"
+        )
+
+    # 2. Strict validation of named numeric fields
+    fields = [
+        ("N", req.N),
+        ("P", req.P),
+        ("K", req.K),
+        ("temperature", req.temperature),
+        ("humidity", req.humidity),
+        ("ph", req.ph),
+        ("rainfall", req.rainfall)
+    ]
+    for name, val in fields:
+        if not isinstance(val, (int, float)) or not math.isfinite(val):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Field '{name}' must be a finite numeric value."
+            )
+
+    if req.N < 0 or req.P < 0 or req.K < 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Soil nutrient values (N, P, K) cannot be negative."
+        )
+
+    if req.ph < 0.0 or req.ph > 14.0:
+        raise HTTPException(
+            status_code=400,
+            detail="Soil pH must be between 0.0 and 14.0."
+        )
+
+    if req.humidity < 0.0 or req.humidity > 100.0:
+        raise HTTPException(
+            status_code=400,
+            detail="Relative humidity must be between 0% and 100%."
+        )
+
+    if req.rainfall < 0.0:
+        raise HTTPException(
+            status_code=400,
+            detail="Rainfall cannot be negative."
+        )
+    # Note: negative temperatures are permitted (e.g. cold / sub-zero climates)
+
+    # 3. Build model input strictly in metadata feature order: [N, P, K, temperature, humidity, ph, rainfall]
+    import numpy as np
+    input_vector = np.array([[req.N, req.P, req.K, req.temperature, req.humidity, req.ph, req.rainfall]], dtype=float)
+
+    try:
+        prediction = model.predict(input_vector)[0]
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Model inference failed: {str(e)}"
+        )
+
+    return {
+        "predicted_crop": str(prediction),
+        "model_version": version or "crop_classifier_v1.0",
+        "educational_demo": True,
+        "limitations": [
+            "Unknown nutrient units (N, P, K units are unspecified in source dataset).",
+            "Unknown rainfall period (unspecified whether annual, seasonal, or monthly).",
+            "No regional or field validation for Karnataka farms.",
+            "Educational demo only; benchmark classification does not establish actual agronomic suitability."
+        ]
+    }
+
 # --- Support Queries ---
 @router.get("/queries")
 def get_queries(db: Session = Depends(get_db)):
