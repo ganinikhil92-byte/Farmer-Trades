@@ -1,0 +1,815 @@
+/* ==========================================================================
+   Farmer Trades — Hero Landing & Authentication Portal
+   Exact match to the bespoke dark emerald agricultural aesthetic
+   ========================================================================== */
+
+.ft-hero-page-root {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #03140b;
+  background-image:
+    radial-gradient(ellipse at 85% 20%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 80%, rgba(5, 150, 105, 0.06) 0%, transparent 60%),
+    linear-gradient(135deg, rgba(3, 20, 11, 0.88) 0%, rgba(4, 26, 15, 0.76) 45%, rgba(2, 14, 8, 0.92) 100%),
+    url('/farmer_hero_bg.jpg');
+  background-size: cover;
+  background-position: center bottom;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  color: #f1f5f9;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  padding: 40px 24px;
+}
+
+.ft-hero-page-root *,
+.ft-hero-page-root *::before,
+.ft-hero-page-root *::after {
+  box-sizing: border-box;
+}
+
+.ft-hero-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at center, transparent 30%, rgba(2, 10, 6, 0.65) 100%);
+  z-index: 1;
+}
+
+/* ── Container Layout ── */
+.ft-hero-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1260px;
+  display: grid;
+  grid-template-columns: 1.15fr 0.95fr;
+  gap: 56px;
+  align-items: center;
+  min-height: calc(100vh - 80px);
+}
+
+/* ── LEFT COLUMN ── */
+.ft-hero-left-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 16px 24px 8px;
+}
+
+/* Logo & Tagline */
+.ft-logo-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 48px;
+  user-select: none;
+}
+
+.ft-logo-text-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.ft-logo-title {
+  font-family: 'Playfair Display', Georgia, Cambria, serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #f8fafc;
+  line-height: 1.15;
+}
+
+.ft-logo-tagline {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: #86efac;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* Main Titles */
+.ft-hero-text-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.ft-hero-main-title {
+  font-family: 'Playfair Display', Georgia, Cambria, 'Times New Roman', serif;
+  font-size: 52px;
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: #f8fafc;
+  margin: 0 0 24px 0;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+}
+
+.ft-hero-main-desc {
+  font-size: 17px;
+  line-height: 1.6;
+  color: #cbd5e1;
+  max-width: 500px;
+  margin: 0 0 36px 0;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Motto */
+.ft-hero-motto-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.ft-hero-motto-divider {
+  width: 44px;
+  height: 2px;
+  background-color: #86efac;
+  border-radius: 2px;
+  opacity: 0.85;
+}
+
+.ft-hero-motto-text {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  line-height: 1.8;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* ── RIGHT COLUMN: Glassmorphic Floating Card ── */
+.ft-hero-right-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ft-auth-card {
+  width: 100%;
+  max-width: 490px;
+  background: rgba(6, 32, 20, 0.86);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(110, 231, 183, 0.22);
+  border-radius: 24px;
+  padding: 40px 38px;
+  box-shadow:
+    0 24px 64px -12px rgba(0, 0, 0, 0.65),
+    0 0 32px rgba(16, 185, 129, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  position: relative;
+}
+
+.ft-auth-card:hover {
+  box-shadow:
+    0 28px 72px -12px rgba(0, 0, 0, 0.75),
+    0 0 44px rgba(16, 185, 129, 0.18),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+}
+
+/* Card Header */
+.ft-card-header {
+  text-align: left;
+  margin-bottom: 28px;
+}
+
+.ft-card-heading {
+  font-family: 'Playfair Display', Georgia, Cambria, serif;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #f8fafc;
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+}
+
+.ft-card-subheading {
+  font-size: 14.5px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* Feedback Alerts */
+.ft-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  margin-bottom: 20px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.ft-alert-error {
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+}
+
+.ft-alert-success {
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #6ee7b7;
+}
+
+.ft-alert-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── Role Section (Farmers / Buyers) ── */
+.ft-role-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ft-role-section-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.ft-role-icon-box {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(110, 231, 183, 0.2);
+}
+
+.ft-role-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.ft-role-title {
+  font-family: 'Playfair Display', Georgia, Cambria, serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #f8fafc;
+  margin: 0 0 5px 0;
+  line-height: 1.2;
+}
+
+.ft-role-desc {
+  font-size: 13.5px;
+  color: #cbd5e1;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Dual Button Row */
+.ft-role-btn-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+/* Solid Mint Button */
+.ft-btn-solid {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #86efac;
+  color: #042f1a;
+  font-size: 14.5px;
+  font-weight: 600;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(134, 239, 172, 0.25);
+  text-decoration: none;
+}
+
+.ft-btn-solid:hover {
+  background-color: #a7f3d0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(134, 239, 172, 0.4);
+}
+
+.ft-btn-solid:active {
+  transform: translateY(0);
+}
+
+.ft-btn-arrow {
+  transition: transform 0.2s ease;
+}
+
+.ft-btn-solid:hover .ft-btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Outline Dark Translucent Button */
+.ft-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(6, 44, 28, 0.55);
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(134, 239, 172, 0.32);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.ft-btn-outline:hover {
+  background-color: rgba(16, 185, 129, 0.16);
+  border-color: #86efac;
+  color: #86efac;
+  transform: translateY(-2px);
+}
+
+.ft-btn-outline:active {
+  transform: translateY(0);
+}
+
+/* Section Divider */
+.ft-section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(110, 231, 183, 0.22), transparent);
+  margin: 24px 0;
+}
+
+/* Card Footer Motto */
+.ft-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 32px;
+  padding-top: 18px;
+  opacity: 0.75;
+}
+
+.ft-card-footer-line {
+  flex: 1;
+  height: 1px;
+  background-color: rgba(110, 231, 183, 0.2);
+}
+
+.ft-card-footer-text {
+  font-size: 13px;
+  color: #a7f3d0;
+  font-style: italic;
+  white-space: nowrap;
+}
+
+/* ── FORM VIEWS (Login / Signup / Forgot) ── */
+.ft-form-view {
+  width: 100%;
+}
+
+.ft-form-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.ft-btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: #a7f3d0;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 0;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.ft-btn-back:hover {
+  color: #86efac;
+  transform: translateX(-3px);
+}
+
+/* Role Toggle Tabs */
+.ft-role-toggle-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: rgba(3, 20, 12, 0.7);
+  border: 1px solid rgba(110, 231, 183, 0.18);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.ft-toggle-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ft-toggle-tab:hover {
+  color: #e2e8f0;
+}
+
+.ft-toggle-tab.active {
+  background: #86efac;
+  color: #042f1a;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(134, 239, 172, 0.25);
+}
+
+/* Inputs & Form Groups */
+.ft-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ft-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ft-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ft-input-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #cbd5e1;
+}
+
+.ft-link-text {
+  background: transparent;
+  border: none;
+  color: #86efac;
+  font-size: 12.5px;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.ft-link-text:hover {
+  color: #a7f3d0;
+  text-decoration: underline;
+}
+
+.ft-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ft-input-icon {
+  position: absolute;
+  left: 14px;
+  color: #86efac;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.ft-auth-card:focus-within {
+  animation-play-state: paused !important;
+}
+
+.ft-hero-page-root input[type="text"],
+.ft-hero-page-root input[type="email"],
+.ft-hero-page-root input[type="password"],
+.ft-hero-page-root input[type="tel"],
+.ft-hero-page-root select,
+.ft-text-input,
+.ft-select-input {
+  width: 100%;
+  background: rgba(3, 22, 13, 0.92) !important;
+  border: 1px solid rgba(110, 231, 183, 0.38) !important;
+  border-radius: 12px;
+  padding: 13px 14px 13px 44px;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #86efac !important;
+  font-size: 15px !important;
+  font-weight: 500;
+  outline: none;
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+  user-select: text;
+  -webkit-user-select: text;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.ft-hero-page-root input:focus,
+.ft-hero-page-root select:focus,
+.ft-text-input:focus,
+.ft-select-input:focus {
+  border-color: #86efac !important;
+  background-color: rgba(4, 32, 19, 0.98) !important;
+  box-shadow: 0 0 0 3px rgba(134, 239, 172, 0.28) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Chrome / Edge / Firefox Autofill styling */
+.ft-hero-page-root input:-webkit-autofill,
+.ft-hero-page-root input:-webkit-autofill:hover,
+.ft-hero-page-root input:-webkit-autofill:focus,
+.ft-hero-page-root input:-webkit-autofill:active {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0 1000px #042114 inset !important;
+  box-shadow: 0 0 0 1000px #042114 inset !important;
+  caret-color: #86efac !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Crisp placeholder styling */
+.ft-hero-page-root input::placeholder {
+  color: rgba(148, 163, 184, 0.75) !important;
+  -webkit-text-fill-color: rgba(148, 163, 184, 0.75) !important;
+}
+
+
+.ft-eye-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease;
+}
+
+.ft-eye-btn:hover {
+  color: #f8fafc;
+}
+
+/* Remember Row */
+.ft-remember-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -2px;
+}
+
+.ft-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #94a3b8;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ft-checkbox {
+  accent-color: #86efac;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* Submit Button */
+.ft-btn-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  background: #86efac;
+  color: #042f1a;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 13px 20px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 16px rgba(134, 239, 172, 0.28);
+}
+
+.ft-btn-submit:hover:not(:disabled) {
+  background: #a7f3d0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(134, 239, 172, 0.42);
+}
+
+.ft-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Switch prompt */
+.ft-switch-prompt {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13.5px;
+  color: #94a3b8;
+}
+
+.ft-link-highlight {
+  background: transparent;
+  border: none;
+  color: #86efac;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 4px;
+  transition: color 0.15s ease;
+}
+
+.ft-link-highlight:hover {
+  color: #a7f3d0;
+  text-decoration: underline;
+}
+
+/* 2-column input row for registration */
+.ft-input-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* OTP elements */
+.ft-otp-send-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ft-btn-action-otp {
+  background: #10b981;
+  color: #042f1a;
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.ft-btn-action-otp:hover:not(:disabled) {
+  background: #34d399;
+}
+
+.ft-btn-action-otp:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ft-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #6ee7b7;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ft-otp-verify-box {
+  background: rgba(3, 25, 15, 0.65);
+  border: 1px dashed rgba(110, 231, 183, 0.35);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ft-otp-verify-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #a7f3d0;
+}
+
+.ft-otp-code-input {
+  width: 100%;
+  background: rgba(3, 22, 13, 0.85);
+  border: 1px solid rgba(110, 231, 183, 0.35);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #f8fafc;
+  font-size: 16px;
+  letter-spacing: 0.25em;
+  text-align: center;
+  font-weight: 700;
+  outline: none;
+}
+
+.ft-otp-code-input:focus {
+  border-color: #86efac;
+  box-shadow: 0 0 0 2px rgba(134, 239, 172, 0.25);
+}
+
+/* Subtle fadeIn animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* ── RESPONSIVE BREAKPOINTS ── */
+@media (max-width: 1024px) {
+  .ft-hero-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    min-height: auto;
+  }
+
+  .ft-hero-left-col {
+    text-align: center;
+    align-items: center;
+    padding: 0;
+  }
+
+  .ft-logo-container {
+    margin-bottom: 28px;
+  }
+
+  .ft-hero-main-title {
+    font-size: 40px;
+  }
+
+  .ft-hero-main-desc {
+    max-width: 600px;
+  }
+
+  .ft-hero-motto-wrap {
+    align-items: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .ft-hero-page-root {
+    padding: 20px 14px;
+  }
+
+  .ft-auth-card {
+    padding: 28px 20px;
+    border-radius: 20px;
+  }
+
+  .ft-hero-main-title {
+    font-size: 32px;
+  }
+
+  .ft-role-btn-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ft-input-row-2col {
+    grid-template-columns: 1fr;
+  }
+}

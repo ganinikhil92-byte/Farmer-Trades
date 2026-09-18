@@ -1,0 +1,591 @@
+/* SellProducePage.css — Farmer Trades */
+
+.ft-sell-page {
+  background-color: #f8faf7;
+  min-height: 100vh;
+  padding-bottom: 5rem;
+}
+
+/* Banner */
+.ft-sell-header-banner {
+  background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+  color: #ffffff;
+  padding: 3rem 1.5rem 2.5rem;
+}
+
+.ft-sell-header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.ft-sell-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fef08a;
+  margin-bottom: 0.75rem;
+}
+
+.ft-sell-header-banner h1 {
+  font-size: 2.25rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+}
+
+.ft-sell-header-banner p {
+  font-size: 1rem;
+  color: #dcfce7;
+  max-width: 650px;
+  line-height: 1.5;
+}
+
+/* Container */
+.ft-sell-container {
+  max-width: 900px;
+  margin: -1.5rem auto 0;
+  padding: 0 1.5rem;
+}
+
+/* Stepper */
+.ft-stepper-card {
+  background: #ffffff;
+  border-radius: 0.875rem;
+  padding: 1rem 1.5rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.ft-stepper-steps {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.ft-step-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.15s ease;
+}
+
+.ft-step-pill.active {
+  opacity: 1;
+}
+
+.ft-step-pill.completed {
+  opacity: 0.9;
+}
+
+.ft-step-indicator {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.ft-step-pill.active .ft-step-indicator {
+  background: #15803d;
+  color: #ffffff;
+}
+
+.ft-step-pill.completed .ft-step-indicator {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.ft-step-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.ft-stepper-draft-action {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ft-btn-save-draft {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+}
+
+.ft-draft-saved-text {
+  font-size: 0.75rem;
+  color: #15803d;
+  font-weight: 600;
+}
+
+/* Error Alert */
+.ft-sell-alert-error {
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+  color: #b91c1c;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Form Card */
+.ft-form-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.ft-step-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.ft-step-desc {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+/* Quick Crop Chips */
+.ft-quick-crop-chips {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  background: #f8fafc;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.ft-chips-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.ft-quick-chip {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ft-quick-chip:hover {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #15803d;
+}
+
+/* Form Grids */
+.ft-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.ft-form-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .ft-form-grid-2,
+  .ft-form-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ft-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.ft-field-group label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.ft-field-group input,
+.ft-field-group select,
+.ft-field-group textarea {
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+  color: #111827;
+  outline: none;
+  background: #ffffff;
+  transition: border-color 0.15s ease;
+}
+
+.ft-field-group input:focus,
+.ft-field-group select:focus,
+.ft-field-group textarea:focus {
+  border-color: #15803d;
+  box-shadow: 0 0 0 2px rgba(21, 128, 61, 0.15);
+}
+
+.ft-disabled-input {
+  background: #f3f4f6 !important;
+  color: #6b7280 !important;
+  cursor: not-allowed;
+}
+
+.ft-field-help {
+  font-size: 0.725rem;
+  color: #6b7280;
+}
+
+.ft-input-with-icon {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.ft-currency-sign {
+  background: #f3f4f6;
+  padding: 0.6rem 0.85rem;
+  font-weight: 800;
+  color: #374151;
+  border-right: 1px solid #d1d5db;
+}
+
+.ft-input-with-icon input {
+  border: none;
+  width: 100%;
+}
+
+.ft-organic-checkbox-card,
+.ft-logistic-option-card {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.ft-check-flex {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.ft-check-flex input {
+  margin-top: 0.25rem;
+  accent-color: #15803d;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.ft-check-flex strong {
+  display: block;
+  font-size: 0.9rem;
+  color: #166534;
+}
+
+.ft-check-flex p {
+  font-size: 0.78rem;
+  color: #4b5563;
+  margin-top: 0.15rem;
+}
+
+/* Step 4 Photos */
+.ft-photo-selector-box {
+  margin-bottom: 1.5rem;
+}
+
+.ft-photo-selector-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #374151;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.ft-photo-samples-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .ft-photo-samples-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.ft-photo-thumb-wrap {
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.ft-photo-thumb-wrap:hover {
+  border-color: #15803d;
+}
+
+.ft-photo-thumb-wrap.selected {
+  border-color: #15803d;
+  box-shadow: 0 0 0 2px rgba(21, 128, 61, 0.3);
+}
+
+.ft-photo-thumb-wrap img {
+  width: 100%;
+  height: 65px;
+  object-fit: cover;
+}
+
+.ft-photo-thumb-wrap span {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #374151;
+  padding: 0.25rem;
+  text-align: center;
+  background: #f9fafb;
+}
+
+.ft-review-summary-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.ft-review-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 0.875rem;
+}
+
+.ft-review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.ft-rev-lbl {
+  color: #64748b;
+  margin-right: 0.4rem;
+}
+
+.ft-rev-val {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* Wizard Navigation */
+.ft-wizard-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2rem;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 1.5rem;
+}
+
+.ft-btn-wizard-back {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  padding: 0.6rem 1.25rem;
+  border-radius: 0.375rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #374151;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ft-btn-wizard-next {
+  background: #15803d;
+  color: #ffffff;
+  border: none;
+  padding: 0.65rem 1.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 4px 6px -1px rgba(21, 128, 61, 0.3);
+}
+
+.ft-btn-wizard-next:hover {
+  background: #166534;
+}
+
+.ft-btn-publish {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(217, 119, 6, 0.4);
+  transition: transform 0.15s ease;
+}
+
+.ft-btn-publish:hover {
+  transform: translateY(-2px);
+}
+
+/* Success View */
+.ft-sell-success-page {
+  max-width: 600px;
+  margin: 4rem auto;
+  padding: 0 1.5rem;
+}
+
+.ft-sell-success-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  padding: 3rem 2rem;
+  text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ft-success-check-circle {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #15803d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.ft-sell-success-card h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.ft-sell-success-card p {
+  font-size: 0.9rem;
+  color: #4b5563;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.ft-success-lot-summary {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  color: #166534;
+  margin-bottom: 2rem;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.ft-success-actions {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+@media (max-width: 500px) {
+  .ft-success-actions {
+    flex-direction: column;
+  }
+}
+
+.ft-btn-view-live {
+  flex: 1;
+  background: #15803d;
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ft-btn-post-another {
+  flex: 1;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+}

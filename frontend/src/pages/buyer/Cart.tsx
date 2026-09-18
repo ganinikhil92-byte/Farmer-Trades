@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { getCart, clearCart } from './cartStore';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
+import { resolveProduceImage, handleImageError, saveOrderImageRef } from '../../utils/producePhoto';
 import { Trash2, CreditCard, ShoppingCart, ClipboardList, ShieldCheck, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 
 declare global {
@@ -44,14 +45,28 @@ export default function Cart() {
   // Helper to commit orders to backend after payment verification
   async function finalizeOrder(paymentId: string) {
     for (const item of cartItems) {
-      await api.post('/orders', {
+      const res = await api.post('/orders', {
         listing_id: item.listing.id,
         buyer_id: user?.email || 'buyer@agrotrades.com',
         crop_name: item.listing.crop_name,
         quantity: item.qty,
         total_price: item.qty * item.listing.price_per_kg,
         payment_id: paymentId,
+        image_url: item.listing.image_url || undefined,
       });
+      if (res.data && res.data.id) {
+        const resolved = resolveProduceImage({
+          name: item.listing.crop_name,
+          category: item.listing.category,
+          imageUrl: item.listing.image_url,
+        });
+        saveOrderImageRef(res.data.id, {
+          imageUrl: resolved.isSellerProvided ? resolved.url : undefined,
+          source: resolved.isSellerProvided ? 'seller' : 'no_photo',
+          cropName: item.listing.crop_name,
+          listingId: item.listing.id,
+        });
+      }
     }
     clearCart();
     setCartItems([]);
@@ -238,19 +253,93 @@ export default function Cart() {
                 </tr>
               </thead>
               <tbody>
-                {cartItems.map((c) => (
-                  <tr key={c.listing.id}>
-                    <td style={{ fontWeight: 600 }}>{c.listing.crop_name}</td>
-                    <td>{c.qty} kg</td>
-                    <td>₹{c.listing.price_per_kg}</td>
-                    <td style={{ fontWeight: 600, color: 'var(--color-primary-700)' }}>₹{(c.qty * c.listing.price_per_kg).toLocaleString()}</td>
-                    <td>
-                      <button className="btn btn-danger btn-sm" onClick={() => removeItem(c.listing.id)} title="Remove item">
-                        <Trash2 size={14} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {cartItems.map((c) => {
+                  const imgRes = resolveProduceImage({
+                    name: c.listing.crop_name,
+                    category: c.listing.category,
+                    imageUrl: c.listing.image_url,
+                  });
+                  return (
+                    <tr key={c.listing.id}>
+                      <td style={{ fontWeight: 600 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          <div style={{ position: 'relative', width: 44, height: 44, flexShrink: 0 }}>
+                            <img
+                              src={imgRes.url}
+                              alt={c.listing.crop_name}
+                              style={{
+                                width: 44,
+                                height: 44,
+                                objectFit: 'cover',
+                                borderRadius: 6,
+                                border: '1px solid var(--color-border)',
+                                display: 'block',
+                              }}
+                              onError={handleImageError}
+                            />
+                            {imgRes.isSellerProvided ? (
+                              <span
+                                title="Seller-provided photo"
+                                style={{
+                                  position: 'absolute',
+                                  bottom: 0,
+                                  left: 0,
+                                  right: 0,
+                                  background: 'rgba(22, 101, 52, 0.9)',
+                                  color: '#fff',
+                                  fontSize: '0.55rem',
+                                  padding: '1px 2px',
+                                  textAlign: 'center',
+                                  borderBottomLeftRadius: 6,
+                                  borderBottomRightRadius: 6,
+                                  lineHeight: 1.1,
+                                }}
+                              >
+                                Photo
+                              </span>
+                            ) : (
+                              <span
+                                title="No photo uploaded"
+                                style={{
+                                  position: 'absolute',
+                                  bottom: 0,
+                                  left: 0,
+                                  right: 0,
+                                  background: 'rgba(100, 116, 139, 0.85)',
+                                  color: '#fff',
+                                  fontSize: '0.5rem',
+                                  padding: '1px 2px',
+                                  textAlign: 'center',
+                                  borderBottomLeftRadius: 6,
+                                  borderBottomRightRadius: 6,
+                                  lineHeight: 1.1,
+                                }}
+                              >
+                                No photo
+                              </span>
+                            )}
+                          </div>
+                          <div>
+                            <div>{c.listing.crop_name}</div>
+                            {c.listing.crop_type && (
+                              <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', fontWeight: 400 }}>
+                                {c.listing.crop_type}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td>{c.qty} kg</td>
+                      <td>₹{c.listing.price_per_kg}</td>
+                      <td style={{ fontWeight: 600, color: 'var(--color-primary-700)' }}>₹{(c.qty * c.listing.price_per_kg).toLocaleString()}</td>
+                      <td>
+                        <button className="btn btn-danger btn-sm" onClick={() => removeItem(c.listing.id)} title="Remove item">
+                          <Trash2 size={14} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

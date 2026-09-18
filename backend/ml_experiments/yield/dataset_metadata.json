@@ -1,0 +1,123 @@
+{
+  "dataset_name": "District-wise Season-wise Crop Production Statistics (APY)",
+  "source_authority": "Directorate of Economics and Statistics, Ministry of Agriculture & Farmers Welfare, Government of India",
+  "ogd_catalog_url": "https://data.gov.in/catalog/district-wise-season-wise-crop-production-statistics",
+  "download_url": "https://raw.githubusercontent.com/ankitaS11/Crop-Yield-Prediction-in-India-using-ML/master/crop_production.csv",
+  "license": "Government Open Data License - India (GODL)",
+  "license_terms": "Permits non-exclusive, worldwide, royalty-free use, adaptation, and sharing for commercial and non-commercial purposes with attribution under NDSAP.",
+  "file_sha256": "5b2637058ca4aff2ef7c0e0f2f391bca712300d082693b585f489871fd91d520",
+  "file_size_bytes": 15316741,
+  "total_records_all_states": 246091,
+  "karnataka_total_records": 21122,
+  "karnataka_years": [
+    1997,
+    1998,
+    1999,
+    2000,
+    2001,
+    2002,
+    2003,
+    2004,
+    2005,
+    2006,
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012,
+    2013,
+    2014
+  ],
+  "karnataka_districts": [
+    "BAGALKOT",
+    "BANGALORE RURAL",
+    "BELGAUM",
+    "BELLARY",
+    "BENGALURU URBAN",
+    "BIDAR",
+    "BIJAPUR",
+    "CHAMARAJANAGAR",
+    "CHIKBALLAPUR",
+    "CHIKMAGALUR",
+    "CHITRADURGA",
+    "DAKSHIN KANNAD",
+    "DAVANGERE",
+    "DHARWAD",
+    "GADAG",
+    "GULBARGA",
+    "HASSAN",
+    "HAVERI",
+    "KODAGU",
+    "KOLAR",
+    "KOPPAL",
+    "MANDYA",
+    "MYSORE",
+    "RAICHUR",
+    "RAMANAGARA",
+    "SHIMOGA",
+    "TUMKUR",
+    "UDUPI",
+    "UTTAR KANNAD",
+    "YADGIR"
+  ],
+  "karnataka_seasons": [
+    "Kharif",
+    "Rabi",
+    "Summer",
+    "Whole Year"
+  ],
+  "karnataka_missing_production": 43,
+  "karnataka_zero_production": 11,
+  "karnataka_zero_or_missing_area": 0,
+  "karnataka_duplicate_keys_count": 0,
+  "documented_units": {
+    "area": "Hectares (ha)",
+    "production_general_grains": "Metric Tonnes",
+    "production_coconut": "Nuts / Thousands of Nuts (Excluded from weight-based cohort)",
+    "production_cotton": "Bales (Excluded from primary weight cohort)",
+    "yield_metric": "Tonnes per Hectare (Production Tonnes / Area Hectares)"
+  },
+  "platform_crops_evaluated": {
+    "Ragi": {
+      "common_name": "Ragi (Finger Millet)",
+      "record_count_raw": 838,
+      "area_unit": "Hectares",
+      "production_unit": "Metric Tonnes",
+      "yield_unit": "Tonnes/Hectare"
+    },
+    "Rice": {
+      "common_name": "Paddy (Rice)",
+      "record_count_raw": 1195,
+      "area_unit": "Hectares",
+      "production_unit": "Metric Tonnes",
+      "yield_unit": "Tonnes/Hectare"
+    },
+    "Jowar": {
+      "common_name": "Jowar (Sorghum)",
+      "record_count_raw": 962,
+      "area_unit": "Hectares",
+      "production_unit": "Metric Tonnes",
+      "yield_unit": "Tonnes/Hectare"
+    },
+    "Maize": {
+      "common_name": "Maize",
+      "record_count_raw": 1331,
+      "area_unit": "Hectares",
+      "production_unit": "Metric Tonnes",
+      "yield_unit": "Tonnes/Hectare"
+    },
+    "Sugarcane": {
+      "common_name": "Sugarcane",
+      "record_count_raw": 402,
+      "area_unit": "Hectares",
+      "production_unit": "Metric Tonnes",
+      "yield_unit": "Tonnes/Hectare"
+    }
+  },
+  "district_notes": [
+    "Karnataka has experienced district reorganizations: Ramanagara was carved from Bangalore Rural (2007), Chikkaballapur from Kolar (2007), and Yadgir from Gulbarga (2009).",
+    "Official district names have also been re-anglicized (e.g. Belagavi for Belgaum, Kalaburagi for Gulbarga, Vijayapura for Bijapur, Mysuru for Mysore, Ballari for Bellary, Shivamogga for Shimoga, Tumakuru for Tumkur).",
+    "Historical reporting preserves the administrative district designation at the time of recording without blind retroactive merging."
+  ]
+}

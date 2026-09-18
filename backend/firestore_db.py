@@ -29,49 +29,87 @@ def create_or_update_user(email: str, data: Dict[str, Any]) -> Dict[str, Any]:
     return data
 
 def list_users(role: Optional[str] = None) -> List[Dict[str, Any]]:
-    db = get_db()
-    if not db:
+    try:
+        db = get_db()
+        if not db:
+            return []
+        coll = db.collection("users")
+        if role:
+            docs = coll.where("role", "==", role).stream()
+        else:
+            docs = coll.stream()
+        return [d.to_dict() for d in docs]
+    except Exception as e:
+        print(f"[Firestore list_users error]: {e}")
         return []
-    coll = db.collection("users")
-    if role:
-        docs = coll.where("role", "==", role).stream()
-    else:
-        docs = coll.stream()
-    return [d.to_dict() for d in docs]
 
 def delete_user(email: str) -> bool:
-    db = get_db()
-    if not db:
+    try:
+        db = get_db()
+        if not db:
+            return False
+        db.collection("users").document(email.lower().strip()).delete()
+        return True
+    except Exception as e:
+        print(f"[Firestore delete_user error]: {e}")
         return False
-    db.collection("users").document(email.lower().strip()).delete()
-    return True
 
 # --- Listings Collection (Crops, Fruits, Vegetables) ---
 def create_listing(data: Dict[str, Any]) -> Dict[str, Any]:
-    db = get_db()
-    if "created_at" not in data:
-        data["created_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
-    doc_ref = db.collection("listings").document()
-    data["id"] = doc_ref.id
-    doc_ref.set(data)
-    return data
+    try:
+        db = get_db()
+        if "created_at" not in data:
+            data["created_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+        doc_ref = db.collection("listings").document()
+        data["id"] = doc_ref.id
+        doc_ref.set(data)
+        return data
+    except Exception as e:
+        print(f"[Firestore create_listing error]: {e}")
+        return data
 
 def list_listings(category: Optional[str] = None) -> List[Dict[str, Any]]:
+    try:
+        db = get_db()
+        if not db:
+            return []
+        coll = db.collection("listings")
+        if category:
+            docs = coll.where("category", "==", category).stream()
+        else:
+            docs = coll.stream()
+        
+        results = []
+        for d in docs:
+            item = d.to_dict()
+            item["id"] = d.id
+            results.append(item)
+        return results
+    except Exception as e:
+        print(f"[Firestore list_listings error]: {e}")
+        return []
+
+def get_listing(listing_id: str) -> Optional[Dict[str, Any]]:
     db = get_db()
     if not db:
-        return []
-    coll = db.collection("listings")
-    if category:
-        docs = coll.where("category", "==", category).stream()
-    else:
-        docs = coll.stream()
-    
-    results = []
-    for d in docs:
-        item = d.to_dict()
-        item["id"] = d.id
-        results.append(item)
-    return results
+        return None
+    doc = db.collection("listings").document(str(listing_id)).get()
+    if doc.exists:
+        data = doc.to_dict()
+        data["id"] = doc.id
+        return data
+    return None
+
+def update_listing_image(listing_id: str, image_url: str) -> bool:
+    db = get_db()
+    if not db:
+        return False
+    doc_ref = db.collection("listings").document(str(listing_id))
+    doc = doc_ref.get()
+    if not doc.exists:
+        return False
+    doc_ref.set({"image_url": image_url}, merge=True)
+    return True
 
 def delete_listing(listing_id: str) -> bool:
     db = get_db()

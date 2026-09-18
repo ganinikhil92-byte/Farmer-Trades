@@ -1,5 +1,5 @@
 import React, { useState, useEffect, FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import type { UserRole } from '../context/AuthContext';
 import api from '../utils/api';
@@ -7,9 +7,29 @@ import { Sprout, Mail, Lock, User, ChevronRight, Leaf, Phone, MessageSquare, Map
 import { districtTaluks } from '../data/karnatakaLocations';
 import './Landing.css';
 
-export default function Landing() {
+interface LandingProps {
+  initialView?: 'landing' | 'login' | 'signup' | 'forgot-password';
+}
+
+export default function Landing({ initialView }: LandingProps = {}) {
   const { login, signup, sendOtp, verifyOtp, resetPassword, loginWithGoogle } = useAuth();
-  const [view, setView] = useState<'landing' | 'login' | 'signup' | 'forgot-password'>('landing');
+  const location = useLocation();
+  const [view, setView] = useState<'landing' | 'login' | 'signup' | 'forgot-password'>(() => {
+    if (initialView) return initialView;
+    if (location.pathname === '/login') return 'login';
+    if (location.pathname === '/signup') return 'signup';
+    return 'landing';
+  });
+
+  useEffect(() => {
+    if (initialView) {
+      setView(initialView);
+    } else if (location.pathname === '/login') {
+      setView('login');
+    } else if (location.pathname === '/signup') {
+      setView('signup');
+    }
+  }, [initialView, location.pathname]);
   const [error, setError] = useState('');
 
   // Login state
@@ -203,7 +223,7 @@ export default function Landing() {
           <div className="auth-header">
             <Sprout size={40} className="auth-icon" />
             <h2>Welcome Back</h2>
-            <p>Sign in to your Agro Trades account</p>
+            <p>Sign in to your Smart Agricultural Crop Prediction and Trading Platform account</p>
           </div>
           {error && <div className="auth-error">{error}</div>}
           {loginSuccessMsg && (
@@ -518,7 +538,7 @@ export default function Landing() {
           <div className="auth-header">
             <Sprout size={40} className="auth-icon" />
             <h2>Create Account</h2>
-            <p>Join the Agro Trades marketplace</p>
+            <p>Join the Smart Agricultural Crop Prediction and Trading Platform marketplace</p>
           </div>
           {error && <div className="auth-error">{error}</div>}
           <form onSubmit={handleSignup}>
@@ -807,7 +827,7 @@ export default function Landing() {
         <nav className="hero-nav container">
           <div className="logo">
             <Sprout size={28} />
-            <span>Agro Trades</span>
+            <span>Smart Agricultural Crop Prediction and Trading Platform</span>
           </div>
         </nav>
         <div className="hero-content container animate-fadeIn">
@@ -836,7 +856,7 @@ export default function Landing() {
 
       {/* Features */}
       <section className="features container">
-        <h2 className="section-title">Why Agro Trades?</h2>
+        <h2 className="section-title">Why Smart Agricultural Crop Prediction and Trading Platform?</h2>
         <div className="features-grid stagger">
           {[
             { icon: '🌾', title: 'Trade Crops', desc: 'List and sell your harvest directly to buyers at fair market prices.' },
@@ -956,7 +976,7 @@ export default function Landing() {
             <Link to="/admin/login" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>Admin Login</Link>
           </div>
           <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', margin: 0 }}>
-            © 2026 Karnataka Agro Trades Pvt. Ltd. — Empowering Karnataka's Agriculture & APMC Mandis
+            © 2026 Smart Agricultural Crop Prediction and Trading Platform — Empowering Karnataka's Agriculture & APMC Mandis
           </p>
         </div>
       </footer>

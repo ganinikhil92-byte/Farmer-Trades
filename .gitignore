@@ -27,3 +27,37 @@ build/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Backup files
+*.bak
+*.bak_*
+
+# Local/runtime uploads
+/backend/uploads/
+
+# Temporary backend test images
+/backend/test_*.jpg
+/backend/*_test.jpg
+
+# Backup files
+*.bak
+*.bak_*
+*.bak*
+
+# Database backups
+*.db.bak*
+
+# Runtime uploads
+backend/uploads/
+
+# Test images
+backend/test_*.jpg
+backend/*_test.jpg
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment secrets
+.env
+.env.*

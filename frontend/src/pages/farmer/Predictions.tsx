@@ -41,6 +41,37 @@ interface CropMlResult {
   limitations: string[];
 }
 
+interface SoilReportSummary {
+  id: number;
+  request_ref: string;
+  field_name?: string;
+  tested_date?: string;
+  collection_date?: string;
+  laboratory_name?: string;
+  values?: {
+    n?: number;
+    p?: number;
+    k?: number;
+    ph?: number;
+    ec?: number;
+    oc?: number;
+  };
+  parameters_12?: Record<string, { value: number | null | undefined; unit: string; rating?: string }>;
+}
+
+interface FertilizerCalcResult {
+  cropName: string;
+  fertilizerProduct: string;
+  suppliedRate: number;
+  rateUnit: 'kg/acre' | 'kg/hectare';
+  fieldArea: number;
+  areaUnit: 'acres' | 'hectares';
+  totalQuantityKg: number;
+  applicationTiming: string;
+  recommendationSource: string;
+  selectedReport?: SoilReportSummary | null;
+}
+
 interface FeatureRange {
   min: number;
   max: number;
@@ -80,21 +111,21 @@ const config: Record<PredictionType, {
     icon: <BarChart3 size={24} />,
     endpoint: '/predict/yield',
     resultKey: 'prediction',
-    fields: ['Cultivation Area (Acres)', 'Season', 'Crop', 'Rainfall (mm)']
+    fields: ['Cultivation area (acres)', 'Season', 'Crop', 'Rainfall input (mm)']
   },
   'recommend-fertilizer': {
-    title: 'Fertilizer Recommendation',
-    desc: 'Prescriptive organic and NPK dosage recommendation for healthy yields',
+    title: 'Fertilizer Guide',
+    desc: 'Personalized fertilizer guidance is not available yet. View your soil-test report and consult its issuing laboratory or an agricultural adviser for crop-specific recommendations.',
     icon: <TrendingUp size={24} />,
     endpoint: '/recommend/fertilizer',
     resultKey: 'recommendation',
-    fields: ['Soil Nitrogen (kg/ha)', 'Soil Phosphorus (kg/ha)', 'Soil Potassium (kg/ha)', 'Crop Age (Days)']
+    fields: []
   }
 };
 
 function getInitialValues(type: PredictionType, locState: any, fields: string[]): { values: string[]; isPrefilled: boolean } {
-  // Do not automatically fill crop prediction from soil tests or weather data
-  if (type === 'crop') {
+  // Do not automatically fill crop prediction or fertilizer guide from soil tests or weather data
+  if (type === 'crop' || type === 'recommend-fertilizer') {
     return { values: fields.map(() => ''), isPrefilled: false };
   }
   if (locState?.prefill && Array.isArray(locState.prefill) && locState.prefill.length > 0) {
@@ -186,6 +217,28 @@ export default function Predictions({ type }: PredictionPageProps) {
   const [trainingRanges, setTrainingRanges] = useState<Record<string, FeatureRange> | null>(null);
   const [metadataLoadingError, setMetadataLoadingError] = useState<boolean>(false);
 
+  // Fertilizer calculator state
+  const [fertCropName, setFertCropName] = useState('');
+  const [fertSelectedReportId, setFertSelectedReportId] = useState<string>('');
+  const [fertTiming, setFertTiming] = useState('');
+  const [fertArea, setFertArea] = useState('');
+  const [fertAreaUnit, setFertAreaUnit] = useState<'acres' | 'hectares'>('acres');
+  const [fertProduct, setFertProduct] = useState('');
+  const [fertRate, setFertRate] = useState('');
+  const [fertRateUnit, setFertRateUnit] = useState<'kg/acre' | 'kg/hectare'>('kg/acre');
+  const [fertSource, setFertSource] = useState('');
+  const [fertError, setFertError] = useState<string | null>(null);
+  const [fertResult, setFertResult] = useState<FertilizerCalcResult | null>(null);
+  const [availableSoilReports, setAvailableSoilReports] = useState<SoilReportSummary[]>([]);
+  const [loadingReports, setLoadingReports] = useState(false);
+
+  function clearFertResult() {
+    if (fertResult || fertError) {
+      setFertResult(null);
+      setFertError(null);
+    }
+  }
+
   useEffect(() => {
     if (type === 'crop') {
       api.get('/ml/crop-metadata')
@@ -201,7 +254,134 @@ export default function Predictions({ type }: PredictionPageProps) {
           setMetadataLoadingError(true);
         });
     }
+
+    if (type === 'recommend-fertilizer') {
+      setLoadingReports(true);
+      api.get('/soil-test-requests')
+        .then((res) => {
+          const remoteData = Array.isArray(res.data) ? res.data : [];
+          const reports: SoilReportSummary[] = remoteData.map((r: any) => ({
+            id: r.id,
+            request_ref: r.request_ref || `REQ-${r.id}`,
+            field_name: r.field_name,
+            tested_date: r.report?.tested_date || r.report?.collection_date,
+            collection_date: r.sample_collected_date || r.report?.collection_date,
+            laboratory_name: r.report?.laboratory_name || r.provider_name,
+            values: r.report?.values,
+            parameters_12: r.report?.parameters_12,
+          }));
+          setAvailableSoilReports(reports);
+        })
+        .catch(() => {
+          try {
+            const raw = localStorage.getItem('agro_soil_test_requests');
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              if (Array.isArray(parsed)) {
+                const localReports: SoilReportSummary[] = parsed.map((r: any) => ({
+                  id: r.id,
+                  request_ref: r.request_ref || `REQ-${r.id}`,
+                  field_name: r.field_name,
+                  tested_date: r.report?.tested_date || r.report?.collection_date,
+                  collection_date: r.sample_collected_date || r.report?.collection_date,
+                  laboratory_name: r.report?.laboratory_name || r.provider_name,
+                  values: r.report?.values,
+                  parameters_12: r.report?.parameters_12,
+                }));
+                setAvailableSoilReports(localReports);
+                return;
+              }
+            }
+          } catch {}
+          setAvailableSoilReports([]);
+        })
+        .finally(() => {
+          setLoadingReports(false);
+        });
+    }
   }, [type]);
+
+  function handleCalculateFertilizer(e: React.FormEvent) {
+    e.preventDefault();
+    setFertError(null);
+    setFertResult(null);
+
+    const cleanCrop = fertCropName.trim();
+    if (!cleanCrop) {
+      setFertError('Please enter the crop name.');
+      return;
+    }
+
+    const cleanProduct = fertProduct.trim();
+    if (!cleanProduct) {
+      setFertError('Please enter the fertilizer product name.');
+      return;
+    }
+
+    const areaNum = parseFloat(fertArea);
+    if (isNaN(areaNum) || !isFinite(areaNum) || areaNum <= 0) {
+      setFertError('Field area must be a positive finite number greater than 0.');
+      return;
+    }
+
+    const rateNum = parseFloat(fertRate);
+    if (isNaN(rateNum) || !isFinite(rateNum) || rateNum <= 0) {
+      setFertError('Recommended product rate must be a positive finite number greater than 0.');
+      return;
+    }
+
+    const cleanTiming = fertTiming.trim();
+    if (!cleanTiming) {
+      setFertError('Please enter the application stage / timing.');
+      return;
+    }
+
+    const cleanSource = fertSource.trim();
+    if (!cleanSource) {
+      setFertError('Please enter the recommendation source or reference.');
+      return;
+    }
+
+    // Exact conversion: 1 acre = 0.40468564224 hectares
+    const ACRE_TO_HECTARE = 0.40468564224;
+    let areaInMatchingUnit: number;
+
+    if (fertRateUnit === 'kg/acre') {
+      if (fertAreaUnit === 'acres') {
+        areaInMatchingUnit = areaNum;
+      } else {
+        // Area is in hectares, convert to acres
+        areaInMatchingUnit = areaNum / ACRE_TO_HECTARE;
+      }
+    } else {
+      // fertRateUnit === 'kg/hectare'
+      if (fertAreaUnit === 'hectares') {
+        areaInMatchingUnit = areaNum;
+      } else {
+        // Area is in acres, convert to hectares
+        areaInMatchingUnit = areaNum * ACRE_TO_HECTARE;
+      }
+    }
+
+    const totalProductQuantityKg = rateNum * areaInMatchingUnit;
+
+    const selectedRep = fertSelectedReportId
+      ? availableSoilReports.find((r) => String(r.id) === fertSelectedReportId || r.request_ref === fertSelectedReportId)
+      : null;
+
+    setFertResult({
+      cropName: cleanCrop,
+      fertilizerProduct: cleanProduct,
+      suppliedRate: rateNum,
+      rateUnit: fertRateUnit,
+      fieldArea: areaNum,
+      areaUnit: fertAreaUnit,
+      totalQuantityKg: totalProductQuantityKg,
+      applicationTiming: cleanTiming,
+      recommendationSource: cleanSource,
+      selectedReport: selectedRep || null,
+    });
+  }
 
   if (prevType !== type || prevState !== location.state) {
     setPrevType(type);
@@ -400,7 +580,7 @@ export default function Predictions({ type }: PredictionPageProps) {
             <h2>{cfg.title}</h2>
             <p>{cfg.desc}</p>
           </div>
-          {type !== 'crop' && (
+          {type === 'yield' && (
             <Link
               to="/farmer/soil-test"
               className="btn btn-secondary btn-sm"
@@ -505,8 +685,8 @@ export default function Predictions({ type }: PredictionPageProps) {
         </div>
       )}
 
-      {/* Soil Test Prefill Banner (only for non-crop pages) */}
-      {isPrefilled && type !== 'crop' && (
+      {/* Soil Test Prefill Banner (only for yield page) */}
+      {isPrefilled && type === 'yield' && (
         <div
           style={{
             background: '#ecfdf5',
@@ -539,13 +719,408 @@ export default function Predictions({ type }: PredictionPageProps) {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
-        <form onSubmit={handlePredict} className="card">
+      {type === 'recommend-fertilizer' ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
+          {/* Left Column: Calculator Form */}
+          <form onSubmit={handleCalculateFertilizer} className="card">
+            <div style={{ marginBottom: '1.25rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
+              <h3 style={{ margin: '0 0 0.25rem', fontSize: '1.15rem', color: 'var(--text-main)' }}>
+                Fertilizer Quantity Calculator
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748b' }}>
+                Enter your crop, field area, and adviser-provided product rate to compute total field requirement.
+              </p>
+            </div>
+
+            {/* Input 1: Crop Name */}
+            <div className="form-group">
+              <label className="form-label">Crop Name *</label>
+              <input
+                className="input"
+                type="text"
+                placeholder="e.g. Ragi, Paddy, Maize, Sugarcane"
+                value={fertCropName}
+                onChange={(e) => {
+                  setFertCropName(e.target.value);
+                  clearFertResult();
+                }}
+                required
+              />
+              <small style={{ color: '#64748b', fontSize: '0.78rem', marginTop: '0.2rem', display: 'block' }}>
+                Crop under cultivation (context only; does not alter calculation).
+              </small>
+            </div>
+
+            {/* Input 2: Optional Soil-Test Report */}
+            <div className="form-group">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                <label className="form-label" style={{ margin: 0 }}>Attached Soil-Test Report (Optional)</label>
+                <Link
+                  to="/farmer/soil-test"
+                  style={{ fontSize: '0.78rem', color: 'var(--primary)', textDecoration: 'none', fontWeight: 600 }}
+                >
+                  View Soil Test & Reports →
+                </Link>
+              </div>
+              <select
+                className="input"
+                value={fertSelectedReportId}
+                onChange={(e) => {
+                  setFertSelectedReportId(e.target.value);
+                  clearFertResult();
+                }}
+              >
+                <option value="">None (Do not attach soil report)</option>
+                {availableSoilReports.map((r) => (
+                  <option key={r.id} value={String(r.id)}>
+                    {r.request_ref} {r.field_name ? `(${r.field_name})` : ''} — {r.tested_date || r.collection_date || 'Date N/A'}
+                  </option>
+                ))}
+              </select>
+
+              {(() => {
+                const selectedSoilReport = fertSelectedReportId
+                  ? availableSoilReports.find((r) => String(r.id) === fertSelectedReportId || r.request_ref === fertSelectedReportId)
+                  : null;
+                if (!selectedSoilReport) return null;
+                return (
+                  <div
+                    style={{
+                      marginTop: '0.75rem',
+                      padding: '0.85rem 1rem',
+                      background: '#f8fafc',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: 8,
+                      fontSize: '0.82rem',
+                    }}
+                  >
+                    <div style={{ fontWeight: 600, color: '#0f172a', marginBottom: '0.35rem' }}>
+                      Original Laboratory Record: {selectedSoilReport.request_ref}
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.35rem', color: '#475569', marginBottom: '0.5rem' }}>
+                      <div><strong>Laboratory:</strong> {selectedSoilReport.laboratory_name || 'Not recorded'}</div>
+                      <div><strong>Test Date:</strong> {selectedSoilReport.tested_date || selectedSoilReport.collection_date || 'Not recorded'}</div>
+                      {selectedSoilReport.field_name && <div><strong>Field:</strong> {selectedSoilReport.field_name}</div>}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: '#334155' }}>
+                      <strong>Tested Parameters (from original lab record):</strong>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '0.25rem' }}>
+                        {selectedSoilReport.values?.n !== undefined && (
+                          <span className="badge badge-gray" style={{ fontSize: '0.75rem' }}>Available N: {selectedSoilReport.values.n} kg/ha</span>
+                        )}
+                        {selectedSoilReport.values?.p !== undefined && (
+                          <span className="badge badge-gray" style={{ fontSize: '0.75rem' }}>Available P: {selectedSoilReport.values.p} kg/ha</span>
+                        )}
+                        {selectedSoilReport.values?.k !== undefined && (
+                          <span className="badge badge-gray" style={{ fontSize: '0.75rem' }}>Available K: {selectedSoilReport.values.k} kg/ha</span>
+                        )}
+                        {selectedSoilReport.values?.ph !== undefined && (
+                          <span className="badge badge-gray" style={{ fontSize: '0.75rem' }}>pH: {selectedSoilReport.values.ph}</span>
+                        )}
+                        {selectedSoilReport.values?.ec !== undefined && (
+                          <span className="badge badge-gray" style={{ fontSize: '0.75rem' }}>EC: {selectedSoilReport.values.ec} dS/m</span>
+                        )}
+                        {selectedSoilReport.values?.oc !== undefined && (
+                          <span className="badge badge-gray" style={{ fontSize: '0.75rem' }}>OC: {selectedSoilReport.values.oc} %</span>
+                        )}
+                        {!selectedSoilReport.values && (
+                          <span style={{ color: '#64748b', fontStyle: 'italic', fontSize: '0.75rem' }}>Nutrient values not recorded in this report summary.</span>
+                        )}
+                      </div>
+                    </div>
+                    <small style={{ display: 'block', marginTop: '0.5rem', color: '#64748b', fontStyle: 'italic', fontSize: '0.74rem' }}>
+                      * Soil report parameters are displayed for reference context only and do not automatically adjust the fertilizer rate.
+                    </small>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Input 3: Application Stage / Timing */}
+            <div className="form-group">
+              <label className="form-label">Application Stage / Timing *</label>
+              <input
+                className="input"
+                type="text"
+                placeholder="e.g. Basal dressing at sowing, Vegetative stage (30 DAS)"
+                value={fertTiming}
+                onChange={(e) => {
+                  setFertTiming(e.target.value);
+                  clearFertResult();
+                }}
+                required
+              />
+              <small style={{ color: '#64748b', fontSize: '0.78rem', marginTop: '0.2rem', display: 'block' }}>
+                Application timing specified by your adviser (context only).
+              </small>
+            </div>
+
+            {/* Input 4: Field Area */}
+            <div className="form-group">
+              <label className="form-label">Field Area *</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.5rem' }}>
+                <input
+                  className="input"
+                  type="number"
+                  min="0.000001"
+                  step="any"
+                  placeholder="e.g. 2.0"
+                  value={fertArea}
+                  onChange={(e) => {
+                    setFertArea(e.target.value);
+                    clearFertResult();
+                  }}
+                  required
+                />
+                <select
+                  className="input"
+                  value={fertAreaUnit}
+                  onChange={(e) => {
+                    setFertAreaUnit(e.target.value as 'acres' | 'hectares');
+                    clearFertResult();
+                  }}
+                >
+                  <option value="acres">Acres</option>
+                  <option value="hectares">Hectares</option>
+                </select>
+              </div>
+              <small style={{ color: '#64748b', fontSize: '0.78rem', marginTop: '0.2rem', display: 'block' }}>
+                Total land area for application (must be a positive number).
+              </small>
+            </div>
+
+            {/* Input 5: Fertilizer Product Name */}
+            <div className="form-group">
+              <label className="form-label">Fertilizer Product Name *</label>
+              <input
+                className="input"
+                type="text"
+                placeholder="e.g. Urea, DAP, MOP, 10:26:26, Compost"
+                value={fertProduct}
+                onChange={(e) => {
+                  setFertProduct(e.target.value);
+                  clearFertResult();
+                }}
+                required
+              />
+            </div>
+
+            {/* Input 6: Recommended Product Rate */}
+            <div className="form-group">
+              <label className="form-label">Recommended Product Rate *</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.5rem' }}>
+                <input
+                  className="input"
+                  type="number"
+                  min="0.000001"
+                  step="any"
+                  placeholder="e.g. 10"
+                  value={fertRate}
+                  onChange={(e) => {
+                    setFertRate(e.target.value);
+                    clearFertResult();
+                  }}
+                  required
+                />
+                <select
+                  className="input"
+                  value={fertRateUnit}
+                  onChange={(e) => {
+                    setFertRateUnit(e.target.value as 'kg/acre' | 'kg/hectare');
+                    clearFertResult();
+                  }}
+                >
+                  <option value="kg/acre">kg / acre</option>
+                  <option value="kg/hectare">kg / hectare</option>
+                </select>
+              </div>
+              <small style={{ color: '#64748b', fontSize: '0.78rem', marginTop: '0.2rem', display: 'block' }}>
+                Recommended dosage rate from your laboratory card or adviser.
+              </small>
+            </div>
+
+            {/* Input 7: Recommendation Source */}
+            <div className="form-group">
+              <label className="form-label">Recommendation Source / Reference *</label>
+              <input
+                className="input"
+                type="text"
+                placeholder="e.g. Mandya Soil Testing Lab Report #402, KVK Extension Officer"
+                value={fertSource}
+                onChange={(e) => {
+                  setFertSource(e.target.value);
+                  clearFertResult();
+                }}
+                required
+              />
+              <small style={{ color: '#64748b', fontSize: '0.78rem', marginTop: '0.2rem', display: 'block' }}>
+                Document reference or official source that prescribed this rate.
+              </small>
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary btn-lg"
+              style={{ width: '100%', marginTop: '0.75rem' }}
+            >
+              Calculate Fertilizer Quantity
+            </button>
+          </form>
+
+          {/* Right Column: Information, Link, and Results */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            {/* Explanation card */}
+            <div
+              style={{
+                background: '#f8fafc',
+                border: '1px solid #cbd5e1',
+                borderRadius: 8,
+                padding: '1.15rem 1.25rem',
+                fontSize: '0.875rem',
+                color: '#334155',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.4rem', color: '#0f172a' }}>
+                <Info size={18} style={{ color: 'var(--primary)' }} />
+                <h4 style={{ margin: 0, fontSize: '0.95rem' }}>Field Quantity Calculation Only</h4>
+              </div>
+              <p style={{ margin: '0 0 0.75rem', lineHeight: 1.55 }}>
+                Enter the fertilizer product rate provided by your laboratory or agricultural adviser. This tool calculates the quantity for your field; it does not determine the dose.
+              </p>
+              <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '0.6rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Consult certified soil reports:</span>
+                <Link
+                  to="/farmer/soil-test"
+                  className="btn btn-secondary btn-sm"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem' }}
+                >
+                  <FlaskConical size={14} /> View Soil Test & Reports
+                </Link>
+              </div>
+            </div>
+
+            {/* Error banner if any */}
+            {fertError && (
+              <div
+                className="animate-fadeIn"
+                style={{
+                  background: '#fef2f2',
+                  border: '1px solid #fecaca',
+                  borderRadius: 8,
+                  padding: '1rem 1.25rem',
+                  color: '#991b1b',
+                  textAlign: 'center',
+                }}
+              >
+                <AlertCircle size={24} style={{ color: '#dc2626', margin: '0 auto 0.35rem', display: 'block' }} />
+                <h4 style={{ margin: '0 0 0.25rem', color: '#991b1b', fontSize: '0.92rem' }}>Input Validation Required</h4>
+                <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 500 }}>{fertError}</p>
+              </div>
+            )}
+
+            {/* Result card */}
+            {fertResult ? (
+              <div className="card animate-fadeIn" style={{ textAlign: 'left', padding: '1.5rem' }}>
+                <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+                  <span className="badge badge-green" style={{ fontSize: '0.75rem', marginBottom: '0.5rem' }}>
+                    Calculated Field Requirement
+                  </span>
+                  <h3 style={{ margin: '0.25rem 0 0', color: 'var(--primary)', fontSize: '1.15rem' }}>
+                    Total Fertilizer Quantity
+                  </h3>
+                  <p style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-main)', margin: '0.35rem 0' }}>
+                    {(Math.round(fertResult.totalQuantityKg * 100) / 100).toLocaleString(undefined, {
+                      minimumFractionDigits: fertResult.totalQuantityKg % 1 === 0 ? 0 : 2,
+                      maximumFractionDigits: 2,
+                    })}{' '}
+                    kg
+                  </p>
+                  <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                    of {fertResult.fertilizerProduct}
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: 8,
+                    padding: '1rem 1.15rem',
+                    marginBottom: '1.25rem',
+                    fontSize: '0.875rem',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.35rem 0', borderBottom: '1px solid #edf2f7' }}>
+                    <span style={{ color: '#64748b' }}>Crop:</span>
+                    <span style={{ fontWeight: 600, color: '#0f172a' }}>{fertResult.cropName}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.35rem 0', borderBottom: '1px solid #edf2f7' }}>
+                    <span style={{ color: '#64748b' }}>Fertilizer Product:</span>
+                    <span style={{ fontWeight: 600, color: '#0f172a' }}>{fertResult.fertilizerProduct}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.35rem 0', borderBottom: '1px solid #edf2f7' }}>
+                    <span style={{ color: '#64748b' }}>Supplied Rate:</span>
+                    <span style={{ fontWeight: 600, color: '#0f172a' }}>{fertResult.suppliedRate} {fertResult.rateUnit}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.35rem 0', borderBottom: '1px solid #edf2f7' }}>
+                    <span style={{ color: '#64748b' }}>Field Area:</span>
+                    <span style={{ fontWeight: 600, color: '#0f172a' }}>{fertResult.fieldArea} {fertResult.areaUnit}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.35rem 0', borderBottom: '1px solid #edf2f7' }}>
+                    <span style={{ color: '#64748b' }}>Supplied Application Timing:</span>
+                    <span style={{ fontWeight: 600, color: '#0f172a' }}>{fertResult.applicationTiming}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.35rem 0' }}>
+                    <span style={{ color: '#64748b' }}>Recommendation Source:</span>
+                    <span style={{ fontWeight: 600, color: '#0f172a', textAlign: 'right', maxWidth: '60%' }}>{fertResult.recommendationSource}</span>
+                  </div>
+                  {fertResult.selectedReport && (
+                    <div style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px dashed #cbd5e1', fontSize: '0.8rem', color: '#475569' }}>
+                      Attached Soil Report Context: <strong>{fertResult.selectedReport.request_ref}</strong>
+                    </div>
+                  )}
+                </div>
+
+                <div
+                  style={{
+                    padding: '0.75rem 1rem',
+                    background: '#fffbeb',
+                    border: '1px solid #fcd34d',
+                    borderRadius: 8,
+                    fontSize: '0.8rem',
+                    color: '#92400e',
+                    lineHeight: 1.45,
+                  }}
+                >
+                  <strong>Important Disclaimer:</strong> Calculated from your supplied recommendation—not independently verified.
+                  <p style={{ margin: '0.25rem 0 0', fontSize: '0.76rem', color: '#b45309' }}>
+                    Crop, stage, and soil report are context only in this calculator. They do not automatically adjust the rate.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="card" style={{ textAlign: 'center', padding: '2.5rem 1.75rem' }}>
+                <div style={{ color: 'var(--primary)', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ background: 'var(--primary-subtle)', padding: '1rem', borderRadius: '50%' }}>
+                    <TrendingUp size={32} />
+                  </div>
+                </div>
+                <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.15rem' }}>Calculator Ready</h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: 1.5, maxWidth: '380px', margin: '0 auto' }}>
+                  Fill in your crop, field area, and the recommended fertilizer rate from your adviser or lab card, then click “Calculate Fertilizer Quantity”.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
+          <form onSubmit={handlePredict} className="card">
           {type === 'yield' ? (
             <>
               {/* Field 0: Cultivation Area */}
               <div className="form-group">
-                <label className="form-label">Cultivation Area (Acres)</label>
+                <label className="form-label">Cultivation area (acres)</label>
                 <input
                   className="input"
                   type="number"
@@ -578,7 +1153,7 @@ export default function Predictions({ type }: PredictionPageProps) {
                   ))}
                 </select>
                 <small style={{ color: '#64748b', fontSize: '0.78rem', marginTop: '0.2rem', display: 'block' }}>
-                  Supported growing seasons: Kharif (monsoon) or Rabi (winter).
+                  Supported growing seasons: Kharif (monsoon) or Rabi (winter). Recorded selection only; the current experimental formula does not use this value.
                 </small>
               </div>
 
@@ -598,13 +1173,13 @@ export default function Predictions({ type }: PredictionPageProps) {
                   ))}
                 </select>
                 <small style={{ color: '#64748b', fontSize: '0.78rem', marginTop: '0.2rem', display: 'block' }}>
-                  Select from registered produce crops supported by the platform.
+                  Available crop selections. Crop-specific yield modelling is not implemented yet. Recorded selection only; the current experimental formula does not use this value.
                 </small>
               </div>
 
               {/* Field 3: Rainfall */}
               <div className="form-group">
-                <label className="form-label">Rainfall (mm)</label>
+                <label className="form-label">Rainfall input (mm)</label>
                 <input
                   className="input"
                   type="number"
@@ -617,7 +1192,7 @@ export default function Predictions({ type }: PredictionPageProps) {
                   disabled={loading}
                 />
                 <small style={{ color: '#64748b', fontSize: '0.78rem', marginTop: '0.2rem', display: 'block' }}>
-                  Expected rainfall in millimeters. <em>(Limitation: The underlying formula does not document whether this represents annual or seasonal crop-cycle rainfall).</em>
+                  The formula’s rainfall period is undocumented. This calculation is for demonstration only.
                 </small>
               </div>
             </>
@@ -663,11 +1238,13 @@ export default function Predictions({ type }: PredictionPageProps) {
             disabled={loading}
           >
             {loading
-              ? 'Predicting with ML Model…'
+              ? type === 'crop'
+                ? 'Predicting with ML Model…'
+                : 'Calculating Estimate…'
               : type === 'crop'
               ? 'Predict Crop with ML'
               : type === 'yield'
-              ? 'Calculate Yield Estimate'
+              ? 'Calculate experimental estimate'
               : `Compute ${cfg.title}`}
           </button>
         </form>
@@ -764,11 +1341,27 @@ export default function Predictions({ type }: PredictionPageProps) {
             </div>
           ) : type === 'yield' && yieldDetails ? (
             <div className="animate-fadeIn" style={{ textAlign: 'left' }}>
-              <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+              <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
                 <span className="badge badge-amber" style={{ fontSize: '0.75rem', marginBottom: '0.5rem' }}>
-                  Experimental Rule-Based Estimate
+                  Experimental rule-based yield estimate
                 </span>
                 <h3 style={{ margin: '0.25rem 0 0', color: 'var(--primary)', fontSize: '1.35rem' }}>Estimated Yield & Harvest</h3>
+              </div>
+
+              <div
+                style={{
+                  background: '#f8fafc',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: 8,
+                  padding: '0.75rem 1rem',
+                  marginBottom: '1rem',
+                  fontSize: '0.82rem',
+                  color: '#475569',
+                  lineHeight: 1.45,
+                  textAlign: 'center',
+                }}
+              >
+                This formula uses rainfall and area only. It does not account for differences between crops or seasons.
               </div>
 
               <div
@@ -830,13 +1423,14 @@ export default function Predictions({ type }: PredictionPageProps) {
                 {type === 'crop'
                   ? 'Enter your soil and climate parameters or click "Load example inputs" to generate an ML prediction.'
                   : type === 'yield'
-                  ? 'Enter your plot area, season, target crop, and rainfall to calculate an estimated harvest.'
+                  ? 'Enter your plot area, season, target crop, and rainfall to calculate an experimental estimate.'
                   : 'Fill in your farm conditions and click compute to get an estimate.'}
               </p>
             </div>
           )}
         </div>
       </div>
+      )}
     </div>
   );
 }

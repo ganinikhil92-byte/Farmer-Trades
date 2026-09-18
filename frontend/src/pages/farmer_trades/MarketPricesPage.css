@@ -1,0 +1,505 @@
+/* MarketPricesPage.css — Farmer Trades */
+
+.ft-prices-page {
+  background-color: #f8faf7;
+  min-height: 100vh;
+  padding-bottom: 5rem;
+}
+
+/* Banner */
+.ft-prices-banner {
+  background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+  color: #ffffff;
+  padding: 3rem 1.5rem 2.5rem;
+}
+
+.ft-prices-banner-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.ft-prices-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fef08a;
+  margin-bottom: 0.75rem;
+}
+
+.ft-prices-banner h1 {
+  font-size: 2.25rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+}
+
+.ft-prices-banner p {
+  font-size: 1rem;
+  color: #dcfce7;
+  max-width: 700px;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.ft-sample-disclaimer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.78rem;
+  color: #fef3c7;
+  max-width: 750px;
+}
+
+/* Container */
+.ft-prices-container {
+  max-width: 1200px;
+  margin: -1.5rem auto 0;
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Controls Card */
+.ft-chart-controls-card {
+  background: #ffffff;
+  border-radius: 0.875rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ft-controls-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ft-mandi-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.75rem;
+}
+
+.ft-mandi-select {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1f2937;
+  cursor: pointer;
+}
+
+.ft-date-range-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #f1f5f9;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+}
+
+.ft-range-pill {
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ft-range-pill.active {
+  background: #ffffff;
+  color: #15803d;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ft-controls-right {
+  position: relative;
+}
+
+.ft-btn-add-commodity {
+  background: #15803d;
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.825rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ft-btn-add-commodity:hover {
+  background: #166534;
+}
+
+.ft-add-commodity-dropdown {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem;
+  z-index: 50;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ft-dropdown-header {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #94a3b8;
+  padding: 0.35rem 0.6rem;
+  text-transform: uppercase;
+}
+
+.ft-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  background: none;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #1e293b;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.ft-dropdown-item:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+.ft-dropdown-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ft-dot-color {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ft-added-check {
+  font-size: 0.7rem;
+  color: #15803d;
+  margin-left: auto;
+}
+
+/* Commodity Chips Bar */
+.ft-commodity-chips-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ft-chips-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.ft-commodity-chip {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ft-commodity-chip.inactive {
+  background: #f8fafc;
+  opacity: 0.6;
+}
+
+.ft-chip-indicator {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+
+.ft-chip-remove {
+  color: #94a3b8;
+  margin-left: 0.2rem;
+}
+
+/* Chart Card */
+.ft-chart-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.ft-chart-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.ft-chart-card-header h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.ft-chart-subtitle {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.ft-chart-legend-custom {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ft-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.ft-legend-color {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 2px;
+}
+
+.ft-chart-canvas-wrap {
+  width: 100%;
+}
+
+/* Comparison Cards Grid */
+.ft-comparison-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .ft-comparison-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ft-price-comp-card {
+  background: #ffffff;
+  border-radius: 0.875rem;
+  border: 1px solid #e5e7eb;
+  padding: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.ft-comp-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.ft-comp-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ft-comp-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+}
+
+.ft-comp-crop-name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.ft-comp-change-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.ft-comp-change-pill.positive {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.ft-comp-change-pill.negative {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.ft-comp-current-price {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #111827;
+  margin-bottom: 0.75rem;
+}
+
+.ft-comp-unit {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-left: 0.35rem;
+}
+
+.ft-comp-details-list {
+  border-top: 1px solid #f3f4f6;
+  padding-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+}
+
+.ft-comp-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #475569;
+}
+
+/* Historical Table */
+.ft-historical-table-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.ft-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.ft-table-header h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.ft-table-subtitle {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.ft-table-search input {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  outline: none;
+  min-width: 220px;
+}
+
+.ft-table-overflow {
+  overflow-x: auto;
+}
+
+.ft-mandi-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.ft-mandi-data-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid #e2e8f0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.ft-mandi-data-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+.ft-mandi-data-table tr:hover td {
+  background: #f0fdf4;
+}
+
+.ft-trend-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.ft-trend-tag.up {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.ft-trend-tag.down {
+  background: #fee2e2;
+  color: #dc2626;
+}

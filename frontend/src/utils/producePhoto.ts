@@ -1,105 +1,270 @@
-/* Realistic photo URLs from Unsplash for each produce item */
-export const PHOTO_MAP: Record<string, string> = {
-  // Crops
-  'ragi (finger millet)': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop',
-  'ragi': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop',
-  'mandya organic ragi': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop',
-  'paddy (rice)': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop',
-  'paddy': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop',
-  'rice': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop',
-  'sonamasuri': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop',
-  'jowar (sorghum)': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop',
-  'jowar': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop',
-  'sorghum': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop',
-  'maize': 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&h=300&fit=crop',
-  'corn': 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&h=300&fit=crop',
-  'sugarcane': 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=400&h=300&fit=crop',
-  'wheat': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop',
-  'barley': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop',
-  'millet': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop',
-  'cotton': 'https://images.unsplash.com/photo-1606041008023-472dfb5e530f?w=400&h=300&fit=crop',
-  'groundnut': 'https://images.unsplash.com/photo-1567894340315-735d7c361db0?w=400&h=300&fit=crop',
-  'peanut': 'https://images.unsplash.com/photo-1567894340315-735d7c361db0?w=400&h=300&fit=crop',
-  'soybean': 'https://images.unsplash.com/photo-1599818816933-4f24f469efb9?w=400&h=300&fit=crop',
-
-  // Vegetables
-  'tomato': 'https://images.unsplash.com/photo-1546470427-0d4db154ceb8?w=400&h=300&fit=crop',
-  'potato': 'https://images.unsplash.com/photo-1518977676601-b53f8216b6f7?w=400&h=300&fit=crop',
-  'onion': 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=400&h=300&fit=crop',
-  'brinjal': 'https://images.unsplash.com/photo-1615484477778-ca3b77940c25?w=400&h=300&fit=crop',
-  'eggplant': 'https://images.unsplash.com/photo-1615484477778-ca3b77940c25?w=400&h=300&fit=crop',
-  'green chilli': 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=400&h=300&fit=crop',
-  'chilli': 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=400&h=300&fit=crop',
-  'ladies finger': 'https://images.unsplash.com/photo-1425543103986-22abb7d7e8d2?w=400&h=300&fit=crop',
-  'ladies finder': 'https://images.unsplash.com/photo-1425543103986-22abb7d7e8d2?w=400&h=300&fit=crop',
-  'okra': 'https://images.unsplash.com/photo-1425543103986-22abb7d7e8d2?w=400&h=300&fit=crop',
-  'bhendi': 'https://images.unsplash.com/photo-1425543103986-22abb7d7e8d2?w=400&h=300&fit=crop',
-  'bhindi': 'https://images.unsplash.com/photo-1425543103986-22abb7d7e8d2?w=400&h=300&fit=crop',
-  'carrot': 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&h=300&fit=crop',
-  'cabbage': 'https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?w=400&h=300&fit=crop',
-  'cauliflower': 'https://images.unsplash.com/photo-1568584711075-3d021a7c3ca3?w=400&h=300&fit=crop',
-  'cucumber': 'https://images.unsplash.com/photo-1449300079323-02e209d9d3a6?w=400&h=300&fit=crop',
-  'garlic': 'https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=400&h=300&fit=crop',
-  'ginger': 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=400&h=300&fit=crop',
-  'capsicum': 'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400&h=300&fit=crop',
-  'spinach': 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400&h=300&fit=crop',
-  'peas': 'https://images.unsplash.com/photo-1587735243615-c03f25aaff15?w=400&h=300&fit=crop',
-  'beetroot': 'https://images.unsplash.com/photo-1593105544559-ecb03bf76f82?w=400&h=300&fit=crop',
-
-  // Fruits
-  'mango (alphonso)': 'https://images.unsplash.com/photo-1553279768-865429fa0078?w=400&h=300&fit=crop',
-  'mango': 'https://images.unsplash.com/photo-1553279768-865429fa0078?w=400&h=300&fit=crop',
-  'banana': 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=300&fit=crop',
-  'sapota (chikoo)': 'https://images.unsplash.com/photo-1618897996318-5a901fa6ca71?w=400&h=300&fit=crop',
-  'sapota': 'https://images.unsplash.com/photo-1618897996318-5a901fa6ca71?w=400&h=300&fit=crop',
-  'chikoo': 'https://images.unsplash.com/photo-1618897996318-5a901fa6ca71?w=400&h=300&fit=crop',
-  'pomegranate': 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=400&h=300&fit=crop',
-  'jackfruit': 'https://images.unsplash.com/photo-1622597467836-f3285f2131b8?w=400&h=300&fit=crop',
-  'grapes': 'https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=400&h=300&fit=crop',
-  'orange': 'https://images.unsplash.com/photo-1547514701-42782101795e?w=400&h=300&fit=crop',
-  'apple': 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400&h=300&fit=crop',
-  'papaya': 'https://images.unsplash.com/photo-1617112848923-cc2234396a8d?w=400&h=300&fit=crop',
-  'watermelon': 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=400&h=300&fit=crop',
-  'guava': 'https://images.unsplash.com/photo-1536511135898-8959d282e75e?w=400&h=300&fit=crop',
-  'pineapple': 'https://images.unsplash.com/photo-1550258987-190a2d41a8ba?w=400&h=300&fit=crop',
-  'lemon': 'https://images.unsplash.com/photo-1533082603883-3be2030882e2?w=400&h=300&fit=crop',
-  'sweet lime': 'https://images.unsplash.com/photo-1547514701-42782101795e?w=400&h=300&fit=crop',
-  'mosambi': 'https://images.unsplash.com/photo-1547514701-42782101795e?w=400&h=300&fit=crop',
-  'strawberry': 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400&h=300&fit=crop',
-};
-
-/* Fallback photos by category */
-export const FALLBACK_PHOTOS: Record<string, string> = {
-  crop: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=300&fit=crop',
-  vegetable: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&h=300&fit=crop',
-  fruit: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=400&h=300&fit=crop',
-};
+import React from 'react';
 
 /**
- * Returns the best visual photo for a produce item.
- * Prioritizes uploaded image_url, followed by exact/fuzzy produce photo matching,
- * and finally a high-resolution category fallback.
+ * Placeholder shown when no seller has provided an image for the produce listing.
+ * Neutral, high-contrast, self-contained SVG data URL.
+ */
+export const NO_PHOTO_UPLOADED_PLACEHOLDER =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">' +
+      '<rect width="400" height="300" fill="#f8fafc"/>' +
+      '<rect x="8" y="8" width="384" height="284" rx="10" fill="none" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="6 6"/>' +
+      '<g transform="translate(176, 100)" stroke="#94a3b8" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>' +
+        '<circle cx="12" cy="13" r="4"/>' +
+      '</g>' +
+      '<text x="200" y="168" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#64748b">No photo uploaded</text>' +
+      '<text x="200" y="188" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94a3b8">Seller has not provided a photo</text>' +
+    '</svg>'
+  );
+
+/**
+ * Placeholder shown when a known image URL fails to load (e.g. 404, network error, broken link).
+ * Neutral, high-contrast, self-contained SVG data URL.
+ */
+export const PHOTO_UNAVAILABLE_PLACEHOLDER =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">' +
+      '<rect width="400" height="300" fill="#fef2f2"/>' +
+      '<rect x="8" y="8" width="384" height="284" rx="10" fill="none" stroke="#fecaca" stroke-width="2" stroke-dasharray="6 6"/>' +
+      '<g transform="translate(176, 100)" stroke="#ef4444" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
+        '<circle cx="12" cy="12" r="10"/>' +
+        '<line x1="12" y1="8" x2="12" y2="12"/>' +
+        '<line x1="12" y1="16" x2="12.01" y2="16"/>' +
+      '</g>' +
+      '<text x="200" y="168" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="#991b1b">Photo unavailable</text>' +
+      '<text x="200" y="188" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#b91c1c">Image could not be loaded</text>' +
+    '</svg>'
+  );
+
+export interface ProduceImageResult {
+  url: string;
+  source: 'seller' | 'no_photo' | 'uploaded' | 'placeholder';
+  isSellerProvided: boolean;
+  isRepresentative: boolean;
+  label: string;
+}
+
+/**
+ * Validates whether an image URL is an authentic seller-provided photo.
+ * Strictly excludes:
+ * - Temporary blob: URLs
+ * - Unsplash stock / generic seed photos (images.unsplash.com)
+ * - Empty, null, or undefined values
+ * Accepts:
+ * - Verified durable produce uploads (/api/produce-images/ or /produce-images/)
+ * - Durable farmer base64 data URLs (data:image/...)
+ * - Local durable uploaded paths (/uploads/)
+ */
+export function isSellerProvidedPhoto(url?: string | null): boolean {
+  if (!url || typeof url !== 'string') return false;
+  const trimmed = url.trim();
+  if (trimmed.length === 0) return false;
+  if (trimmed === 'null' || trimmed === 'undefined') return false;
+  // Temporary blob: URLs must never be treated as durable permanent references
+  if (trimmed.startsWith('blob:')) return false;
+
+  // Generic seed photos and Unsplash stock assets must not be classified as seller uploads
+  if (trimmed.includes('unsplash.com') || trimmed.includes('images.unsplash.com')) {
+    return false;
+  }
+
+  // Uploaded produce photo endpoints from backend
+  if (trimmed.includes('/produce-images/')) {
+    return true;
+  }
+
+  // Direct farmer data URL uploads (e.g. data:image/jpeg;base64,...)
+  if (trimmed.startsWith('data:image/')) {
+    return true;
+  }
+
+  // Local uploads directory
+  if (trimmed.includes('/uploads/')) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Resolves an image URL to an absolute URL accessible by the frontend.
+ */
+export function toAbsoluteImageUrl(url?: string | null): string {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (trimmed.startsWith('data:image/')) return trimmed;
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+  if (trimmed.startsWith('/api/')) {
+    const apiBase = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api').replace(/\/api\/?$/, '');
+    return `${apiBase}${trimmed}`;
+  }
+  return trimmed;
+}
+
+/**
+ * Deterministic produce image resolver:
+ * 1. If seller provided an authentic photo -> return it with label "Seller-provided photo".
+ * 2. Otherwise -> return clean "No photo uploaded" placeholder.
+ * (Automatic Google, AI-generated, catalogue, random, and landscape fallbacks are removed).
+ */
+export function resolveProduceImage(options: {
+  name?: string;
+  category?: string;
+  imageUrl?: string | null;
+}): ProduceImageResult {
+  const { imageUrl } = options;
+
+  if (isSellerProvidedPhoto(imageUrl)) {
+    return {
+      url: toAbsoluteImageUrl(imageUrl),
+      source: 'seller',
+      isSellerProvided: true,
+      isRepresentative: false,
+      label: 'Seller-provided photo',
+    };
+  }
+
+  return {
+    url: NO_PHOTO_UPLOADED_PLACEHOLDER,
+    source: 'no_photo',
+    isSellerProvided: false,
+    isRepresentative: false,
+    label: 'No photo uploaded',
+  };
+}
+
+/**
+ * Backward compatibility alias for existing code calling getProduceImage
  */
 export function getProduceImage(
   name?: string,
   category?: string,
   imageUrl?: string | null
 ): string {
-  if (imageUrl && typeof imageUrl === 'string' && imageUrl.trim().length > 0 && imageUrl !== 'null' && imageUrl !== 'undefined') {
-    return imageUrl;
+  return resolveProduceImage({ name, category, imageUrl }).url;
+}
+
+export const FALLBACK_PHOTOS: Record<string, string> = {
+  crop: NO_PHOTO_UPLOADED_PLACEHOLDER,
+  vegetable: NO_PHOTO_UPLOADED_PLACEHOLDER,
+  fruit: NO_PHOTO_UPLOADED_PLACEHOLDER,
+};
+
+/**
+ * Deterministic error fallback for <img> tags that prevents error loops.
+ * Shows "Photo unavailable" when a known image fails to load.
+ */
+export function handleImageError(e: React.SyntheticEvent<HTMLImageElement, Event>) {
+  const target = e.currentTarget;
+  target.onerror = null; // Prevent infinite loop
+  target.src = PHOTO_UNAVAILABLE_PLACEHOLDER;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Durable Order Image Storage & Resolution
+   Preserves the seller-provided image reference for order items
+   ───────────────────────────────────────────────────────────────────────────── */
+
+const ORDER_IMAGE_STORAGE_KEY = 'agro_order_image_refs_v2';
+
+export interface StoredOrderImageRef {
+  imageUrl?: string;
+  source: 'seller' | 'no_photo';
+  cropName?: string;
+  listingId?: number | string;
+}
+
+/**
+ * Persists a durable image reference for a newly placed order item in localStorage.
+ * Strictly rejects temporary blob: URLs.
+ */
+export function saveOrderImageRef(orderId: number | string, ref: StoredOrderImageRef): void {
+  try {
+    const raw = localStorage.getItem(ORDER_IMAGE_STORAGE_KEY);
+    const map: Record<string, StoredOrderImageRef> = raw ? JSON.parse(raw) : {};
+    let cleanUrl = ref.imageUrl;
+    if (cleanUrl && cleanUrl.startsWith('blob:')) {
+      cleanUrl = undefined;
+    }
+    map[String(orderId)] = {
+      ...ref,
+      imageUrl: cleanUrl,
+    };
+    localStorage.setItem(ORDER_IMAGE_STORAGE_KEY, JSON.stringify(map));
+  } catch {}
+}
+
+/**
+ * Retrieves a saved order image reference from durable local storage.
+ */
+export function getOrderImageRef(orderId: number | string): StoredOrderImageRef | null {
+  try {
+    const raw = localStorage.getItem(ORDER_IMAGE_STORAGE_KEY);
+    if (!raw) return null;
+    const map: Record<string, StoredOrderImageRef> = JSON.parse(raw);
+    return map[String(orderId)] || null;
+  } catch {
+    return null;
   }
-  const cleanCategory = (category || 'crop').toLowerCase().trim();
-  if (!name) {
-    return FALLBACK_PHOTOS[cleanCategory] || FALLBACK_PHOTOS.crop;
+}
+
+/**
+ * Resolves an image for an order item following the strict hierarchy:
+ * 1. Saved order seller photo (persisted on the order record or in order storage).
+ * 2. Exact linked listing by ID (listingsById[order.listing_id]).
+ * (Never matches a listing by crop name alone).
+ * 3. Neutral "No photo uploaded" placeholder when no seller-provided photo is known.
+ */
+export function resolveOrderImage(
+  order: { id: number | string; listing_id?: number | string; crop_name?: string; image_url?: string },
+  listingsById?: Record<string | number, { image_url?: string; crop_name?: string; category?: string }>
+): ProduceImageResult {
+  // Step 1: Check saved durable order image
+  const storedRef = getOrderImageRef(order.id);
+  if (storedRef && isSellerProvidedPhoto(storedRef.imageUrl)) {
+    return {
+      url: toAbsoluteImageUrl(storedRef.imageUrl),
+      source: 'seller',
+      isSellerProvided: true,
+      isRepresentative: false,
+      label: 'Seller-provided photo',
+    };
   }
-  const lower = name.toLowerCase().trim();
-  if (PHOTO_MAP[lower]) {
-    return PHOTO_MAP[lower];
+
+  if (isSellerProvidedPhoto(order.image_url)) {
+    return {
+      url: toAbsoluteImageUrl(order.image_url),
+      source: 'seller',
+      isSellerProvided: true,
+      isRepresentative: false,
+      label: 'Seller-provided photo',
+    };
   }
-  for (const [key, url] of Object.entries(PHOTO_MAP)) {
-    if (lower.includes(key) || key.includes(lower)) {
-      return url;
+
+  // Step 2: Check exact linked listing by ID (never by crop name alone)
+  if (listingsById && order.listing_id !== undefined && order.listing_id !== null) {
+    const key = String(order.listing_id);
+    const linkedListing = listingsById[key] || listingsById[order.listing_id];
+    if (linkedListing && isSellerProvidedPhoto(linkedListing.image_url)) {
+      return {
+        url: toAbsoluteImageUrl(linkedListing.image_url),
+        source: 'seller',
+        isSellerProvided: true,
+        isRepresentative: false,
+        label: 'Seller-provided photo',
+      };
     }
   }
-  return FALLBACK_PHOTOS[cleanCategory] || FALLBACK_PHOTOS.crop;
+
+  // Step 3: No substitute photos: show "No photo uploaded"
+  return {
+    url: NO_PHOTO_UPLOADED_PLACEHOLDER,
+    source: 'no_photo',
+    isSellerProvided: false,
+    isRepresentative: false,
+    label: 'No photo uploaded',
+  };
 }

@@ -1,0 +1,313 @@
+/* ==========================================================================
+   Farmer Trades — Global Top Navigation Styles
+   Agricultural Green-and-Orange branding, clean sticky navbar
+   ========================================================================== */
+
+.ft-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.ft-nav-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+/* ── Brand Logo ── */
+.ft-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  color: #1f2937;
+  flex-shrink: 0;
+}
+
+.ft-brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(21, 128, 61, 0.25);
+}
+
+.ft-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.ft-brand-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #166534;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.ft-brand-title span {
+  color: #f59e0b; /* Orange accent */
+}
+
+.ft-brand-subtitle {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Navigation Links ── */
+.ft-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.ft-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #374151;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.ft-nav-link:hover {
+  background: #f8faf7;
+  color: #15803d;
+}
+
+.ft-nav-link.active {
+  background: #f0fdf4;
+  color: #15803d;
+  font-weight: 700;
+}
+
+/* ── Right Actions ── */
+.ft-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ft-action-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #4b5563;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.ft-action-btn:hover {
+  background: #f8faf7;
+  color: #15803d;
+  border-color: #cbd5e1;
+}
+
+.ft-badge-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: #f59e0b; /* Orange notification badge */
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid #ffffff;
+}
+
+.ft-btn-sell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 9px;
+  background: #f59e0b; /* Orange primary action */
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.35);
+  transition: all 0.15s ease;
+}
+
+.ft-btn-sell:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+}
+
+.ft-btn-login {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.95rem;
+  border-radius: 9px;
+  border: 1.5px solid #15803d;
+  background: #ffffff;
+  color: #15803d;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ft-btn-login:hover {
+  background: #f0fdf4;
+}
+
+/* User Dropdown */
+.ft-user-menu-wrap {
+  position: relative;
+}
+
+.ft-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f8faf7;
+  border: 1px solid #e5e7eb;
+  padding: 0.35rem 0.75rem 0.35rem 0.45rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.ft-user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #15803d;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.ft-user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 230px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  z-index: 1100;
+  animation: ftFadeIn 0.15s ease-out;
+}
+
+.ft-dropdown-header {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #f3f4f6;
+  margin-bottom: 0.25rem;
+}
+
+.ft-dropdown-header strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #111827;
+}
+
+.ft-dropdown-header span {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.ft-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.ft-dropdown-item:hover {
+  background: #f8faf7;
+  color: #15803d;
+}
+
+.ft-dropdown-item.logout {
+  color: #dc2626;
+  border-top: 1px solid #f3f4f6;
+  margin-top: 0.25rem;
+}
+
+.ft-dropdown-item.logout:hover {
+  background: #fef2f2;
+}
+
+/* Mobile Toggle */
+.ft-mobile-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #374151;
+  cursor: pointer;
+}
+
+@keyframes ftFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 960px) {
+  .ft-nav-links {
+    display: none;
+  }
+  .ft-mobile-toggle {
+    display: block;
+  }
+}

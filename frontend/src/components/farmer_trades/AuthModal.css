@@ -1,0 +1,245 @@
+/* ==========================================================================
+   Farmer Trades — Auth Modal Styles
+   ========================================================================== */
+
+.ft-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1.25rem;
+  animation: ftFadeIn 0.2s ease-out;
+}
+
+.ft-modal-box {
+  background: #ffffff;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  position: relative;
+  padding: 2rem;
+  border: 1px solid #e5e7eb;
+}
+
+.ft-modal-close-btn {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: #f3f4f6;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ft-modal-close-btn:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.ft-modal-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.ft-modal-brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #15803d;
+  font-weight: 800;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.ft-modal-header h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}
+
+.ft-intended-notice {
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  margin-top: 0.6rem;
+}
+
+.ft-modal-subtitle {
+  font-size: 0.82rem;
+  color: #6b7280;
+  margin: 0.4rem 0 0;
+  line-height: 1.45;
+}
+
+/* Role Selector */
+.ft-role-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  background: #f3f4f6;
+  padding: 0.3rem;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+}
+
+.ft-role-btn {
+  padding: 0.55rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #4b5563;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ft-role-btn.active {
+  background: #ffffff;
+  color: #15803d;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.ft-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ft-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.ft-form-field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.ft-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ft-field-icon {
+  position: absolute;
+  left: 0.85rem;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.ft-input-wrap input {
+  width: 100%;
+  padding: 0.65rem 0.85rem 0.65rem 2.4rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.ft-input-wrap input:focus {
+  border-color: #15803d;
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12);
+}
+
+.ft-btn-submit {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 10px;
+  background: #15803d;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(21, 128, 61, 0.25);
+  transition: all 0.15s ease;
+}
+
+.ft-btn-submit:hover:not(:disabled) {
+  background: #166534;
+  transform: translateY(-1px);
+}
+
+.ft-btn-google {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.65rem;
+  border-radius: 10px;
+  border: 1.5px solid #e5e7eb;
+  background: #ffffff;
+  color: #374151;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ft-btn-google:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.ft-toggle-mode {
+  text-align: center;
+  font-size: 0.82rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+.ft-toggle-mode button {
+  background: transparent;
+  border: none;
+  color: #15803d;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.ft-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  margin-bottom: 0.5rem;
+}
+
+.ft-alert.error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.ft-alert.success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+}

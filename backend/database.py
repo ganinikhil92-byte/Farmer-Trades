@@ -59,11 +59,14 @@ def init_db():
                     conn.execute(text(f"ALTER TABLE soil_test_requests ADD COLUMN {c_name} {c_type}"))
             conn.commit()
 
-            # Ensure orders has payment_id column
+            # Ensure orders has payment_id and image_url columns
             res_orders = conn.execute(text("PRAGMA table_info(orders)")).fetchall()
             existing_order_cols = {row[1] for row in res_orders}
             if "payment_id" not in existing_order_cols:
                 conn.execute(text("ALTER TABLE orders ADD COLUMN payment_id TEXT DEFAULT ''"))
+                conn.commit()
+            if "image_url" not in existing_order_cols:
+                conn.execute(text("ALTER TABLE orders ADD COLUMN image_url TEXT DEFAULT ''"))
                 conn.commit()
     except Exception as ex:
         print(f"[DB migration note] {ex}")
@@ -95,87 +98,10 @@ def init_db():
                     status="Verified",
                     registered_at="2026-08-01"
                 ),
-                db_models.User(
-                    email="farmer@agro.com",
-                    name="Ramesh Gowda",
-                    password_hash=auth.hash_password("Farmer@123"),
-                    role="farmer",
-                    district="Bengaluru Urban",
-                    taluk="Bengaluru North",
-                    village="Jakkur",
-                    pincode="560064",
-                    phone="9845012345",
-                    status="Verified",
-                    registered_at="2026-08-15"
-                ),
-                db_models.User(
-                    email="patil@agro.com",
-                    name="Basavaraj Patil",
-                    password_hash=auth.hash_password("Farmer@123"),
-                    role="farmer",
-                    district="Belagavi",
-                    taluk="Athani",
-                    village="Hulagabal",
-                    pincode="591304",
-                    phone="9845023456",
-                    status="Pending",
-                    registered_at="2026-09-02"
-                ),
-                db_models.User(
-                    email="ningappa@agro.com",
-                    name="Ningappa Hegde",
-                    password_hash=auth.hash_password("Farmer@123"),
-                    role="farmer",
-                    district="Shivamogga",
-                    taluk="Sagar",
-                    village="Anandapura",
-                    pincode="577412",
-                    phone="9845034567",
-                    status="Verified",
-                    registered_at="2026-09-05"
-                ),
-                db_models.User(
-                    email="buyer@agro.com",
-                    name="Suresh Kumar (Mysuru Traders)",
-                    password_hash=auth.hash_password("Buyer@123"),
-                    role="buyer",
-                    district="Mysuru",
-                    taluk="Mysuru",
-                    village="Jayalakshmipuram",
-                    pincode="570012",
-                    phone="9845045678",
-                    status="Verified",
-                    registered_at="2026-08-20"
-                ),
-                db_models.User(
-                    email="trader@agro.com",
-                    name="Hubballi Wholesale APMC",
-                    password_hash=auth.hash_password("Buyer@123"),
-                    role="buyer",
-                    district="Dharwad",
-                    taluk="Hubballi Urban",
-                    village="APMC Yard",
-                    pincode="580025",
-                    phone="9845056789",
-                    status="Verified",
-                    registered_at="2026-09-01"
-                ),
-                db_models.User(
-                    email="retail@agro.com",
-                    name="Bangalore Fresh Mart",
-                    password_hash=auth.hash_password("Buyer@123"),
-                    role="buyer",
-                    district="Bengaluru Urban",
-                    taluk="Bengaluru South",
-                    village="Jayanagar",
-                    pincode="560041",
-                    phone="9845067890",
-                    status="Pending",
-                    registered_at="2026-09-08"
-                ),
             ]
             db.add_all(seed_users)
             db.commit()
+
 
         # Seed Items (Crops, Vegetables, Fruits)
         if db.query(db_models.Item).count() == 0:

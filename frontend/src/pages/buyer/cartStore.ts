@@ -6,6 +6,7 @@ export interface Listing {
   quantity_kg: number;
   price_per_kg: number;
   farmer_id: string;
+  image_url?: string;
 }
 
 export interface CartItem {

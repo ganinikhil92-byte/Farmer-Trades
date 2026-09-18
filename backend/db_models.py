@@ -85,6 +85,7 @@ class Order(Base):
     total_price: Mapped[float] = mapped_column(Float, nullable=False)
     status: Mapped[str] = mapped_column(String(50), default="Confirmed")
     payment_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    image_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[Optional[datetime]] = mapped_column(DateTime, default=datetime.utcnow)
 
     def to_dict(self):
@@ -97,6 +98,7 @@ class Order(Base):
             "total_price": self.total_price,
             "status": self.status,
             "payment_id": self.payment_id or "",
+            "image_url": self.image_url or "",
             "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S") if self.created_at else "",
         }
 

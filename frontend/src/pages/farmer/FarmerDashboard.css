@@ -1,0 +1,419 @@
+/* ==========================================================================
+   Agro Trades — Executive Farmer Agronomic Command Center
+   Bespoke Modern Agritech System
+   ========================================================================== */
+
+.farmer-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  width: 100%;
+}
+
+/* ── 1. Welcome & Greeting Bar ── */
+.farmer-hero-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 0.25rem;
+}
+
+.farmer-hero-text h1 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.farmer-hero-text p {
+  color: var(--color-text-secondary);
+  margin: 0.25rem 0 0;
+  font-size: 0.925rem;
+}
+
+.farmer-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  color: var(--color-primary-800);
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
+}
+
+/* ── 2. Executive Agronomic Briefing Banner ── */
+.farmer-ai-briefing-card {
+  background: linear-gradient(135deg, #091e13 0%, #123824 50%, #174a30 100%);
+  color: #ffffff;
+  border-radius: var(--radius-xl);
+  padding: 1.65rem 2rem;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 30px -8px rgba(9, 30, 19, 0.35);
+}
+
+.farmer-ai-briefing-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+.farmer-ai-briefing-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.farmer-ai-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #c5dccb;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.farmer-ai-briefing-body {
+  position: relative;
+  z-index: 1;
+}
+
+.farmer-ai-briefing-body h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.farmer-ai-briefing-body p {
+  color: #d1dfd6;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  max-width: 820px;
+  margin: 0 0 1.25rem 0;
+}
+
+.farmer-ai-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.farmer-ai-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #0d2818;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  transition: all var(--transition-fast);
+}
+
+.farmer-ai-btn-primary:hover {
+  background: #f2f7f3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.farmer-ai-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.farmer-ai-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ── 3. Linear-Grade Metrics Grid ── */
+.farmer-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.25rem;
+}
+
+.farmer-stat-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.farmer-stat-card:nth-child(1) { border-top: 3px solid #2d6a4f; }
+.farmer-stat-card:nth-child(2) { border-top: 3px solid #2563eb; }
+.farmer-stat-card:nth-child(3) { border-top: 3px solid #d97706; }
+.farmer-stat-card:nth-child(4) { border-top: 3px solid #7c3aed; }
+
+.farmer-stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.farmer-stat-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.farmer-stat-icon.green { background: #f0fdf4; color: #16a34a; }
+.farmer-stat-icon.blue { background: #eff6ff; color: #2563eb; }
+.farmer-stat-icon.amber { background: #fffbeb; color: #d97706; }
+.farmer-stat-icon.purple { background: #faf5ff; color: #7c3aed; }
+
+.farmer-stat-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.farmer-stat-tag.positive {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.farmer-stat-num {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.025em;
+}
+
+.farmer-stat-label {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+/* ── 4. Quick Actions Grid ── */
+.farmer-section-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0.5rem 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  letter-spacing: -0.015em;
+}
+
+.farmer-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.15rem;
+}
+
+.farmer-action-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  text-decoration: none;
+  color: var(--color-text);
+  box-shadow: var(--shadow-card);
+}
+
+.farmer-action-card:hover {
+  border-color: #94a3b8;
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.farmer-action-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #f2f7f3;
+  color: #163a2b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+  border: 1px solid rgba(13, 40, 24, 0.06);
+}
+
+.farmer-action-card:hover .farmer-action-icon {
+  background: #163a2b;
+  color: #ffffff;
+}
+
+.farmer-action-card h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-text);
+}
+
+.farmer-action-card p {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin: 0.25rem 0 0 0;
+  line-height: 1.45;
+}
+
+/* ── 5. Market Pulse & Privileges Split ── */
+.farmer-split-grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 1.25rem;
+}
+
+.farmer-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.35rem 1.5rem;
+  box-shadow: var(--shadow-card);
+}
+
+.farmer-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.farmer-panel-header h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.farmer-panel-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-primary-700);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+.farmer-panel-link:hover {
+  color: var(--color-primary-900);
+  text-decoration: underline;
+}
+
+.farmer-mandi-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.farmer-mandi-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  background: var(--color-surface-dim);
+  border: 1px solid rgba(13, 40, 24, 0.05);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  transition: background var(--transition-fast);
+}
+
+.farmer-mandi-item:hover {
+  background: #eef4f0;
+}
+
+.farmer-mandi-info strong {
+  display: block;
+  color: var(--color-text);
+  font-size: 0.875rem;
+}
+
+.farmer-mandi-info span {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.farmer-mandi-price {
+  text-align: right;
+  font-weight: 700;
+  color: var(--color-primary-800);
+  font-variant-numeric: tabular-nums;
+}
+
+.farmer-mandi-price span {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+@media (max-width: 840px) {
+  .farmer-split-grid {
+    grid-template-columns: 1fr;
+  }
+}

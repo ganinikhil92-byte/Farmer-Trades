@@ -13,59 +13,22 @@ import {
   Scale,
   IndianRupee
 } from 'lucide-react';
+import { resolveOrderImage, handleImageError } from '../../utils/producePhoto';
 
 interface OrderItem {
   id: number;
   listing_id: number;
   buyer_id: string;
   crop_name?: string;
+  image_url?: string;
   quantity: number;
   total_price: number;
-}
-
-const PHOTO_MAP: Record<string, string> = {
-  // Crops
-  'ragi (finger millet)': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop',
-  'paddy (rice)': 'https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?w=400&h=300&fit=crop',
-  'jowar (sorghum)': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop',
-  'maize': 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&h=300&fit=crop',
-  'sugarcane': 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=400&h=300&fit=crop',
-  'wheat': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop',
-  'rice': 'https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?w=400&h=300&fit=crop',
-  // Vegetables
-  'tomato': 'https://images.unsplash.com/photo-1546470427-0d4db154ceb8?w=400&h=300&fit=crop',
-  'potato': 'https://images.unsplash.com/photo-1518977676601-b53f82b8efd8?w=400&h=300&fit=crop',
-  'onion': 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=400&h=300&fit=crop',
-  'brinjal': 'https://images.unsplash.com/photo-1615484477778-ca3b77940c25?w=400&h=300&fit=crop',
-  'green chilli': 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=400&h=300&fit=crop',
-  'carrot': 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&h=300&fit=crop',
-  'cabbage': 'https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?w=400&h=300&fit=crop',
-  // Fruits
-  'mango (alphonso)': 'https://images.unsplash.com/photo-1553279768-865429fa0078?w=400&h=300&fit=crop',
-  'banana': 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=300&fit=crop',
-  'sapota (chikoo)': 'https://images.unsplash.com/photo-1618897996318-5a901fa6ca71?w=400&h=300&fit=crop',
-  'pomegranate': 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=400&h=300&fit=crop',
-  'jackfruit': 'https://images.unsplash.com/photo-1622597467836-f3285f2131b8?w=400&h=300&fit=crop',
-  'mango': 'https://images.unsplash.com/photo-1553279768-865429fa0078?w=400&h=300&fit=crop',
-  'grapes': 'https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=400&h=300&fit=crop',
-  'orange': 'https://images.unsplash.com/photo-1547514701-42782101795e?w=400&h=300&fit=crop',
-};
-
-const DEFAULT_PHOTO = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=300&fit=crop';
-
-function getPhoto(name?: string): string {
-  if (!name) return DEFAULT_PHOTO;
-  const lower = name.toLowerCase();
-  if (PHOTO_MAP[lower]) return PHOTO_MAP[lower];
-  for (const [key, url] of Object.entries(PHOTO_MAP)) {
-    if (lower.includes(key) || key.includes(lower)) return url;
-  }
-  return DEFAULT_PHOTO;
 }
 
 export default function MyOrders() {
   const { user } = useAuth();
   const [orders, setOrders] = useState<OrderItem[]>([]);
+  const [listingsMap, setListingsMap] = useState<Record<string | number, any>>({});
   const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -78,19 +41,23 @@ export default function MyOrders() {
     ])
       .then(([ordersRes, listingsRes]) => {
         if (ignore) return;
-        const listingMap: Record<number, string> = {};
+        const listingsById: Record<string | number, any> = {};
         (listingsRes.data || []).forEach((l: any) => {
-          if (l && l.id) listingMap[l.id] = l.crop_name;
+          if (l && l.id !== undefined) {
+            listingsById[l.id] = l;
+            listingsById[String(l.id)] = l;
+          }
         });
 
         const enriched = (ordersRes.data as OrderItem[]).map((o) => ({
           ...o,
-          crop_name: o.crop_name || listingMap[o.listing_id] || `Listing #${o.listing_id}`
+          crop_name: o.crop_name || listingsById[o.listing_id]?.crop_name || `Listing #${o.listing_id}`
         }));
 
         // Sort newest first
         enriched.sort((a, b) => b.id - a.id);
         setOrders(enriched);
+        setListingsMap(listingsById);
       })
       .catch(() => {
         if (!ignore) setOrders([]);
@@ -272,7 +239,7 @@ export default function MyOrders() {
             <tbody>
               {orders.map((o) => {
                 const itemName = o.crop_name || 'Produce Item';
-                const photoUrl = getPhoto(itemName);
+                const imgRes = resolveOrderImage(o, listingsMap);
                 const unitPrice = o.quantity > 0 ? (o.total_price / o.quantity).toFixed(0) : '-';
 
                 return (
@@ -295,21 +262,62 @@ export default function MyOrders() {
                     </td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <img
-                          src={photoUrl}
-                          alt={itemName}
-                          style={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: 8,
-                            objectFit: 'cover',
-                            border: '1px solid var(--color-border)',
-                            flexShrink: 0,
-                          }}
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = DEFAULT_PHOTO;
-                          }}
-                        />
+                        <div style={{ position: 'relative', width: 48, height: 48, flexShrink: 0 }}>
+                          <img
+                            src={imgRes.url}
+                            alt={itemName}
+                            style={{
+                              width: 48,
+                              height: 48,
+                              borderRadius: 8,
+                              objectFit: 'cover',
+                              border: '1px solid var(--color-border)',
+                              display: 'block',
+                            }}
+                            onError={handleImageError}
+                          />
+                          {imgRes.isSellerProvided ? (
+                            <span
+                              title="Seller-provided photo"
+                              style={{
+                                position: 'absolute',
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                background: 'rgba(22, 101, 52, 0.9)',
+                                color: '#fff',
+                                fontSize: '0.55rem',
+                                padding: '1px 2px',
+                                textAlign: 'center',
+                                borderBottomLeftRadius: 8,
+                                borderBottomRightRadius: 8,
+                                lineHeight: 1.1,
+                              }}
+                            >
+                              Photo
+                            </span>
+                          ) : (
+                            <span
+                              title="No photo uploaded"
+                              style={{
+                                position: 'absolute',
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                background: 'rgba(100, 116, 139, 0.85)',
+                                color: '#fff',
+                                fontSize: '0.5rem',
+                                padding: '1px 2px',
+                                textAlign: 'center',
+                                borderBottomLeftRadius: 8,
+                                borderBottomRightRadius: 8,
+                                lineHeight: 1.1,
+                              }}
+                            >
+                              No photo
+                            </span>
+                          )}
+                        </div>
                         <div>
                           <div style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--color-text)' }}>
                             {itemName}

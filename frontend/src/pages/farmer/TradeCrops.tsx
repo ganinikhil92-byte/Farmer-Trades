@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, FormEvent } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import api from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
-import { ArrowLeft, Upload, CheckCircle, Wheat, Salad, Apple } from 'lucide-react';
+import { ArrowLeft, Upload, CheckCircle, Wheat, Salad, Apple, Camera, AlertCircle } from 'lucide-react';
 
 type Category = 'crop' | 'vegetable' | 'fruit';
 
@@ -78,9 +79,19 @@ const CATEGORY_META: Record<
 
 export default function TradeCrops() {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const catParam = searchParams.get('category') as Category | null;
   const [draft] = useState<TradeDraft>(getStoredDraft);
 
-  const [category, setCategory] = useState<Category | null>(draft.category);
+  const [category, setCategory] = useState<Category | null>(
+    catParam && ['crop', 'vegetable', 'fruit'].includes(catParam) ? catParam : draft.category
+  );
+
+  useEffect(() => {
+    if (catParam && ['crop', 'vegetable', 'fruit'].includes(catParam)) {
+      setCategory(catParam);
+    }
+  }, [catParam]);
 
   // Form fields
   const [photo, setPhoto] = useState<File | null>(null);
@@ -91,7 +102,9 @@ export default function TradeCrops() {
   const [price, setPrice] = useState(draft.price);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
 
   // Auto-persist draft across page refreshes
   useEffect(() => {
@@ -126,16 +139,49 @@ export default function TradeCrops() {
     }
   }, [category, name, type, quantity, price, photoPreview]);
 
-  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0] ?? null;
-    setPhoto(file);
-    if (file) {
+  function handleFileSelected(file: File | null) {
+    setUploadError(null);
+    if (!file) {
+      setPhoto(null);
+      setPhotoPreview(null);
+      return;
+    }
+
+    // 1. File size check (5 MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError(`File size ${(file.size / (1024 * 1024)).toFixed(1)} MB exceeds the 5 MB limit. Please select a smaller photo.`);
+      return;
+    }
+
+    // 2. Format check (JPG, PNG, WEBP)
+    const validExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
+    const lowerName = file.name.toLowerCase();
+    const hasValidExt = validExtensions.some((ext) => lowerName.endsWith(ext));
+    const validMimes = ['image/jpeg', 'image/png', 'image/webp'];
+    const hasValidMime = validMimes.includes(file.type);
+
+    if (!hasValidExt && !hasValidMime) {
+      setUploadError('Unsupported format. Please select a genuine JPG, PNG, or WEBP image.');
+      return;
+    }
+
+    // 3. Client-side actual image decoding validation
+    const objectUrl = URL.createObjectURL(file);
+    const testImg = new Image();
+    testImg.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      setPhoto(file);
       const reader = new FileReader();
       reader.onload = (ev) => setPhotoPreview(ev.target?.result as string);
       reader.readAsDataURL(file);
-    } else {
+    };
+    testImg.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      setUploadError('Invalid image content. File could not be decoded as a valid photo.');
+      setPhoto(null);
       setPhotoPreview(null);
-    }
+    };
+    testImg.src = objectUrl;
   }
 
   function clearDraft() {
@@ -147,15 +193,19 @@ export default function TradeCrops() {
   function resetForm() {
     setPhoto(null);
     setPhotoPreview(null);
+    setUploadError(null);
     setName('');
     setType('');
     setQuantity('');
     setPrice('');
     clearDraft();
+    if (fileRef.current) fileRef.current.value = '';
+    if (cameraRef.current) cameraRef.current.value = '';
   }
 
   function handleBack() {
     setCategory(null);
+    setSearchParams({});
     resetForm();
     setSuccess(false);
   }
@@ -165,7 +215,33 @@ export default function TradeCrops() {
     if (!category) return;
     setLoading(true);
     setSuccess(false);
+    setUploadError(null);
+
     try {
+      let durableImageUrl: string | undefined = undefined;
+
+      // If a photo was selected, upload it durably to the backend first
+      if (photo) {
+        const formData = new FormData();
+        formData.append('file', photo);
+        try {
+          const uploadRes = await api.post('/upload/produce-photo', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          });
+          if (uploadRes.data?.image_url) {
+            durableImageUrl = uploadRes.data.image_url;
+          } else {
+            throw new Error('Upload did not return a valid image URL');
+          }
+        } catch (uploadErr: any) {
+          const detail = uploadErr.response?.data?.detail || 'Photo upload failed. Please verify the image and try again.';
+          setUploadError(detail);
+          setLoading(false);
+          // Retain form values; do not reset
+          return;
+        }
+      }
+
       await api.post('/listings', {
         category,
         crop_name: name,
@@ -173,12 +249,14 @@ export default function TradeCrops() {
         quantity_kg: parseFloat(quantity),
         price_per_kg: parseFloat(price),
         farmer_id: user?.email || 'unknown',
-        image_url: photoPreview || undefined,
+        image_url: durableImageUrl,
       });
+
       setSuccess(true);
       resetForm();
-    } catch {
-      alert('Failed to create listing. Please try again.');
+    } catch (createErr: any) {
+      const detail = createErr.response?.data?.detail || 'Failed to create listing. Please try again.';
+      setUploadError(detail);
     } finally {
       setLoading(false);
     }
@@ -291,60 +369,168 @@ export default function TradeCrops() {
           </div>
         )}
 
-        {/* ── Photo upload ── */}
-        <div className="form-group">
-          <label className="form-label">
-            Photo <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span>
-          </label>
+        {uploadError && (
           <div
-            onClick={() => fileRef.current?.click()}
             style={{
-              border: `2px dashed ${photo ? meta.color : '#cbd5e1'}`,
-              borderRadius: '0.875rem',
-              background: photo ? meta.bg : '#f8fafc',
-              minHeight: 180,
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
+              borderRadius: '0.75rem',
+              padding: '0.85rem 1rem',
+              color: '#b91c1c',
+              marginBottom: '1.25rem',
+              fontSize: '0.875rem',
               display: 'flex',
-              flexDirection: 'column',
               alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              overflow: 'hidden',
-              transition: 'all 200ms ease',
-              position: 'relative',
+              gap: '0.5rem',
             }}
           >
-            {photoPreview ? (
-              <img
-                src={photoPreview}
-                alt="Preview"
-                style={{ width: '100%', maxHeight: 240, objectFit: 'cover', borderRadius: '0.75rem' }}
-              />
-            ) : (
-              <>
-                <Upload size={32} style={{ color: '#94a3b8', marginBottom: 8 }} />
-                <span style={{ color: '#64748b', fontWeight: 600 }}>Click to upload photo</span>
-                <span style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: 4 }}>
-                  JPG, PNG, WEBP (max 5 MB)
-                </span>
-              </>
-            )}
+            <AlertCircle size={18} style={{ flexShrink: 0 }} />
+            <span>{uploadError}</span>
           </div>
+        )}
+
+        {/* ── Photo upload ── */}
+        <div className="form-group">
+          <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>
+              Seller Produce Photo <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span>
+            </span>
+            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>JPG, PNG, WEBP (max 5 MB)</span>
+          </label>
+
+          {photoPreview ? (
+            <div
+              style={{
+                border: `2px solid ${meta.color}`,
+                borderRadius: '0.875rem',
+                background: '#fff',
+                padding: '0.75rem',
+                position: 'relative',
+              }}
+            >
+              <div style={{ position: 'relative', borderRadius: '0.625rem', overflow: 'hidden' }}>
+                <img
+                  src={photoPreview}
+                  alt="Produce Preview"
+                  style={{ width: '100%', maxHeight: 240, objectFit: 'cover', display: 'block' }}
+                />
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '0.5rem',
+                    left: '0.5rem',
+                    background: 'rgba(22, 101, 52, 0.9)',
+                    color: '#fff',
+                    padding: '0.2rem 0.6rem',
+                    borderRadius: '0.35rem',
+                    fontSize: '0.7rem',
+                    fontWeight: 600,
+                    letterSpacing: '0.3px',
+                  }}
+                >
+                  Seller-provided photo preview
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => fileRef.current?.click()}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                >
+                  <Upload size={14} /> Upload Photo
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => cameraRef.current?.click()}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                >
+                  <Camera size={14} /> Take Photo
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPhoto(null);
+                    setPhotoPreview(null);
+                    if (fileRef.current) fileRef.current.value = '';
+                    if (cameraRef.current) cameraRef.current.value = '';
+                  }}
+                  style={{
+                    fontSize: '0.8rem',
+                    color: '#ef4444',
+                    background: 'none',
+                    border: '1px solid #fecaca',
+                    borderRadius: '0.375rem',
+                    padding: '0.3rem 0.65rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div
+              style={{
+                border: '2px dashed #cbd5e1',
+                borderRadius: '0.875rem',
+                background: '#f8fafc',
+                padding: '1.75rem 1.25rem',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.85rem',
+              }}
+            >
+              <div>
+                <p style={{ margin: '0 0 0.25rem', fontWeight: 600, color: '#334155' }}>
+                  Add a photo of your harvest
+                </p>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b' }}>
+                  Upload a photo from your device or take one with your camera
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => fileRef.current?.click()}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  <Upload size={15} /> Upload Photo
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={() => cameraRef.current?.click()}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  <Camera size={15} /> Take Photo
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Standard file picker */}
           <input
             ref={fileRef}
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp"
             style={{ display: 'none' }}
-            onChange={handlePhotoChange}
+            onChange={(e) => handleFileSelected(e.target.files?.[0] ?? null)}
           />
-          {photo && (
-            <button
-              type="button"
-              onClick={() => { setPhoto(null); setPhotoPreview(null); if (fileRef.current) fileRef.current.value = ''; }}
-              style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}
-            >
-              ✕ Remove photo
-            </button>
-          )}
+
+          {/* Mobile camera input with file picker fallback */}
+          <input
+            ref={cameraRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            capture="environment"
+            style={{ display: 'none' }}
+            onChange={(e) => handleFileSelected(e.target.files?.[0] ?? null)}
+          />
         </div>
 
         {/* ── Name ── */}

@@ -440,114 +440,161 @@ export default function SoilTest() {
   return (
     <div className="animate-fadeIn">
       {/* Header */}
-      <div className="page-header">
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#ecfdf5', color: '#059669', padding: '0.25rem 0.75rem', borderRadius: 999, fontSize: '0.82rem', fontWeight: 600, marginBottom: '0.5rem' }}>
-          <FlaskConical size={14} /> Laboratory Testing & Reports Workflow
+      <div className="page-header" style={{ marginBottom: '1.5rem' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', background: '#eaf4ee', color: '#163a2b', padding: '0.25rem 0.75rem', borderRadius: 9999, fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.65rem', border: '1px solid #c5dccb' }}>
+          <FlaskConical size={14} style={{ color: '#2d6a4f' }} />
+          <span>Accredited Agronomic Laboratory Testing</span>
         </div>
-        <h1>Soil Testing & Reports</h1>
-        <p>
-          Request physical soil sample testing by a qualified laboratory or view certified soil test reports. Physical soil samples must be collected and analyzed by an accredited soil testing laboratory to test soil nutrient levels.
+        <h1 style={{ fontSize: '1.85rem', fontWeight: 700, letterSpacing: '-0.025em', color: '#0f172a' }}>
+          Soil Testing & Certified Reports
+        </h1>
+        <p style={{ color: '#475569', fontSize: '0.95rem', maxWidth: '820px', margin: '0.35rem 0 0', lineHeight: 1.5 }}>
+          Book physical core sample testing at certified agricultural laboratories across Karnataka. Analyze 12 macro and micro nutrient parameters to compute precision fertilizer dosages.
         </p>
       </div>
 
-      {/* Workflow Explainer Banner */}
+      {/* Protocol Stepper Banner */}
       <div
         className="card"
         style={{
-          background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)',
-          border: '1px solid #bbf7d0',
+          background: 'linear-gradient(180deg, #f7faf8 0%, #ffffff 100%)',
+          border: '1px solid #dce5dd',
           marginBottom: '1.75rem',
-          padding: '1.25rem 1.5rem',
+          padding: '1.35rem 1.65rem',
+          boxShadow: 'var(--shadow-card)',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
-          <h3 style={{ margin: 0, color: '#166534', fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <PhoneCall size={18} /> Soil Testing & Report Process
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+          <h3 style={{ margin: 0, color: '#163a2b', fontSize: '1rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Layers size={17} style={{ color: '#2d6a4f' }} />
+            Official ICAR / UAS Field-to-Lab Testing Protocol
           </h3>
-          <span style={{ fontSize: '0.75rem', color: '#64748b', background: '#ffffff', padding: '0.2rem 0.5rem', borderRadius: 4, border: '1px solid #e2e8f0' }}>
-            Demonstration Workflow
+          <span className="badge badge-green" style={{ fontSize: '0.74rem' }}>
+            <CheckCircle2 size={12} /> Standard 5-Step Process
           </span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
-          <div style={{ background: '#ffffff', padding: '0.75rem 0.85rem', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-            <div style={{ fontWeight: 700, color: '#15803d', fontSize: '0.85rem', marginBottom: '0.2rem' }}>
-              1. Request Submitted
+        {/* Stepper Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '0.85rem' }}>
+          <div style={{ background: '#ffffff', padding: '0.85rem 1rem', borderRadius: 8, border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.03)', position: 'relative' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.25rem' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, borderRadius: '50%', background: '#2d6a4f', color: '#ffffff', fontSize: '0.72rem', fontWeight: 700 }}>1</span>
+              <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>Request Field Test</span>
             </div>
-            <p style={{ margin: 0, fontSize: '0.78rem', color: '#475569' }}>
-              Enter your field location, plot name, area, and preferred date.
+            <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748b', lineHeight: 1.4 }}>
+              Specify plot survey number, acres, and preferred collection date.
             </p>
           </div>
 
-          <div style={{ background: '#ffffff', padding: '0.75rem 0.85rem', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-            <div style={{ fontWeight: 700, color: '#15803d', fontSize: '0.85rem', marginBottom: '0.2rem' }}>
-              2. Appointment Scheduled
+          <div style={{ background: '#ffffff', padding: '0.85rem 1rem', borderRadius: 8, border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.25rem' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, borderRadius: '50%', background: '#2d6a4f', color: '#ffffff', fontSize: '0.72rem', fontWeight: 700 }}>2</span>
+              <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>Field Appointment</span>
             </div>
-            <p style={{ margin: 0, fontSize: '0.78rem', color: '#475569' }}>
-              Testing provider reviews availability and confirms the appointment date.
+            <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748b', lineHeight: 1.4 }}>
+              Lab technician confirms slot and schedules field visit.
             </p>
           </div>
 
-          <div style={{ background: '#ffffff', padding: '0.75rem 0.85rem', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-            <div style={{ fontWeight: 700, color: '#15803d', fontSize: '0.85rem', marginBottom: '0.2rem' }}>
-              3. Sample Collected
+          <div style={{ background: '#ffffff', padding: '0.85rem 1rem', borderRadius: 8, border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.25rem' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, borderRadius: '50%', background: '#2d6a4f', color: '#ffffff', fontSize: '0.72rem', fontWeight: 700 }}>3</span>
+              <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>Core Sampling</span>
             </div>
-            <p style={{ margin: 0, fontSize: '0.78rem', color: '#475569' }}>
-              Core field samples collected and labeled with unique sample ID.
+            <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748b', lineHeight: 1.4 }}>
+              Auger core samples collected in zigzag grid with sample ID.
             </p>
           </div>
 
-          <div style={{ background: '#ffffff', padding: '0.75rem 0.85rem', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-            <div style={{ fontWeight: 700, color: '#15803d', fontSize: '0.85rem', marginBottom: '0.2rem' }}>
-              4. Testing in Progress
+          <div style={{ background: '#ffffff', padding: '0.85rem 1rem', borderRadius: 8, border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.25rem' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, borderRadius: '50%', background: '#2d6a4f', color: '#ffffff', fontSize: '0.72rem', fontWeight: 700 }}>4</span>
+              <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>Spectrometry Assay</span>
             </div>
-            <p style={{ margin: 0, fontSize: '0.78rem', color: '#475569' }}>
-              Soil laboratory analyzes macro and micro nutrient parameters.
+            <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748b', lineHeight: 1.4 }}>
+              Accredited lab assays pH, EC, organic carbon, and 12 nutrients.
             </p>
           </div>
 
-          <div style={{ background: '#ffffff', padding: '0.75rem 0.85rem', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-            <div style={{ fontWeight: 700, color: '#15803d', fontSize: '0.85rem', marginBottom: '0.2rem' }}>
-              5. Report Available
+          <div style={{ background: '#ffffff', padding: '0.85rem 1rem', borderRadius: 8, border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.25rem' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, borderRadius: '50%', background: '#2d6a4f', color: '#ffffff', fontSize: '0.72rem', fontWeight: 700 }}>5</span>
+              <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>Certified Report</span>
             </div>
-            <p style={{ margin: 0, fontSize: '0.78rem', color: '#475569' }}>
-              Certified report with 12 nutrient parameters available to view & download.
+            <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748b', lineHeight: 1.4 }}>
+              Verified digital lab report generated with dosage recommendations.
             </p>
           </div>
         </div>
 
-        <div style={{ marginTop: '0.75rem', fontSize: '0.76rem', color: '#475569', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-          <Info size={14} style={{ color: '#059669', flexShrink: 0 }} />
+        <div style={{ marginTop: '0.85rem', fontSize: '0.75rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <Info size={14} style={{ color: '#2d6a4f', flexShrink: 0 }} />
           <span>
-            <strong>Note on Weather Information:</strong> Meteorological parameters (such as air temperature, humidity, and rainfall) are tracked separately via weather forecast modules and are not soil laboratory measurements. Doorstep testing visits are subject to testing provider confirmation.
+            Testing is conducted per Soil Health Card guidelines. Doorstep sample collection visits are confirmed directly by authorized testing lab partners.
           </span>
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.5rem', flexWrap: 'wrap' }}>
+      {/* Segmented Control Navigation Tabs */}
+      <div style={{ display: 'inline-flex', background: '#eaf0ec', padding: '0.25rem', borderRadius: 10, marginBottom: '1.75rem', gap: '0.25rem', border: '1px solid #dbe6dd' }}>
         <button
-          className={`btn ${activeTab === 'request' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
           onClick={() => { setActiveTab('request'); setErrorMsg(''); setSuccessMsg(''); }}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            padding: '0.45rem 1rem',
+            borderRadius: 7,
+            fontSize: '0.84rem',
+            fontWeight: activeTab === 'request' ? 600 : 500,
+            background: activeTab === 'request' ? '#ffffff' : 'transparent',
+            color: activeTab === 'request' ? '#0d2818' : '#475569',
+            boxShadow: activeTab === 'request' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+            transition: 'all 150ms ease',
+          }}
         >
-          <ClipboardList size={15} /> Request Soil Testing
+          <ClipboardList size={15} style={{ color: activeTab === 'request' ? '#2d6a4f' : 'inherit' }} />
+          <span>Request Soil Testing</span>
         </button>
 
         <button
-          className={`btn ${activeTab === 'upload' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
           onClick={() => { setActiveTab('upload'); setErrorMsg(''); setSuccessMsg(''); }}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            padding: '0.45rem 1rem',
+            borderRadius: 7,
+            fontSize: '0.84rem',
+            fontWeight: activeTab === 'upload' ? 600 : 500,
+            background: activeTab === 'upload' ? '#ffffff' : 'transparent',
+            color: activeTab === 'upload' ? '#0d2818' : '#475569',
+            boxShadow: activeTab === 'upload' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+            transition: 'all 150ms ease',
+          }}
         >
-          <UploadCloud size={15} /> Upload Existing Soil Report
+          <UploadCloud size={15} style={{ color: activeTab === 'upload' ? '#2d6a4f' : 'inherit' }} />
+          <span>Upload Existing Report</span>
         </button>
 
         <button
-          className={`btn ${activeTab === 'history' ? 'btn-primary' : 'btn-secondary'} btn-sm`}
           onClick={() => { setActiveTab('history'); setErrorMsg(''); setSuccessMsg(''); }}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.45rem',
+            padding: '0.45rem 1rem',
+            borderRadius: 7,
+            fontSize: '0.84rem',
+            fontWeight: activeTab === 'history' ? 600 : 500,
+            background: activeTab === 'history' ? '#ffffff' : 'transparent',
+            color: activeTab === 'history' ? '#0d2818' : '#475569',
+            boxShadow: activeTab === 'history' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+            transition: 'all 150ms ease',
+          }}
         >
-          <FileText size={15} /> My Requests & Reports ({requests.length})
+          <FileText size={15} style={{ color: activeTab === 'history' ? '#2d6a4f' : 'inherit' }} />
+          <span>My Requests & Reports ({requests.length})</span>
         </button>
       </div>
 

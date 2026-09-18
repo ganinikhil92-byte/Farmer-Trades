@@ -1,443 +1,692 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
-import { ShoppingCart, Search, ArrowLeft, Wheat, Salad, Apple, Package, Plus, Minus } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { Listing, getCart } from './cartStore';
+import { resolveProduceImage, handleImageError } from '../../utils/producePhoto';
+import {
+  Sprout,
+  Search,
+  ShoppingCart,
+  ClipboardList,
+  User,
+  LogOut,
+  ChevronDown,
+  X,
+  MapPin,
+  Package,
+  RotateCcw,
+  Plus,
+  Minus,
+  Check,
+  Wheat,
+  Salad,
+  Apple,
+  Layers,
+  AlertCircle,
+  WifiOff,
+  RefreshCw
+} from 'lucide-react';
+import './BuyCrops.css';
+
+const CACHE_LISTINGS_KEY = 'agro_cached_produce_listings';
+const CACHE_FARMERS_KEY = 'agro_cached_farmers_map';
+
 export type { Listing };
 
-type Category = 'crop' | 'vegetable' | 'fruit';
-
-const CATEGORY_META: Record<Category, { label: string; plural: string; icon: React.ReactNode; color: string; bg: string; accent: string }> = {
-  crop: {
-    label: 'Crop',
-    plural: 'Crops',
-    icon: <Wheat size={40} />,
-    color: '#ca8a04',
-    bg: 'linear-gradient(135deg, #fefce8, #fef9c3)',
-    accent: '#fef08a',
-  },
-  vegetable: {
-    label: 'Vegetable',
-    plural: 'Vegetables',
-    icon: <Salad size={40} />,
-    color: '#16a34a',
-    bg: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
-    accent: '#bbf7d0',
-  },
-  fruit: {
-    label: 'Fruit',
-    plural: 'Fruits',
-    icon: <Apple size={40} />,
-    color: '#dc2626',
-    bg: 'linear-gradient(135deg, #fff1f2, #ffe4e6)',
-    accent: '#fecdd3',
-  },
-};
-
-/* Realistic photo URLs from Unsplash for each produce item */
-const PHOTO_MAP: Record<string, string> = {
-  // Crops
-  'ragi (finger millet)': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop',
-  'paddy (rice)': 'https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?w=400&h=300&fit=crop',
-  'jowar (sorghum)': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop',
-  'maize': 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&h=300&fit=crop',
-  'sugarcane': 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=400&h=300&fit=crop',
-  'wheat': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop',
-  'rice': 'https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?w=400&h=300&fit=crop',
-  // Vegetables
-  'tomato': 'https://images.unsplash.com/photo-1546470427-0d4db154ceb8?w=400&h=300&fit=crop',
-  'potato': 'https://images.unsplash.com/photo-1518977676601-b53f82ber6f7?w=400&h=300&fit=crop',
-  'onion': 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=400&h=300&fit=crop',
-  'brinjal': 'https://images.unsplash.com/photo-1615484477778-ca3b77940c25?w=400&h=300&fit=crop',
-  'green chilli': 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=400&h=300&fit=crop',
-  'ladies finder': 'https://images.unsplash.com/photo-1425543103986-22abb7d7e8d2?w=400&h=300&fit=crop',
-  'carrot': 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&h=300&fit=crop',
-  'cabbage': 'https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?w=400&h=300&fit=crop',
-  // Fruits
-  'mango (alphonso)': 'https://images.unsplash.com/photo-1553279768-865429fa0078?w=400&h=300&fit=crop',
-  'banana': 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=300&fit=crop',
-  'sapota (chikoo)': 'https://images.unsplash.com/photo-1618897996318-5a901fa6ca71?w=400&h=300&fit=crop',
-  'pomegranate': 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=400&h=300&fit=crop',
-  'jackfruit': 'https://images.unsplash.com/photo-1622597467836-f3285f2131b8?w=400&h=300&fit=crop',
-  'mango': 'https://images.unsplash.com/photo-1553279768-865429fa0078?w=400&h=300&fit=crop',
-  'grapes': 'https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=400&h=300&fit=crop',
-  'orange': 'https://images.unsplash.com/photo-1547514701-42782101795e?w=400&h=300&fit=crop',
-};
-
-/* Fallback photos by category */
-const FALLBACK_PHOTOS: Record<string, string> = {
-  crop: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=300&fit=crop',
-  vegetable: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&h=300&fit=crop',
-  fruit: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=400&h=300&fit=crop',
-};
-
-function getPhoto(name: string, category: string): string {
-  const lower = name.toLowerCase();
-  // Exact match first
-  if (PHOTO_MAP[lower]) return PHOTO_MAP[lower];
-  // Partial match
-  for (const [key, url] of Object.entries(PHOTO_MAP)) {
-    if (lower.includes(key) || key.includes(lower)) return url;
-  }
-  return FALLBACK_PHOTOS[category] || FALLBACK_PHOTOS.crop;
+export interface ProduceListing extends Listing {
+  district?: string;
 }
 
+type ProduceCategory = 'all' | 'crop' | 'vegetable' | 'fruit';
+
+interface FarmerMeta {
+  name: string;
+  district?: string;
+  taluk?: string;
+  village?: string;
+}
+
+const CATEGORIES: { id: ProduceCategory; label: string; icon: React.ReactNode }[] = [
+  { id: 'all', label: 'All Produce', icon: <Layers size={16} /> },
+  { id: 'crop', label: 'Crops', icon: <Wheat size={16} /> },
+  { id: 'vegetable', label: 'Vegetables', icon: <Salad size={16} /> },
+  { id: 'fruit', label: 'Fruits', icon: <Apple size={16} /> },
+];
+
 export default function BuyCrops() {
-  const [category, setCategory] = useState<Category | null>(null);
-  const [listings, setListings] = useState<Listing[]>([]);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  // State
+  const [listings, setListings] = useState<ProduceListing[]>([]);
+  const [farmersMap, setFarmersMap] = useState<Record<string, FarmerMeta>>({});
+  const [selectedCategory, setSelectedCategory] = useState<ProduceCategory>('all');
   const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [addedId, setAddedId] = useState<string | number | null>(null);
+  const [selectedDistrict, setSelectedDistrict] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Cart & Quantities
   const [quantities, setQuantities] = useState<Record<string | number, number>>({});
+  const [addedId, setAddedId] = useState<string | number | null>(null);
+  const [cartCount, setCartCount] = useState<number>(() => getCart().length);
+
+  // Account Menu dropdown
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
+
+  const [isUsingCache, setIsUsingCache] = useState(false);
+  const [retrying, setRetrying] = useState(false);
+
+  // Fetch produce listings and farmer metadata with cache fallback and auto-retry
+  const fetchData = async (isManualRetry = false, attempt = 1) => {
+    if (isManualRetry || attempt === 1) {
+      setLoading(true);
+      setError(null);
+    }
+    if (isManualRetry) {
+      setRetrying(true);
+    }
+    try {
+      const [listingsRes, farmersRes] = await Promise.all([
+        api.get('/listings'),
+        api.get('/users?role=farmer').catch(() => ({ data: [] })),
+      ]);
+
+      // Farmers lookup map by email
+      const fMap: Record<string, FarmerMeta> = {};
+      if (Array.isArray(farmersRes.data)) {
+        farmersRes.data.forEach((f: any) => {
+          if (f && f.email) {
+            fMap[f.email] = {
+              name: f.name || f.email,
+              district: f.district || undefined,
+              taluk: f.taluk || undefined,
+              village: f.village || undefined,
+            };
+          }
+        });
+      }
+      setFarmersMap(fMap);
+
+      // Deduplicate listings by stable id
+      const rawListings: ProduceListing[] = Array.isArray(listingsRes.data) ? listingsRes.data : [];
+      const seenIds = new Set<string | number>();
+      const uniqueListings: ProduceListing[] = [];
+      const initialQty: Record<string | number, number> = {};
+
+      rawListings.forEach((l) => {
+        if (l && l.id != null && !seenIds.has(l.id)) {
+          seenIds.add(l.id);
+          uniqueListings.push(l);
+          const maxAvail = Number(l.quantity_kg) || 0;
+          initialQty[l.id] = maxAvail > 0 ? Math.min(5, Math.max(1, maxAvail)) : 1;
+        }
+      });
+
+      setListings(uniqueListings);
+      setQuantities(initialQty);
+      setCartCount(getCart().length);
+      setIsUsingCache(false);
+
+      // Cache fresh data for offline/fallback access
+      try {
+        localStorage.setItem(CACHE_LISTINGS_KEY, JSON.stringify(uniqueListings));
+        localStorage.setItem(CACHE_FARMERS_KEY, JSON.stringify(fMap));
+      } catch (storageErr) {
+        // Ignore localStorage quota or disabled errors
+      }
+    } catch (err: any) {
+      console.warn(`Marketplace fetch attempt ${attempt} failed:`, err);
+      // Auto-retry once after 1.5s if initial attempt failed
+      if (attempt === 1 && !isManualRetry) {
+        setTimeout(() => {
+          fetchData(false, 2);
+        }, 1500);
+        return;
+      }
+
+      // Check for cached listings as resilient fallback
+      try {
+        const cachedListingsStr = localStorage.getItem(CACHE_LISTINGS_KEY);
+        const cachedFarmersStr = localStorage.getItem(CACHE_FARMERS_KEY);
+        if (cachedListingsStr) {
+          const cachedListings: ProduceListing[] = JSON.parse(cachedListingsStr);
+          if (Array.isArray(cachedListings) && cachedListings.length > 0) {
+            const initialQty: Record<string | number, number> = {};
+            cachedListings.forEach((l) => {
+              if (l && l.id != null) {
+                const maxAvail = Number(l.quantity_kg) || 0;
+                initialQty[l.id] = maxAvail > 0 ? Math.min(5, Math.max(1, maxAvail)) : 1;
+              }
+            });
+            setListings(cachedListings);
+            setQuantities(initialQty);
+            if (cachedFarmersStr) {
+              setFarmersMap(JSON.parse(cachedFarmersStr));
+            }
+            setIsUsingCache(true);
+            setError(null);
+            setLoading(false);
+            setRetrying(false);
+            return;
+          }
+        }
+      } catch (cacheErr) {
+        console.error('Failed reading marketplace cache:', cacheErr);
+      }
+
+      setError(
+        'Unable to load produce listings. Please ensure the backend server is running on port 8000 and check your connection.'
+      );
+    } finally {
+      setLoading(false);
+      setRetrying(false);
+    }
+  };
 
   useEffect(() => {
-    if (!category) return;
-    let ignore = false;
-    api.get(`/listings?category=${category}`)
-      .then((res) => {
-        if (ignore) return;
-        // Deduplicate by crop_name
-        const seen = new Set<string>();
-        const unique = (res.data as Listing[]).filter((l) => {
-          if (seen.has(l.crop_name)) return false;
-          seen.add(l.crop_name);
-          return true;
-        });
-        setListings(unique);
-        // Initialize quantities to 5 kg each
-        const initQty: Record<string | number, number> = {};
-        unique.forEach((l) => { initQty[l.id] = 5; });
-        setQuantities(initQty);
-      })
-      .catch(() => {
-        if (!ignore) setListings([]);
-      })
-      .finally(() => {
-        if (!ignore) setLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, [category]);
+    fetchData();
+  }, []);
 
-  const filtered = listings.filter(
-    (l) => l.crop_name.toLowerCase().includes(search.toLowerCase()) && l.quantity_kg > 0
-  );
+  // Sync cart count with external changes
+  useEffect(() => {
+    setCartCount(getCart().length);
+  }, []);
+
+  // Account menu outside-click & keyboard dismissal
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(e.target as Node)) {
+        setAccountOpen(false);
+      }
+    }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setAccountOpen(false);
+      }
+    }
+    if (accountOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [accountOpen]);
+
+  // Derived available districts from actual listings
+  const availableDistricts = useMemo(() => {
+    const districts = new Set<string>();
+    listings.forEach((l) => {
+      const d = l.district || farmersMap[l.farmer_id]?.district;
+      if (d && typeof d === 'string' && d.trim()) {
+        districts.add(d.trim());
+      }
+    });
+    return Array.from(districts).sort();
+  }, [listings, farmersMap]);
+
+  // Filtered listings
+  const filteredListings = useMemo(() => {
+    return listings.filter((l) => {
+      if (!l) return false;
+      // Must be in stock
+      if (Number(l.quantity_kg) <= 0) return false;
+
+      // Category filter
+      if (selectedCategory !== 'all' && l.category !== selectedCategory) {
+        return false;
+      }
+
+      // Search query filter (crop_name, crop_type, or farmer name)
+      if (search.trim()) {
+        const query = search.trim().toLowerCase();
+        const nameMatch = (l.crop_name || '').toLowerCase().includes(query);
+        const typeMatch = (l.crop_type || '').toLowerCase().includes(query);
+        const farmerName = (farmersMap[l.farmer_id]?.name || l.farmer_id || '').toLowerCase();
+        const farmerMatch = farmerName.includes(query);
+        if (!nameMatch && !typeMatch && !farmerMatch) return false;
+      }
+
+      // District filter
+      if (selectedDistrict !== 'all') {
+        const d = (l.district || farmersMap[l.farmer_id]?.district || '').trim().toLowerCase();
+        if (d !== selectedDistrict.toLowerCase()) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [listings, selectedCategory, search, selectedDistrict, farmersMap]);
+
+  const hasActiveFilters = selectedCategory !== 'all' || search.trim() !== '' || selectedDistrict !== 'all';
+
+  function handleClearFilters() {
+    setSelectedCategory('all');
+    setSearch('');
+    setSelectedDistrict('all');
+  }
 
   function changeQty(id: string | number, delta: number, maxKg: number) {
     setQuantities((prev) => {
-      const current = prev[id] || 5;
-      const next = Math.max(1, Math.min(maxKg, current + delta));
+      const current = prev[id] || (maxKg > 0 ? Math.min(5, maxKg) : 1);
+      const step = 5;
+      let next: number;
+      if (delta > 0) {
+        // Increment by step (5) or up to maxKg
+        next = Math.min(maxKg, current + (current % step === 0 ? step : step - (current % step)));
+        if (next === current && current < maxKg) next = maxKg;
+      } else {
+        // Decrement by step (5) down to 1
+        next = Math.max(1, current - (current % step === 0 ? step : current % step));
+      }
       return { ...prev, [id]: next };
     });
   }
 
   function addToCart(listing: Listing) {
-    const qty = quantities[listing.id] || 5;
+    const qty = quantities[listing.id] || (listing.quantity_kg > 0 ? Math.min(5, listing.quantity_kg) : 1);
     const cart = getCart();
     const existing = cart.find((c) => c.listing.id === listing.id);
     if (existing) {
-      existing.qty += qty;
+      existing.qty = Math.min(listing.quantity_kg, existing.qty + qty);
     } else {
       cart.push({ listing, qty });
     }
+    setCartCount(cart.length);
     setAddedId(listing.id);
     setTimeout(() => setAddedId(null), 1500);
   }
 
-  function handleBack() {
-    setCategory(null);
-    setSearch('');
-    setListings([]);
-    setQuantities({});
-  }
+  return (
+    <div className="agro-marketplace">
+      {/* ── 1. Compact Marketplace Header ── */}
+      <header className="agro-market-header" role="banner">
+        {/* Brand identity */}
+        <Link to="/buyer/buy" className="agro-market-brand" title="Agro Trades Marketplace">
+          <div className="agro-market-brand-icon">
+            <Sprout size={20} />
+          </div>
+          <div className="agro-market-brand-text">
+            <h1>Agro Trades</h1>
+            <span>Direct Marketplace</span>
+          </div>
+        </Link>
 
-  /* ── Category Selection Screen ── */
-  if (!category) {
-    return (
-      <div>
-        <div className="page-header">
-          <h1>Buy</h1>
-          <p>Select a category to browse available crops, vegetables, and fruits</p>
+        {/* Prominent Search bar */}
+        <div className="agro-market-search" role="search">
+          <Search size={18} className="agro-market-search-icon" aria-hidden="true" />
+          <input
+            type="text"
+            className="agro-market-search-input"
+            placeholder="Search crops, vegetables and fruits"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search crops, vegetables and fruits"
+          />
+          {search && (
+            <button
+              type="button"
+              className="agro-market-search-clear"
+              onClick={() => setSearch('')}
+              title="Clear search"
+              aria-label="Clear search input"
+            >
+              <X size={15} />
+            </button>
+          )}
         </div>
 
-        <div
-          className="stagger"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '1.5rem',
-            maxWidth: 820,
-          }}
-        >
-          {(Object.entries(CATEGORY_META) as [Category, typeof CATEGORY_META[Category]][]).map(
-            ([key, meta]) => (
-              <button
-                key={key}
-                onClick={() => {
-                  setLoading(true);
-                  setCategory(key);
-                }}
-                style={{
-                  background: meta.bg,
-                  border: `2px solid ${meta.accent}`,
-                  borderRadius: '1rem',
-                  padding: '2.5rem 1.5rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '1rem',
-                  boxShadow: '0 4px 20px rgb(0 0 0 / 0.06)',
-                  transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)',
-                  animation: 'fadeIn 0.5s ease-out both',
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-6px)';
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 12px 32px rgb(0 0 0 / 0.12)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 20px rgb(0 0 0 / 0.06)';
-                }}
-              >
-                <span style={{ color: meta.color }}>{meta.icon}</span>
-                <span style={{ fontSize: '1.35rem', fontWeight: 700, color: meta.color }}>
-                  {meta.plural}
-                </span>
-                <span style={{ fontSize: '0.85rem', color: '#64748b', textAlign: 'center' }}>
-                  Browse available {meta.plural.toLowerCase()}
-                </span>
-              </button>
-            )
+        {/* Shopping Actions: My Orders, Cart, Account */}
+        <div className="agro-market-actions">
+          <Link to="/buyer/orders" className="agro-market-action-link" title="View my orders">
+            <ClipboardList size={18} aria-hidden="true" />
+            <span>My Orders</span>
+          </Link>
+
+          <Link to="/buyer/cart" className="agro-market-action-link" title="View shopping cart">
+            <ShoppingCart size={18} aria-hidden="true" />
+            <span>Cart</span>
+            {cartCount > 0 && (
+              <span className="agro-market-cart-badge" aria-label={`${cartCount} items in cart`}>
+                {cartCount}
+              </span>
+            )}
+          </Link>
+
+          {/* Account Menu */}
+          <div className="agro-market-account-wrap" ref={accountMenuRef}>
+            <button
+              type="button"
+              className="agro-market-account-btn"
+              onClick={() => setAccountOpen((prev) => !prev)}
+              aria-haspopup="true"
+              aria-expanded={accountOpen}
+              aria-label="Account menu"
+            >
+              <div className="agro-market-avatar">
+                {user?.name ? user.name.charAt(0).toUpperCase() : 'B'}
+              </div>
+              <span style={{ maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {user?.name ? user.name.split(' ')[0] : 'Account'}
+              </span>
+              <ChevronDown size={14} style={{ transform: accountOpen ? 'rotate(180deg)' : 'none', transition: 'transform 180ms ease' }} />
+            </button>
+
+            {accountOpen && (
+              <div className="agro-market-account-menu" role="menu">
+                <div className="agro-market-menu-userinfo">
+                  <div className="agro-market-menu-name">{user?.name || 'Buyer User'}</div>
+                  <div className="agro-market-menu-email">{user?.email || ''}</div>
+                </div>
+
+                <Link
+                  to="/buyer/profile"
+                  className="agro-market-menu-item"
+                  role="menuitem"
+                  onClick={() => setAccountOpen(false)}
+                >
+                  <User size={15} />
+                  <span>Customer Profile</span>
+                </Link>
+
+                <button
+                  type="button"
+                  className="agro-market-menu-item logout"
+                  role="menuitem"
+                  onClick={() => {
+                    setAccountOpen(false);
+                    logout();
+                  }}
+                >
+                  <LogOut size={15} />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* ── 2. Category Navigation Tabs ── */}
+      <nav className="agro-market-categories" aria-label="Produce Categories">
+        {CATEGORIES.map((cat) => {
+          const isActive = selectedCategory === cat.id;
+          return (
+            <button
+              key={cat.id}
+              type="button"
+              className={`agro-market-cat-tab ${isActive ? 'active' : ''}`}
+              onClick={() => setSelectedCategory(cat.id)}
+              aria-pressed={isActive}
+            >
+              {cat.icon}
+              <span>{cat.label}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Offline / Cached produce listings notice banner */}
+      {isUsingCache && (
+        <div className="agro-market-cache-banner" role="status">
+          <div className="agro-market-cache-banner-content">
+            <WifiOff size={16} />
+            <span>Showing cached produce catalog. Live server connection could not be established.</span>
+          </div>
+          <button
+            type="button"
+            className="agro-market-cache-reconnect-btn"
+            onClick={() => fetchData(true)}
+            disabled={retrying}
+          >
+            <RefreshCw size={12} className={retrying ? 'animate-spin' : ''} />
+            <span>{retrying ? 'Reconnecting...' : 'Reconnect'}</span>
+          </button>
+        </div>
+      )}
+
+      {/* ── 3. Filters & Results Bar ── */}
+      <div className="agro-market-toolbar">
+        <div className="agro-market-result-count">
+          Showing <strong>{filteredListings.length}</strong> of <strong>{listings.length}</strong> produce items
+        </div>
+
+        <div className="agro-market-filter-controls">
+          {/* District Filter Dropdown */}
+          <div className="agro-market-district-wrap">
+            <MapPin size={15} className="agro-market-district-icon" aria-hidden="true" />
+            <select
+              className="agro-market-district-select"
+              value={selectedDistrict}
+              onChange={(e) => setSelectedDistrict(e.target.value)}
+              aria-label="Filter by district"
+            >
+              <option value="all">All Districts {availableDistricts.length > 0 ? `(${availableDistricts.length})` : ''}</option>
+              {availableDistricts.map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Clear Filters Button */}
+          {hasActiveFilters && (
+            <button
+              type="button"
+              className="agro-market-clear-btn"
+              onClick={handleClearFilters}
+              title="Reset all search, category, and district filters"
+            >
+              <RotateCcw size={13} />
+              <span>Clear filters</span>
+            </button>
           )}
         </div>
       </div>
-    );
-  }
 
-  /* ── Listings Grid Screen ── */
-  const meta = CATEGORY_META[category];
-
-  return (
-    <div className="animate-fadeIn">
-      {/* Back + Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-        <button onClick={handleBack} className="btn btn-secondary btn-sm" style={{ gap: '0.4rem' }}>
-          <ArrowLeft size={16} /> Back
-        </button>
-        <div>
-          <h1 style={{ fontSize: '1.75rem', marginBottom: 0 }}>
-            <span style={{ color: meta.color }}>{meta.plural}</span> Available
-          </h1>
-          <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: 2 }}>
-            Browse and buy {meta.plural.toLowerCase()} listed by farmers
-          </p>
-        </div>
-      </div>
-
-      {/* Search */}
-      <div className="card" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <Search size={20} style={{ color: 'var(--color-text-muted)' }} />
-        <input
-          className="input"
-          placeholder={`Search ${meta.plural.toLowerCase()}…`}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ border: 'none', padding: '0.5rem 0', boxShadow: 'none' }}
-        />
-      </div>
-
+      {/* ── 4. Main Content Area: Loading, Error, Empty, or Product Grid ── */}
       {loading ? (
-        <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-          <div className="animate-pulse">Loading…</div>
+        /* Loading Skeletons */
+        <div className="agro-market-grid" aria-busy="true" aria-label="Loading produce listings">
+          {Array.from({ length: 8 }).map((_, idx) => (
+            <div key={idx} className="agro-skeleton-card">
+              <div className="agro-skeleton-img" />
+              <div className="agro-skeleton-body">
+                <div className="agro-skeleton-line" style={{ width: '70%', height: 16 }} />
+                <div className="agro-skeleton-line" style={{ width: '45%', height: 12 }} />
+                <div className="agro-skeleton-line" style={{ width: '35%', height: 20, marginTop: '1rem' }} />
+                <div className="agro-skeleton-line" style={{ width: '100%', height: 36, marginTop: '0.8rem' }} />
+              </div>
+            </div>
+          ))}
         </div>
-      ) : filtered.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>
-          <Package size={48} style={{ color: '#cbd5e1', marginBottom: '1rem' }} />
-          <p style={{ fontSize: '1.05rem' }}>No {meta.plural.toLowerCase()} available right now.</p>
+      ) : error ? (
+        /* Error Notice with Retry */
+        <div className="agro-market-notice" role="alert">
+          <AlertCircle size={44} className="agro-notice-icon" style={{ color: '#ef4444' }} />
+          <h2 className="agro-notice-title">Failed to load marketplace</h2>
+          <p className="agro-notice-desc">{error}</p>
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="agro-btn-retry"
+              onClick={() => fetchData(true)}
+              disabled={retrying}
+            >
+              <RotateCcw size={15} className={retrying ? 'animate-spin' : ''} />
+              <span>{retrying ? 'Retrying...' : 'Retry Loading'}</span>
+            </button>
+          </div>
+        </div>
+      ) : filteredListings.length === 0 ? (
+        /* Empty State with Clear Filters */
+        <div className="agro-market-notice">
+          <Package size={44} className="agro-notice-icon" />
+          <h2 className="agro-notice-title">No produce matches your filters</h2>
+          <p className="agro-notice-desc">
+            We couldn't find any produce matching your current search, category, or district filter.
+          </p>
+          {hasActiveFilters && (
+            <button type="button" className="agro-btn-retry" onClick={handleClearFilters}>
+              <RotateCcw size={15} />
+              <span>Clear Filters</span>
+            </button>
+          )}
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
-          {filtered.map((l) => {
-            const qty = quantities[l.id] || 5;
-            const subtotal = qty * l.price_per_kg;
+        /* ── Product Grid ── */
+        <main className="agro-market-grid" aria-label="Produce Listings">
+          {filteredListings.map((listing) => {
+            const qty = quantities[listing.id] || (listing.quantity_kg > 0 ? Math.min(5, listing.quantity_kg) : 1);
+            const subtotal = qty * listing.price_per_kg;
+            const farmer = farmersMap[listing.farmer_id];
+            const farmerName = farmer?.name || listing.farmer_id;
+            const district = listing.district || farmer?.district;
+            const village = farmer?.village;
+
+            const imgRes = resolveProduceImage({
+              name: listing.crop_name,
+              category: listing.category,
+              imageUrl: listing.image_url,
+            });
+
+            const isAdded = addedId === listing.id;
 
             return (
-              <div
-                key={l.id}
-                className="card"
-                style={{
-                  overflow: 'hidden',
-                  padding: 0,
-                  transition: 'all 250ms ease',
-                  cursor: 'default',
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)';
-                  (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 32px rgb(0 0 0 / 0.1)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)';
-                  (e.currentTarget as HTMLDivElement).style.boxShadow = '';
-                }}
-              >
-                {/* Realistic Photo */}
-                <div style={{ position: 'relative', overflow: 'hidden' }}>
+              <article key={listing.id} className="agro-product-card">
+                {/* Produce Photo */}
+                <div className="agro-card-image-wrap">
                   <img
-                    src={getPhoto(l.crop_name, l.category)}
-                    alt={l.crop_name}
-                    style={{
-                      width: '100%',
-                      height: 180,
-                      objectFit: 'cover',
-                      display: 'block',
-                    }}
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = FALLBACK_PHOTOS[l.category] || FALLBACK_PHOTOS.crop;
-                    }}
+                    src={imgRes.url}
+                    alt={listing.crop_name}
+                    loading="lazy"
+                    onError={handleImageError}
+                    className="agro-card-img"
                   />
-                  {/* Stock badge overlay */}
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: '0.75rem',
-                      right: '0.75rem',
-                      background: 'rgba(255,255,255,0.92)',
-                      backdropFilter: 'blur(8px)',
-                      padding: '0.3rem 0.75rem',
-                      borderRadius: '2rem',
-                      fontSize: '0.8rem',
-                      fontWeight: 700,
-                      color: l.quantity_kg > 50 ? '#16a34a' : '#ea580c',
-                      boxShadow: '0 2px 8px rgb(0 0 0 / 0.08)',
-                    }}
-                  >
-                    {l.quantity_kg} kg available
-                  </span>
+
                   {/* Category badge */}
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: '0.75rem',
-                      left: '0.75rem',
-                      background: 'rgba(0,0,0,0.6)',
-                      backdropFilter: 'blur(8px)',
-                      padding: '0.25rem 0.65rem',
-                      borderRadius: '2rem',
-                      fontSize: '0.7rem',
-                      fontWeight: 600,
-                      color: '#fff',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                    }}
-                  >
-                    {l.crop_type || meta.label}
+                  <span className="agro-badge-category">
+                    {listing.category}
                   </span>
+
+                  {/* Stock badge */}
+                  <span className={`agro-badge-stock ${listing.quantity_kg > 50 ? 'in-stock' : 'low-stock'}`}>
+                    {listing.quantity_kg} kg available
+                  </span>
+
+                  {/* Strict seller-photo verification badge */}
+                  {imgRes.isSellerProvided ? (
+                    <span className="agro-badge-photo-source seller">
+                      Seller photo
+                    </span>
+                  ) : (
+                    <span className="agro-badge-photo-source placeholder">
+                      No photo uploaded
+                    </span>
+                  )}
                 </div>
 
-                {/* Details */}
-                <div style={{ padding: '1.25rem' }}>
-                  <h3 style={{ marginBottom: '0.25rem', fontSize: '1.125rem' }}>{l.crop_name}</h3>
-                  <p style={{ color: '#94a3b8', fontSize: '0.8125rem', marginBottom: '0.75rem' }}>
-                    by {l.farmer_id}
-                  </p>
+                {/* Card Body */}
+                <div className="agro-card-body">
+                  <header className="agro-card-header">
+                    <h2 className="agro-card-title" title={listing.crop_name}>
+                      {listing.crop_name}
+                    </h2>
+                    <div className="agro-card-meta">
+                      {listing.crop_type && (
+                        <span className="agro-card-variety">
+                          {listing.crop_type}
+                        </span>
+                      )}
+                    </div>
+                  </header>
 
-                  {/* Price + Stock info */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  {/* Seller name */}
+                  <div className="agro-card-seller" title={farmerName}>
+                    <span>by</span>
+                    <strong>{farmerName}</strong>
+                  </div>
+
+                  {/* Location if provided */}
+                  {district ? (
+                    <div className="agro-card-location">
+                      <MapPin size={12} aria-hidden="true" />
+                      <span>{village ? `${village}, ${district}` : district}</span>
+                    </div>
+                  ) : null}
+
+                  {/* Price Row */}
+                  <div className="agro-card-price-row">
                     <div>
-                      <span style={{ fontSize: '1.375rem', fontWeight: 800, color: 'var(--color-primary-700)' }}>
-                        ₹{l.price_per_kg}
-                      </span>
-                      <span style={{ fontSize: '0.85rem', color: '#94a3b8', marginLeft: '2px' }}>/kg</span>
+                      <span className="agro-card-price">₹{listing.price_per_kg}</span>
+                      <span className="agro-card-price-unit">/kg</span>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Total Stock</span>
-                      <div style={{ fontWeight: 700, color: '#0f172a' }}>{l.quantity_kg} kg</div>
-                    </div>
+                    <span className="agro-card-stock-label">
+                      Stock: {listing.quantity_kg} kg
+                    </span>
                   </div>
 
                   {/* Quantity selector (+/-) */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      background: '#f8fafc',
-                      border: '1.5px solid #e2e8f0',
-                      borderRadius: '0.75rem',
-                      padding: '0.5rem 0.75rem',
-                      marginBottom: '0.75rem',
-                    }}
-                  >
+                  <div className="agro-qty-selector">
                     <button
-                      onClick={() => changeQty(l.id, -5, l.quantity_kg)}
-                      style={{
-                        width: 34,
-                        height: 34,
-                        borderRadius: '50%',
-                        border: '1.5px solid #cbd5e1',
-                        background: qty <= 1 ? '#f1f5f9' : '#fff',
-                        cursor: qty <= 1 ? 'not-allowed' : 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: qty <= 1 ? '#cbd5e1' : '#334155',
-                        transition: 'all 150ms ease',
-                      }}
+                      type="button"
+                      className="agro-qty-btn"
+                      onClick={() => changeQty(listing.id, -1, listing.quantity_kg)}
                       disabled={qty <= 1}
+                      title="Decrease quantity"
+                      aria-label="Decrease quantity"
                     >
-                      <Minus size={16} />
+                      <Minus size={14} />
                     </button>
-                    <div style={{ textAlign: 'center' }}>
-                      <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>{qty}</span>
-                      <span style={{ fontSize: '0.8rem', color: '#64748b', marginLeft: '4px' }}>kg</span>
+                    <div className="agro-qty-display">
+                      {qty} <span>kg</span>
                     </div>
                     <button
-                      onClick={() => changeQty(l.id, 5, l.quantity_kg)}
-                      style={{
-                        width: 34,
-                        height: 34,
-                        borderRadius: '50%',
-                        border: '1.5px solid #cbd5e1',
-                        background: qty >= l.quantity_kg ? '#f1f5f9' : '#fff',
-                        cursor: qty >= l.quantity_kg ? 'not-allowed' : 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: qty >= l.quantity_kg ? '#cbd5e1' : '#334155',
-                        transition: 'all 150ms ease',
-                      }}
-                      disabled={qty >= l.quantity_kg}
+                      type="button"
+                      className="agro-qty-btn"
+                      onClick={() => changeQty(listing.id, 1, listing.quantity_kg)}
+                      disabled={qty >= listing.quantity_kg}
+                      title="Increase quantity"
+                      aria-label="Increase quantity"
                     >
-                      <Plus size={16} />
+                      <Plus size={14} />
                     </button>
                   </div>
 
-                  {/* Subtotal */}
-                  <div style={{ textAlign: 'center', marginBottom: '0.75rem', fontSize: '0.875rem', color: '#64748b' }}>
-                    Subtotal: <strong style={{ color: '#0f172a' }}>₹{subtotal.toLocaleString()}</strong>
+                  {/* Subtotal calculation */}
+                  <div className="agro-card-subtotal">
+                    Subtotal: <strong>₹{subtotal.toLocaleString()}</strong>
                   </div>
 
-                  {/* Buy button */}
+                  {/* Add to Cart button */}
                   <button
-                    className={`btn ${addedId === l.id ? 'btn-secondary' : 'btn-primary'}`}
-                    onClick={() => addToCart(l)}
-                    style={{
-                      width: '100%',
-                      gap: '0.5rem',
-                      padding: '0.625rem',
-                      fontWeight: 600,
-                      transition: 'all 200ms ease',
-                    }}
+                    type="button"
+                    className={`agro-btn-add ${isAdded ? 'added' : ''}`}
+                    onClick={() => addToCart(listing)}
+                    disabled={isAdded}
+                    aria-label={isAdded ? 'Added to cart' : `Add ${qty} kg of ${listing.crop_name} to cart`}
                   >
-                    <ShoppingCart size={16} />
-                    {addedId === l.id ? '✓ Added to Cart!' : `Add ${qty} kg to Cart`}
+                    {isAdded ? (
+                      <>
+                        <Check size={16} />
+                        <span>✓ Added to Cart!</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart size={16} />
+                        <span>Add to Cart</span>
+                      </>
+                    )}
                   </button>
                 </div>
-              </div>
+              </article>
             );
           })}
-        </div>
+        </main>
       )}
     </div>
   );

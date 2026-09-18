@@ -1,0 +1,226 @@
+/* NotificationsPage.css — Farmer Trades */
+
+.ft-notifs-page {
+  background-color: #f8faf7;
+  min-height: 100vh;
+  padding-bottom: 5rem;
+}
+
+/* Banner */
+.ft-notifs-banner {
+  background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+  color: #ffffff;
+  padding: 3rem 1.5rem 2.5rem;
+}
+
+.ft-notifs-banner-inner {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.ft-notifs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fef08a;
+  margin-bottom: 0.75rem;
+}
+
+.ft-notifs-banner h1 {
+  font-size: 2.25rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+}
+
+.ft-notifs-banner p {
+  font-size: 1rem;
+  color: #dcfce7;
+  max-width: 650px;
+  line-height: 1.5;
+}
+
+/* Container */
+.ft-notifs-container {
+  max-width: 860px;
+  margin: -1.5rem auto 0;
+  padding: 0 1.5rem;
+}
+
+.ft-notifs-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.ft-notifs-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f3f4f6;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.ft-notifs-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ft-notif-filter-pill {
+  background: #f1f5f9;
+  border: none;
+  padding: 0.45rem 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ft-notif-filter-pill.active {
+  background: #15803d;
+  color: #ffffff;
+}
+
+.ft-btn-mark-all {
+  background: none;
+  border: none;
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: #15803d;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+}
+
+.ft-btn-mark-all:hover {
+  text-decoration: underline;
+}
+
+/* List */
+.ft-notifs-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.ft-notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  position: relative;
+}
+
+.ft-notif-item:last-child {
+  border-bottom: none;
+}
+
+.ft-notif-item.unread {
+  background-color: #f0fdf4;
+}
+
+.ft-notif-item:hover {
+  background-color: #fafbfc;
+}
+
+.ft-notif-icon-wrap {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ft-notif-content {
+  flex: 1;
+}
+
+.ft-notif-title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ft-notif-title-row h4 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.ft-notif-time {
+  font-size: 0.725rem;
+  color: #94a3b8;
+}
+
+.ft-notif-msg {
+  font-size: 0.85rem;
+  color: #4b5563;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.ft-notif-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #15803d;
+  text-decoration: none;
+}
+
+.ft-notif-link:hover {
+  text-decoration: underline;
+}
+
+.ft-notif-unread-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  background-color: #15803d;
+  border-radius: 50%;
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+}
+
+/* Empty */
+.ft-notifs-empty {
+  padding: 4rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ft-notifs-empty h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.ft-notifs-empty p {
+  font-size: 0.85rem;
+  color: #6b7280;
+}

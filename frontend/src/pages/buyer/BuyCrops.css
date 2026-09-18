@@ -1,0 +1,887 @@
+/* ==========================================================================
+   Agro Trades Buyer Marketplace Styles (Scoped)
+   Forest green branding, crisp white surfaces, clean e-commerce layout
+   ========================================================================== */
+
+.agro-marketplace {
+  --market-green: #15803d;
+  --market-green-dark: #166534;
+  --market-green-light: #f0fdf4;
+  --market-green-border: #bbf7d0;
+  --market-text-primary: #0f172a;
+  --market-text-secondary: #475569;
+  --market-text-muted: #64748b;
+  --market-border: #e2e8f0;
+  --market-surface: #ffffff;
+  --market-bg: #f8fafc;
+  --market-radius: 8px;
+  --market-radius-sm: 6px;
+  --market-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --market-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.07);
+  --market-shadow-hover: 0 8px 24px rgba(21, 128, 61, 0.12);
+
+  font-family: inherit;
+  color: var(--market-text-primary);
+  width: 100%;
+}
+
+/* ── 1. Compact Marketplace Header ── */
+.agro-market-header {
+  background: var(--market-surface);
+  border: 1px solid var(--market-border);
+  border-radius: var(--market-radius);
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: var(--market-shadow-sm);
+  position: relative;
+  z-index: 20;
+}
+
+.agro-market-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: var(--market-text-primary);
+  flex-shrink: 0;
+}
+
+.agro-market-brand-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--market-radius-sm);
+  background: var(--market-green);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.agro-market-brand-text h1 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--market-green-dark);
+  line-height: 1.2;
+}
+
+.agro-market-brand-text span {
+  font-size: 0.72rem;
+  color: var(--market-text-muted);
+  display: block;
+}
+
+/* Search bar */
+.agro-market-search {
+  flex: 1;
+  max-width: 540px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.agro-market-search-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--market-text-muted);
+  pointer-events: none;
+}
+
+.agro-market-search-input {
+  width: 100%;
+  padding: 0.55rem 2.2rem 0.55rem 2.25rem;
+  font-size: 0.9rem;
+  border: 1.5px solid var(--market-border);
+  border-radius: var(--market-radius-sm);
+  background: #fdfdfd;
+  color: var(--market-text-primary);
+  transition: all 180ms ease;
+  outline: none;
+}
+
+.agro-market-search-input:focus {
+  border-color: var(--market-green);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.15);
+}
+
+.agro-market-search-clear {
+  position: absolute;
+  right: 0.6rem;
+  background: none;
+  border: none;
+  color: var(--market-text-muted);
+  cursor: pointer;
+  padding: 0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.agro-market-search-clear:hover {
+  background: #e2e8f0;
+  color: var(--market-text-primary);
+}
+
+/* Header actions: Orders, Cart, Account */
+.agro-market-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.agro-market-action-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--market-radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--market-text-secondary);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: all 180ms ease;
+  position: relative;
+}
+
+.agro-market-action-link:hover {
+  background: #f1f5f9;
+  color: var(--market-green-dark);
+}
+
+.agro-market-action-link:focus-visible {
+  outline: 2px solid var(--market-green);
+  outline-offset: 1px;
+}
+
+.agro-market-cart-badge {
+  background: var(--market-green);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 1rem;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Account dropdown */
+.agro-market-account-wrap {
+  position: relative;
+}
+
+.agro-market-account-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.7rem;
+  background: #ffffff;
+  border: 1px solid var(--market-border);
+  border-radius: var(--market-radius-sm);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--market-text-primary);
+  transition: all 180ms ease;
+}
+
+.agro-market-account-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.agro-market-account-btn:focus-visible {
+  outline: 2px solid var(--market-green);
+  outline-offset: 1px;
+}
+
+.agro-market-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--market-green-light);
+  color: var(--market-green-dark);
+  font-weight: 700;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--market-green-border);
+}
+
+.agro-market-account-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 230px;
+  background: #ffffff;
+  border: 1px solid var(--market-border);
+  border-radius: var(--market-radius);
+  box-shadow: var(--market-shadow-md);
+  padding: 0.5rem 0;
+  z-index: 50;
+  animation: agroFadeIn 150ms ease-out;
+}
+
+.agro-market-menu-userinfo {
+  padding: 0.5rem 0.85rem;
+  border-bottom: 1px solid var(--market-border);
+  margin-bottom: 0.25rem;
+}
+
+.agro-market-menu-name {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--market-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agro-market-menu-email {
+  font-size: 0.75rem;
+  color: var(--market-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.agro-market-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.85rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--market-text-secondary);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 150ms ease, color 150ms ease;
+  box-sizing: border-box;
+}
+
+.agro-market-menu-item:hover {
+  background: #f1f5f9;
+  color: var(--market-text-primary);
+}
+
+.agro-market-menu-item.logout:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* ── 2. Category Navigation Tabs ── */
+.agro-market-categories {
+  background: var(--market-surface);
+  border: 1px solid var(--market-border);
+  border-radius: var(--market-radius);
+  padding: 0.35rem 0.5rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  overflow-x: auto;
+  box-shadow: var(--market-shadow-sm);
+  scrollbar-width: thin;
+}
+
+.agro-market-cat-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.95rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--market-radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--market-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 180ms ease;
+}
+
+.agro-market-cat-tab:hover {
+  background: #f1f5f9;
+  color: var(--market-text-primary);
+}
+
+.agro-market-cat-tab.active {
+  background: var(--market-green);
+  color: #ffffff;
+  border-color: var(--market-green);
+}
+
+.agro-market-cat-tab:focus-visible {
+  outline: 2px solid var(--market-green);
+  outline-offset: 1px;
+}
+
+/* ── 3. Filters & Results Bar ── */
+.agro-market-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.6rem 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.agro-market-result-count {
+  font-size: 0.9rem;
+  color: var(--market-text-secondary);
+}
+
+.agro-market-result-count strong {
+  color: var(--market-text-primary);
+  font-weight: 700;
+}
+
+.agro-market-filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.agro-market-district-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.agro-market-district-icon {
+  position: absolute;
+  left: 0.6rem;
+  color: var(--market-text-muted);
+  pointer-events: none;
+}
+
+.agro-market-district-select {
+  padding: 0.42rem 1.8rem 0.42rem 1.9rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid var(--market-border);
+  border-radius: var(--market-radius-sm);
+  background: #ffffff;
+  color: var(--market-text-primary);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 180ms ease;
+}
+
+.agro-market-district-select:focus {
+  border-color: var(--market-green);
+  box-shadow: 0 0 0 2px rgba(21, 128, 61, 0.15);
+}
+
+.agro-market-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.65rem;
+  background: #ffffff;
+  border: 1px solid var(--market-border);
+  border-radius: var(--market-radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--market-text-muted);
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.agro-market-clear-btn:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+.agro-market-clear-btn:focus-visible {
+  outline: 2px solid var(--market-green);
+  outline-offset: 1px;
+}
+
+/* ── 4. Product Grid ── */
+.agro-market-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Product Card */
+.agro-product-card {
+  background: var(--market-surface);
+  border: 1px solid var(--market-border);
+  border-radius: var(--market-radius);
+  overflow: hidden;
+  box-shadow: var(--market-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  position: relative;
+}
+
+.agro-product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--market-shadow-hover);
+  border-color: #cbd5e1;
+}
+
+/* Card Image Area */
+.agro-card-image-wrap {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  background: #f1f5f9;
+  overflow: hidden;
+}
+
+.agro-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 250ms ease;
+}
+
+.agro-product-card:hover .agro-card-img {
+  transform: scale(1.03);
+}
+
+.agro-badge-category {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.agro-badge-stock {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.agro-badge-stock.in-stock {
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--market-green-dark);
+  border: 1px solid var(--market-green-border);
+}
+
+.agro-badge-stock.low-stock {
+  background: rgba(255, 255, 255, 0.95);
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+.agro-badge-photo-source {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+
+.agro-badge-photo-source.seller {
+  background: rgba(21, 128, 61, 0.9);
+  color: #ffffff;
+}
+
+.agro-badge-photo-source.placeholder {
+  background: rgba(71, 85, 105, 0.85);
+  color: #ffffff;
+}
+
+/* Card Content Area */
+.agro-card-body {
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.agro-card-header {
+  margin-bottom: 0.35rem;
+}
+
+.agro-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--market-text-primary);
+  margin: 0 0 0.2rem 0;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agro-card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--market-text-muted);
+}
+
+.agro-card-variety {
+  background: #f1f5f9;
+  color: #334155;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+.agro-card-seller {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  color: var(--market-text-secondary);
+  margin-top: 0.35rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agro-card-location {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.74rem;
+  color: var(--market-green-dark);
+  font-weight: 600;
+  margin-top: 0.2rem;
+}
+
+/* Price & Calculation */
+.agro-card-price-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--market-border);
+}
+
+.agro-card-price {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--market-green-dark);
+}
+
+.agro-card-price-unit {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--market-text-muted);
+  margin-left: 2px;
+}
+
+.agro-card-stock-label {
+  font-size: 0.75rem;
+  color: var(--market-text-muted);
+}
+
+/* Quantity selector */
+.agro-qty-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  border: 1px solid var(--market-border);
+  border-radius: var(--market-radius-sm);
+  padding: 0.3rem 0.5rem;
+  margin: 0.75rem 0 0.5rem 0;
+}
+
+.agro-qty-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: var(--market-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.agro-qty-btn:hover:not(:disabled) {
+  background: var(--market-green-light);
+  border-color: var(--market-green);
+  color: var(--market-green-dark);
+}
+
+.agro-qty-btn:disabled {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.agro-qty-display {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--market-text-primary);
+}
+
+.agro-qty-display span {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--market-text-muted);
+  margin-left: 2px;
+}
+
+.agro-card-subtotal {
+  font-size: 0.78rem;
+  color: var(--market-text-muted);
+  text-align: center;
+  margin-bottom: 0.6rem;
+}
+
+.agro-card-subtotal strong {
+  color: var(--market-text-primary);
+}
+
+/* Add to Cart button */
+.agro-btn-add {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.6rem;
+  background: var(--market-green);
+  color: #ffffff;
+  border: 1px solid var(--market-green);
+  border-radius: var(--market-radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.agro-btn-add:hover:not(:disabled) {
+  background: var(--market-green-dark);
+  border-color: var(--market-green-dark);
+}
+
+.agro-btn-add:focus-visible {
+  outline: 2px solid var(--market-green);
+  outline-offset: 1px;
+}
+
+.agro-btn-add.added {
+  background: #166534;
+  border-color: #166534;
+}
+
+.agro-btn-add:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ── 5. Skeleton Loading State ── */
+.agro-skeleton-card {
+  background: #ffffff;
+  border: 1px solid var(--market-border);
+  border-radius: var(--market-radius);
+  overflow: hidden;
+}
+
+.agro-skeleton-img {
+  width: 100%;
+  height: 180px;
+  background: #e2e8f0;
+  animation: agroPulse 1.5s infinite ease-in-out;
+}
+
+.agro-skeleton-body {
+  padding: 0.9rem;
+}
+
+.agro-skeleton-line {
+  height: 12px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  margin-bottom: 0.6rem;
+  animation: agroPulse 1.5s infinite ease-in-out;
+}
+
+/* ── 6. Empty / Error States ── */
+.agro-market-notice {
+  background: #ffffff;
+  border: 1px solid var(--market-border);
+  border-radius: var(--market-radius);
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--market-text-muted);
+  box-shadow: var(--market-shadow-sm);
+  margin-bottom: 2rem;
+}
+
+.agro-notice-icon {
+  color: #94a3b8;
+  margin-bottom: 1rem;
+}
+
+.agro-notice-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--market-text-primary);
+  margin: 0 0 0.4rem 0;
+}
+
+.agro-notice-desc {
+  font-size: 0.875rem;
+  max-width: 440px;
+  margin: 0 auto 1.25rem auto;
+  line-height: 1.5;
+}
+
+.agro-btn-retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  background: var(--market-green);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--market-radius-sm);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.agro-btn-retry:hover {
+  background: var(--market-green-dark);
+}
+
+/* ── 7. Keyframes & Media Queries ── */
+@keyframes agroPulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* Offline / Cached produce listings notice banner */
+.agro-market-cache-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: #fefce8;
+  border: 1px solid #fef08a;
+  border-radius: var(--market-radius-sm);
+  padding: 0.6rem 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  color: #854d0e;
+  animation: agroFadeIn 0.2s ease-out;
+}
+
+.agro-market-cache-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.agro-market-cache-reconnect-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #ffffff;
+  border: 1px solid #ca8a04;
+  color: #854d0e;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.65rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.agro-market-cache-reconnect-btn:hover {
+  background: #fef9c3;
+}
+
+@keyframes agroFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 860px) {
+  .agro-market-header {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .agro-market-search {
+    order: 3;
+    max-width: 100%;
+    width: 100%;
+  }
+  .agro-market-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 540px) {
+  .agro-market-grid {
+    grid-template-columns: 1fr;
+  }
+  .agro-market-actions {
+    gap: 0.4rem;
+  }
+  .agro-market-action-link span {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agro-marketplace,
+  .agro-product-card,
+  .agro-btn-add,
+  .agro-market-cat-tab,
+  .agro-market-account-menu,
+  .agro-card-img,
+  .agro-skeleton-img,
+  .agro-skeleton-line {
+    transition: none !important;
+    animation: none !important;
+  }
+}

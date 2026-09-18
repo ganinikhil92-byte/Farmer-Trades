@@ -1,0 +1,575 @@
+/* BuyProducePage.css — Farmer Trades */
+
+.ft-buy-page {
+  background-color: #f8faf7;
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+/* Banner */
+.ft-buy-banner {
+  background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+  color: #ffffff;
+  padding: 3rem 1.5rem 2.5rem;
+}
+
+.ft-buy-banner-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.ft-buy-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fef08a;
+  margin-bottom: 0.75rem;
+}
+
+.ft-buy-banner h1 {
+  font-size: 2.25rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+}
+
+.ft-buy-banner p {
+  font-size: 1rem;
+  color: #dcfce7;
+  max-width: 650px;
+  line-height: 1.5;
+}
+
+/* Container */
+.ft-buy-container {
+  max-width: 1200px;
+  margin: -1.5rem auto 0;
+  padding: 0 1.5rem;
+}
+
+/* Search Toolbar */
+.ft-search-toolbar {
+  background: #ffffff;
+  border-radius: 0.875rem;
+  padding: 0.875rem 1.25rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.ft-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 260px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.875rem;
+}
+
+.ft-search-ico {
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.ft-search-box input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.9rem;
+  color: #1f2937;
+  width: 100%;
+}
+
+.ft-clear-search {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.ft-sort-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.ft-sort-wrap select {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  color: #1f2937;
+  outline: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Category Pills */
+.ft-cat-pills-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+  scrollbar-width: thin;
+}
+
+.ft-cat-pill {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #4b5563;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.ft-cat-pill:hover {
+  border-color: #15803d;
+  color: #15803d;
+}
+
+.ft-cat-pill.active {
+  background: #15803d;
+  color: #ffffff;
+  border-color: #15803d;
+}
+
+/* Main Layout */
+.ft-buy-main-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .ft-buy-main-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Sidebar Filters */
+.ft-filter-sidebar {
+  background: #ffffff;
+  border-radius: 0.875rem;
+  border: 1px solid #e5e7eb;
+  padding: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ft-filter-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 0.75rem;
+}
+
+.ft-filter-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ft-reset-filters-btn {
+  background: none;
+  border: none;
+  color: #15803d;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ft-reset-filters-btn:hover {
+  text-decoration: underline;
+}
+
+.ft-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ft-filter-group label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ft-filter-select {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  color: #1f2937;
+  outline: none;
+}
+
+.ft-grade-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.4rem;
+}
+
+.ft-grade-btn {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  padding: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ft-grade-btn.active {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #f59e0b;
+}
+
+.ft-slider-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ft-slider-val {
+  font-weight: 800;
+  color: #15803d;
+  font-size: 0.85rem;
+}
+
+.ft-price-range-slider {
+  accent-color: #15803d;
+  cursor: pointer;
+}
+
+.ft-slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+.ft-organic-toggle-row {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.ft-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #166534;
+  text-transform: none !important;
+}
+
+.ft-sidebar-summary {
+  font-size: 0.78rem;
+  color: #6b7280;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 0.75rem;
+  text-align: center;
+}
+
+/* Lots Grid */
+.ft-lots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 1100px) {
+  .ft-lots-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .ft-lots-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ft-lot-card {
+  background: #ffffff;
+  border-radius: 0.875rem;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.ft-lot-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.1);
+  border-color: #86efac;
+}
+
+.ft-lot-img-wrap {
+  position: relative;
+  height: 160px;
+  background: #1e293b;
+}
+
+.ft-lot-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ft-lot-fav-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(17, 24, 39, 0.5);
+  border: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ft-lot-fav-btn.active {
+  background: #fee2e2;
+}
+
+.ft-lot-badge-row {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  display: flex;
+  gap: 0.3rem;
+}
+
+.ft-lot-content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.ft-lot-location {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.725rem;
+  color: #6b7280;
+  margin-bottom: 0.3rem;
+}
+
+.ft-lot-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.25;
+}
+
+.ft-lot-variety {
+  font-size: 0.75rem;
+  color: #4b5563;
+  margin-bottom: 0.75rem;
+}
+
+.ft-lot-price-box {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.ft-lot-price {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #15803d;
+}
+
+.ft-lot-unit {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #166534;
+}
+
+.ft-lot-perkg {
+  font-size: 0.725rem;
+  color: #374151;
+  font-weight: 600;
+}
+
+.ft-lot-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  background: #f9fafb;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.375rem;
+  margin-bottom: 0.75rem;
+}
+
+.ft-metric-lbl {
+  display: block;
+  font-size: 0.65rem;
+  color: #6b7280;
+}
+
+.ft-metric-val {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.ft-lot-farmer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.725rem;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 0.5rem;
+  margin-bottom: 0.875rem;
+}
+
+.ft-farmer-micro {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ft-farmer-avatar-sm {
+  width: 1.25rem;
+  height: 1.25rem;
+  background: #15803d;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 800;
+}
+
+.ft-farmer-name-sm {
+  font-weight: 600;
+  color: #374151;
+}
+
+.ft-lot-date {
+  color: #6b7280;
+}
+
+.ft-lot-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.ft-btn-lot-details {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  padding: 0.45rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  cursor: pointer;
+}
+
+.ft-btn-lot-buy {
+  background: #15803d;
+  color: #ffffff;
+  border: none;
+  padding: 0.45rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ft-btn-lot-buy:hover {
+  background: #166534;
+}
+
+/* No Results */
+.ft-no-results {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.875rem;
+  padding: 4rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ft-no-results h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.ft-no-results p {
+  font-size: 0.875rem;
+  color: #6b7280;
+  max-width: 450px;
+  margin-bottom: 1.5rem;
+}
+
+.ft-btn-large {
+  background: #15803d !important;
+  color: #ffffff !important;
+  padding: 0.625rem 1.5rem !important;
+  border-radius: 0.375rem !important;
+}

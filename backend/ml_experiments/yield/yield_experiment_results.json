@@ -1,0 +1,168 @@
+{
+  "experiment_title": "Isolated Historical District Yield ML Benchmark (Karnataka)",
+  "crops_evaluated": [
+    "Ragi",
+    "Rice",
+    "Jowar",
+    "Maize",
+    "Sugarcane"
+  ],
+  "units": {
+    "area": "hectares",
+    "production": "tonnes",
+    "yield": "tonnes/hectare"
+  },
+  "target_definition": "Production (tonnes) / Area (hectares)",
+  "features_used": [
+    "District",
+    "Crop",
+    "Season",
+    "Crop_Year"
+  ],
+  "excluded_features": [
+    "Production (Excluded: direct target leakage)",
+    "Area (Excluded: farm area is not aggregate district acreage)",
+    "Rainfall (Excluded: undocumented in APY, not invented)"
+  ],
+  "split_definition": {
+    "train_period": "1997 - 2010",
+    "train_samples": 3594,
+    "validation_period": "2011 - 2012",
+    "validation_samples": 574,
+    "test_period": "2013 - 2014",
+    "test_samples": 560
+  },
+  "validation_selection": {
+    "candidate_models": {
+      "Ridge (alpha=1.0)": {
+        "MAE": 2.0653,
+        "RMSE": 5.5507,
+        "R2": 0.952
+      },
+      "Ridge (alpha=10.0)": {
+        "MAE": 1.9874,
+        "RMSE": 5.5049,
+        "R2": 0.9528
+      },
+      "Random Forest (max_depth=5, n_est=100)": {
+        "MAE": 1.4305,
+        "RMSE": 4.4174,
+        "R2": 0.9696
+      },
+      "Random Forest (max_depth=8, n_est=100)": {
+        "MAE": 1.3596,
+        "RMSE": 4.1629,
+        "R2": 0.973
+      },
+      "Random Forest (max_depth=12, n_est=100)": {
+        "MAE": 1.525,
+        "RMSE": 4.5194,
+        "R2": 0.9682
+      },
+      "Gradient Boosting (n_est=100, lr=0.05, max_depth=4)": {
+        "MAE": 1.3975,
+        "RMSE": 4.1693,
+        "R2": 0.9729
+      }
+    },
+    "selected_model": "Random Forest (max_depth=8, n_est=100)",
+    "baseline_val_metrics": {
+      "MAE": 1.2557,
+      "RMSE": 3.8905,
+      "R2": 0.9764
+    }
+  },
+  "test_results_overall": {
+    "baseline": {
+      "MAE": 1.2988,
+      "RMSE": 4.1196,
+      "R2": 0.9744
+    },
+    "ml_model": {
+      "MAE": 1.15,
+      "RMSE": 3.4847,
+      "R2": 0.9817
+    },
+    "mae_difference_ml_minus_baseline": -0.1488,
+    "rmse_difference_ml_minus_baseline": -0.6349,
+    "ml_improved_over_baseline": true
+  },
+  "test_results_per_crop": {
+    "Ragi": {
+      "sample_count": 97,
+      "mean_actual_yield_t_per_ha": 1.7187,
+      "baseline": {
+        "MAE": 0.3234,
+        "RMSE": 0.4171,
+        "R2": 0.0282
+      },
+      "ml_model": {
+        "MAE": 0.2978,
+        "RMSE": 0.3871,
+        "R2": 0.1629
+      }
+    },
+    "Rice": {
+      "sample_count": 137,
+      "mean_actual_yield_t_per_ha": 2.8032,
+      "baseline": {
+        "MAE": 0.4351,
+        "RMSE": 0.5489,
+        "R2": 0.2183
+      },
+      "ml_model": {
+        "MAE": 0.4698,
+        "RMSE": 0.5823,
+        "R2": 0.1203
+      }
+    },
+    "Jowar": {
+      "sample_count": 109,
+      "mean_actual_yield_t_per_ha": 1.3328,
+      "baseline": {
+        "MAE": 0.3295,
+        "RMSE": 0.413,
+        "R2": 0.3158
+      },
+      "ml_model": {
+        "MAE": 0.3069,
+        "RMSE": 0.4319,
+        "R2": 0.2516
+      }
+    },
+    "Maize": {
+      "sample_count": 166,
+      "mean_actual_yield_t_per_ha": 3.1306,
+      "baseline": {
+        "MAE": 0.6077,
+        "RMSE": 0.7766,
+        "R2": -0.3635
+      },
+      "ml_model": {
+        "MAE": 0.5096,
+        "RMSE": 0.6918,
+        "R2": -0.0821
+      }
+    },
+    "Sugarcane": {
+      "sample_count": 51,
+      "mean_actual_yield_t_per_ha": 90.3334,
+      "baseline": {
+        "MAE": 9.7956,
+        "RMSE": 13.5234,
+        "R2": 0.2735
+      },
+      "ml_model": {
+        "MAE": 8.485,
+        "RMSE": 11.4097,
+        "R2": 0.4829
+      }
+    }
+  },
+  "verdict_and_findings": [
+    "Historical district yield exhibits strong crop-specific scale differences (e.g. Sugarcane ~75-90 t/ha vs. Ragi/Jowar ~1-2 t/ha).",
+    "ML model achieves a positive overall R\u00b2 largely due to distinguishing between crop categories.",
+    "Within individual grain crops (e.g., Ragi, Jowar), seasonal and annual yield variations are heavily driven by unobserved weather anomalies (droughts/monsoon failures) not captured by static district-year coordinates.",
+    "This confirms that district-level historical models cannot serve as reliable individual-farm crop advisers or 2026 future forecasting tools."
+  ]
+}
