@@ -1,0 +1,44 @@
+# CodeRabbit AI Configuration for Farmer Trades
+# Documentation: https://docs.coderabbit.ai/guides/configure-coderabbit
+
+version: "2"
+language: "en-US"
+tone_instructions: "Be concise, constructive, and pragmatic. Focus on security, data integrity, and performance."
+
+reviews:
+  profile: "assertive"
+  high_level_summary: true
+  poem: false
+  review_status: true
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "main"
+      - "master"
+
+  path_filters:
+    - "!backend/venv/**"
+    - "!frontend/node_modules/**"
+    - "!frontend/dist/**"
+    - "!**/*.db"
+
+  tools:
+    ast-grep:
+      enabled: true
+    shellcheck:
+      enabled: true
+
+  instructions: |
+    Farmer Trades is a dual-tier agro marketplace (Farmers & Wholesale/Retail Buyers) built with:
+    - Backend: FastAPI, SQLAlchemy, SQLite (agro_trades.db), Razorpay payment processing.
+    - Frontend: React 18, TypeScript, Vite, Tailwind/CSS.
+
+    Review Priorities:
+    1. Security & Payments: Ensure Razorpay signature verification and webhook authentication cannot be bypassed.
+    2. Data Integrity: Ensure database sessions and transaction commits/rollbacks in FastAPI endpoints are safe.
+    3. State & UI: Ensure React frontend handles async fetch errors and empty states cleanly.
+    4. Types: Ensure TypeScript interfaces align with FastAPI response schemas.
+
+chat:
+  auto_reply: true

@@ -72,9 +72,6 @@ export default function AdminProfile() {
               <CheckCircle2 size={16} color="var(--primary)" /> Add / Delete Crops Master Catalog
             </li>
             <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <CheckCircle2 size={16} color="var(--primary)" /> Add / Delete Vegetables & Fruits Catalog
-            </li>
-            <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <CheckCircle2 size={16} color="var(--primary)" /> Verify & Deactivate Karnataka Farmers
             </li>
             <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

@@ -66,6 +66,7 @@ def main():
     
     # Compute in-memory test predictions
     in_memory_preds = pipeline.predict(X_test)
+    assert isinstance(in_memory_preds, np.ndarray)
     in_memory_accuracy = float(accuracy_score(y_test, in_memory_preds))
     in_memory_macro_f1 = float(f1_score(y_test, in_memory_preds, average="macro"))
     in_memory_cm = confusion_matrix(y_test, in_memory_preds, labels=unique_labels).tolist()
@@ -168,6 +169,7 @@ def main():
     # 6. Load saved pipeline in fresh context and verify prediction parity
     loaded_pipeline = joblib.load(MODEL_PATH)
     loaded_preds = loaded_pipeline.predict(X_test)
+    assert isinstance(loaded_preds, np.ndarray)
     
     matches = np.array_equal(in_memory_preds, loaded_preds)
     print(f"Verification: Loaded pipeline predictions match in-memory predictions exactly: {matches}")

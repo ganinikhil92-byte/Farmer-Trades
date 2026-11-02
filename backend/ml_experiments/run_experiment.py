@@ -195,7 +195,8 @@ def main():
     print(f"Weighted F1:       {test_weighted_f1*100:.2f}%")
     
     # Per-class report
-    clf_report = classification_report(y_test, y_pred, target_names=unique_labels, output_dict=True)
+    clf_report_raw = classification_report(y_test, y_pred, target_names=unique_labels, output_dict=True)
+    clf_report: dict[str, dict[str, float]] = clf_report_raw if isinstance(clf_report_raw, dict) else {}
     print(f"\n--- PER-CLASS PERFORMANCE METRICS ---")
     print(f"{'Crop':<15} {'Precision':<12} {'Recall':<12} {'F1-Score':<12} {'Support':<8}")
     print("-" * 59)
@@ -208,7 +209,7 @@ def main():
             "f1_score": float(metrics["f1-score"]),
             "support": int(metrics["support"]),
         }
-        print(f"{crop:<15} {metrics['precision']*100:>8.2f}%   {metrics['recall']*100:>8.2f}%   {metrics['f1-score']*100:>8.2f}%   {metrics['support']:>6}")
+        print(f"{crop:<15} {metrics['precision']*100:>8.2f}%   {metrics['recall']*100:>8.2f}%   {metrics['f1-score']*100:>8.2f}%   {int(metrics['support']):>6}")
         
     # Confusion Matrix
     cm = confusion_matrix(y_test, y_pred, labels=unique_labels)
@@ -239,10 +240,10 @@ def main():
             "author": "Atharva Ingle (Verified)",
             "icar_fao_origin": "Unknown / Unverified in source metadata",
             "sha256_checksum": sha256_checksum,
-            "total_samples": int(total_samples),
+            "total_samples": total_samples,
             "num_features": len(feature_names),
             "feature_names": feature_names,
-            "num_classes": int(num_classes),
+            "num_classes": num_classes,
             "classes": unique_labels.tolist()
         },
         "data_integrity": {
@@ -281,3 +282,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

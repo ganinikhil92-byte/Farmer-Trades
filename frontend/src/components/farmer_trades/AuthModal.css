@@ -1,12 +1,14 @@
 /* ==========================================================================
    Farmer Trades — Auth Modal Styles
+   Botanical Obsidian & Emerald Glass Theme
    ========================================================================== */
 
 .ft-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(5px);
+  background: rgba(1, 10, 6, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15,39 +17,47 @@
   animation: ftFadeIn 0.2s ease-out;
 }
 
+@keyframes ftFadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 .ft-modal-box {
-  background: #ffffff;
-  border-radius: 18px;
+  background: rgba(4, 26, 18, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
   width: 100%;
   max-width: 480px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(16, 185, 129, 0.12);
   position: relative;
-  padding: 2rem;
-  border: 1px solid #e5e7eb;
+  padding: 2.25rem 2rem;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #ffffff;
 }
 
 .ft-modal-close-btn {
   position: absolute;
   top: 1.25rem;
   right: 1.25rem;
-  background: #f3f4f6;
-  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   width: 32px;
   height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .ft-modal-close-btn:hover {
-  background: #e5e7eb;
-  color: #111827;
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
 }
 
 .ft-modal-header {
@@ -59,23 +69,24 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  color: #15803d;
+  color: #34d399;
   font-weight: 800;
   font-size: 0.95rem;
   margin-bottom: 0.5rem;
 }
 
 .ft-modal-header h2 {
-  font-size: 1.35rem;
+  font-size: 1.45rem;
   font-weight: 800;
-  color: #111827;
+  color: #ffffff;
   margin: 0;
+  letter-spacing: -0.02em;
 }
 
 .ft-intended-notice {
-  background: #fef3c7;
-  border: 1px solid #fde68a;
-  color: #92400e;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #fbbf24;
   font-size: 0.8rem;
   font-weight: 600;
   padding: 0.35rem 0.75rem;
@@ -85,7 +96,7 @@
 
 .ft-modal-subtitle {
   font-size: 0.82rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.65);
   margin: 0.4rem 0 0;
   line-height: 1.45;
 }
@@ -95,28 +106,30 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
-  background: #f3f4f6;
+  background: rgba(2, 18, 12, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 0.3rem;
-  border-radius: 10px;
+  border-radius: 12px;
   margin-bottom: 1.25rem;
 }
 
 .ft-role-btn {
   padding: 0.55rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 9px;
   font-size: 0.82rem;
   font-weight: 700;
-  color: #4b5563;
+  color: rgba(255, 255, 255, 0.7);
   background: transparent;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .ft-role-btn.active {
-  background: #ffffff;
-  color: #15803d;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  background: rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
 }
 
 .ft-modal-form {
@@ -134,7 +147,7 @@
 .ft-form-field label {
   font-size: 0.82rem;
   font-weight: 600;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .ft-input-wrap {
@@ -146,100 +159,75 @@
 .ft-field-icon {
   position: absolute;
   left: 0.85rem;
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.45);
   pointer-events: none;
 }
 
-.ft-input-wrap input {
+.ft-input-wrap input,
+.ft-input-wrap select {
   width: 100%;
   padding: 0.65rem 0.85rem 0.65rem 2.4rem;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.5rem;
   font-size: 0.9rem;
   outline: none;
-  transition: border-color 0.15s ease;
-}
-
-.ft-input-wrap input:focus {
-  border-color: #15803d;
-  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12);
-}
-
-.ft-btn-submit {
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 10px;
-  background: #15803d;
+  background: rgba(2, 18, 12, 0.8);
   color: #ffffff;
-  font-size: 0.95rem;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 3px 8px rgba(21, 128, 61, 0.25);
   transition: all 0.15s ease;
 }
 
-.ft-btn-submit:hover:not(:disabled) {
-  background: #166534;
-  transform: translateY(-1px);
+.ft-input-wrap input:focus,
+.ft-input-wrap select:focus {
+  border-color: #34d399;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2);
 }
 
-.ft-btn-google {
-  width: 100%;
+.ft-btn-submit-auth {
+  margin-top: 0.5rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  padding: 0.75rem 1.25rem;
+  border-radius: 9999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
-  padding: 0.65rem;
-  border-radius: 10px;
-  border: 1.5px solid #e5e7eb;
-  background: #ffffff;
-  color: #374151;
-  font-size: 0.88rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s ease;
+  gap: 0.5rem;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s ease;
 }
 
-.ft-btn-google:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
+.ft-btn-submit-auth:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.5);
 }
 
-.ft-toggle-mode {
+.ft-btn-submit-auth:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ft-auth-toggle-row {
+  margin-top: 1.25rem;
   text-align: center;
-  font-size: 0.82rem;
-  color: #6b7280;
-  margin-top: 0.5rem;
+  font-size: 0.825rem;
+  color: rgba(255, 255, 255, 0.6);
 }
 
-.ft-toggle-mode button {
-  background: transparent;
+.ft-auth-toggle-btn {
+  background: none;
   border: none;
-  color: #15803d;
+  color: #34d399;
   font-weight: 700;
   cursor: pointer;
+  margin-left: 0.35rem;
+  transition: color 0.15s ease;
+}
+
+.ft-auth-toggle-btn:hover {
+  color: #6ee7b7;
   text-decoration: underline;
-}
-
-.ft-alert {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 0.85rem;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  margin-bottom: 0.5rem;
-}
-
-.ft-alert.error {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #b91c1c;
-}
-
-.ft-alert.success {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  color: #15803d;
 }

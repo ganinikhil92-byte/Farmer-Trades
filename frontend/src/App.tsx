@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Landing from './pages/Landing';
+import FarmerTradesHero from './components/landing/FarmerTradesHero';
 import DashboardLayout from './components/DashboardLayout';
 
 // Farmer Trades Components & Pages
@@ -25,14 +26,14 @@ import QueriesList from './pages/admin/QueriesList';
 import AdminProfile from './pages/admin/AdminProfile';
 import AdminLogin from './pages/admin/AdminLogin';
 import SoilTestAdmin from './pages/admin/SoilTestAdmin';
+import ProduceManager from './pages/admin/ProduceManager';
+import ListingsOrders from './pages/admin/ListingsOrders';
 
 // Farmer pages
 import FarmerDashboard from './pages/farmer/FarmerDashboard';
 import TradeCrops from './pages/farmer/TradeCrops';
 import FarmerStocks from './pages/farmer/FarmerStocks';
 import CropStocks from './pages/farmer/CropStocks';
-import VegetableStocks from './pages/farmer/VegetableStocks';
-import FruitStocks from './pages/farmer/FruitStocks';
 import SellingHistory from './pages/farmer/SellingHistory';
 import NearestAPMC from './pages/farmer/NearestAPMC';
 import SoilTest from './pages/farmer/SoilTest';
@@ -58,7 +59,7 @@ import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import RefundPolicy from './pages/legal/RefundPolicy';
 import ContactUs from './pages/legal/ContactUs';
 
-import { Wheat, Carrot, Apple } from 'lucide-react';
+import { Wheat } from 'lucide-react';
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -73,14 +74,14 @@ function AppRoutes() {
 
   return (
     <Routes>
-      {/* ── Main Page: Dedicated Farmer & Buyer Authentication Portal ── */}
+      {/* ── Main Page: Premium Hero Landing (public) / Redirect (logged in) ── */}
       <Route
         path="/"
         element={
           user ? (
             <Navigate to={userHome} replace />
           ) : (
-            <MainAuthPage />
+            <FarmerTradesHero />
           )
         }
       />
@@ -200,9 +201,10 @@ function AppRoutes() {
           <Route path="/admin/stocks" element={<DashboardLayout><MasterStocks /></DashboardLayout>} />
           <Route path="/admin/queries" element={<DashboardLayout><QueriesList /></DashboardLayout>} />
           <Route path="/admin/crops" element={<DashboardLayout><ManageList title="Crops" endpoint="crops" icon={<Wheat size={18} />} /></DashboardLayout>} />
-          <Route path="/admin/vegetables" element={<DashboardLayout><ManageList title="Vegetables" endpoint="vegetables" icon={<Carrot size={18} />} /></DashboardLayout>} />
-          <Route path="/admin/fruits" element={<DashboardLayout><ManageList title="Fruits" endpoint="fruits" icon={<Apple size={18} />} /></DashboardLayout>} />
+          <Route path="/admin/produce" element={<DashboardLayout><ProduceManager /></DashboardLayout>} />
+          <Route path="/admin/market-prices" element={<DashboardLayout><ProduceManager /></DashboardLayout>} />
           <Route path="/admin/soil-tests" element={<DashboardLayout><SoilTestAdmin /></DashboardLayout>} />
+          <Route path="/admin/listings-orders" element={<DashboardLayout><ListingsOrders /></DashboardLayout>} />
           <Route path="/admin/profile" element={<DashboardLayout><AdminProfile /></DashboardLayout>} />
         </>
       )}
@@ -214,8 +216,6 @@ function AppRoutes() {
           <Route path="/farmer/trade" element={<DashboardLayout><TradeCrops /></DashboardLayout>} />
           <Route path="/farmer/stocks" element={<DashboardLayout><FarmerStocks /></DashboardLayout>} />
           <Route path="/farmer/crop-stocks" element={<DashboardLayout><FarmerStocks /></DashboardLayout>} />
-          <Route path="/farmer/vegetable-stocks" element={<DashboardLayout><FarmerStocks /></DashboardLayout>} />
-          <Route path="/farmer/fruit-stocks" element={<DashboardLayout><FarmerStocks /></DashboardLayout>} />
           <Route path="/farmer/history" element={<DashboardLayout><SellingHistory /></DashboardLayout>} />
           <Route path="/farmer/apmc" element={<DashboardLayout><NearestAPMC /></DashboardLayout>} />
           <Route path="/farmer/soil-test" element={<DashboardLayout><SoilTest /></DashboardLayout>} />
@@ -245,7 +245,7 @@ function AppRoutes() {
       {/* Fallbacks if logged in user navigates to a role dashboard they do not belong to */}
       {user && (
         <>
-          <Route path="/admin/*" element={<Navigate to={userHome} replace />} />
+          <Route path="/admin/*" element={<Navigate to="/admin/login" replace />} />
           <Route path="/farmer/*" element={<Navigate to={userHome} replace />} />
           <Route path="/buyer/*" element={<Navigate to={userHome} replace />} />
         </>

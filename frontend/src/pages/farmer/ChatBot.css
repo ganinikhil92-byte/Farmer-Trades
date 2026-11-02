@@ -1,6 +1,6 @@
 /* ==========================================================================
-   Agro Trades — Google AI Studio (Gemini 2.0 Flash) Agri-Copilot
-   High-Level UI/UX, Glassmorphism, Emerald Cyber Accents, Responsive Design
+   Farmer Trades — Google AI Studio (Gemini 2.0 Flash) Agri-Copilot
+   Botanical Obsidian & Emerald Glass Theme
    ========================================================================== */
 
 .agri-ai-container {
@@ -8,12 +8,15 @@
   flex-direction: column;
   height: calc(100vh - 150px);
   min-height: 600px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px -5px rgba(21, 128, 61, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  background: rgba(4, 26, 18, 0.75);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
   overflow: hidden;
   position: relative;
+  color: #ffffff;
 }
 
 /* ── Top Bar / Header ── */
@@ -22,8 +25,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #ffffff 100%);
-  border-bottom: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, rgba(6, 44, 30, 0.95) 0%, rgba(2, 18, 12, 0.95) 100%);
+  border-bottom: 1px solid rgba(16, 185, 129, 0.2);
   flex-wrap: wrap;
   gap: 0.75rem;
 }
@@ -43,7 +46,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
   position: relative;
 }
 
@@ -55,21 +58,21 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #22c55e;
-  border: 2px solid #ffffff;
+  background: #34d399;
+  border: 2px solid #041f14;
   animation: agriPulse 2s infinite;
 }
 
 @keyframes agriPulse {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
 }
 
 .agri-ai-title-wrap h2 {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #ffffff;
   margin: 0;
   display: flex;
   align-items: center;
@@ -88,11 +91,12 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
 }
 
 .agri-ai-subtitle {
   font-size: 0.8rem;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.65);
   margin: 0.15rem 0 0 0;
 }
 
@@ -109,29 +113,29 @@
   font-size: 0.82rem;
   font-weight: 600;
   padding: 0.4rem 0.75rem;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  color: #334155;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .agri-ai-pill-btn:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(52, 211, 153, 0.4);
 }
 
 .agri-ai-pill-btn.active {
-  background: #15803d;
-  color: #ffffff;
-  border-color: #15803d;
+  background: rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.5);
 }
 
 .agri-ai-pill-btn.connected {
-  background: #ecfdf5;
-  color: #047857;
-  border-color: #a7f3d0;
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.3);
 }
 
 /* ── Chat Messages Scroll Area ── */
@@ -142,7 +146,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  background: #fdfdfd;
+  background: rgba(2, 14, 9, 0.85);
   scroll-behavior: smooth;
 }
 
@@ -176,12 +180,13 @@
 .agri-ai-msg-avatar.bot {
   background: linear-gradient(135deg, #10b981, #059669);
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
 }
 
 .agri-ai-msg-avatar.user {
-  background: #334155;
+  background: rgba(255, 255, 255, 0.15);
   color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .agri-ai-msg-bubble {
@@ -194,18 +199,19 @@
 }
 
 .agri-ai-message-row.user .agri-ai-msg-bubble {
-  background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
   border-bottom-right-radius: 4px;
-  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
 }
 
 .agri-ai-message-row.bot .agri-ai-msg-bubble {
-  background: #ffffff;
-  color: #1e293b;
-  border: 1px solid #e2e8f0;
+  background: rgba(6, 44, 30, 0.65);
+  backdrop-filter: blur(12px);
+  color: #ffffff;
+  border: 1px solid rgba(16, 185, 129, 0.22);
   border-bottom-left-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
 }
 
 .agri-ai-msg-image-thumb {
@@ -213,7 +219,7 @@
   max-height: 160px;
   border-radius: 8px;
   margin-bottom: 0.75rem;
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  border: 2px solid rgba(52, 211, 153, 0.4);
   display: block;
   object-fit: cover;
 }
@@ -240,7 +246,7 @@
 }
 
 .agri-ai-msg-bubble strong {
-  color: #0f172a;
+  color: #34d399;
 }
 
 .agri-ai-message-row.user .agri-ai-msg-bubble strong {
@@ -254,9 +260,9 @@
   gap: 0.75rem;
   margin-top: 0.6rem;
   padding-top: 0.5rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 0.72rem;
-  color: #94a3b8;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .agri-ai-message-row.user .agri-ai-msg-footer {
@@ -274,7 +280,7 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.6);
   padding: 3px 6px;
   border-radius: 4px;
   transition: all 0.15s ease;
@@ -285,8 +291,8 @@
 }
 
 .agri-ai-icon-btn:hover {
-  background: #f1f5f9;
-  color: #15803d;
+  background: rgba(255, 255, 255, 0.1);
+  color: #34d399;
 }
 
 /* Typing Waveform */
@@ -295,11 +301,11 @@
   align-items: center;
   gap: 0.6rem;
   padding: 0.75rem 1rem;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: rgba(6, 44, 30, 0.65);
+  border: 1px solid rgba(16, 185, 129, 0.22);
   border-radius: 14px;
   width: fit-content;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .agri-ai-dots {
@@ -312,7 +318,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #10b981;
+  background: #34d399;
   animation: dotBounce 1.2s infinite ease-in-out;
 }
 
@@ -326,15 +332,15 @@
 
 .agri-ai-typing-text {
   font-size: 0.82rem;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.65);
   font-style: italic;
 }
 
 /* ── Suggestion Chips Bar ── */
 .agri-ai-chips-container {
   padding: 0.65rem 1.25rem;
-  background: #fafaf9;
-  border-top: 1px solid #e2e8f0;
+  background: rgba(4, 26, 18, 0.85);
+  border-top: 1px solid rgba(16, 185, 129, 0.15);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -350,26 +356,26 @@
   font-weight: 500;
   padding: 0.35rem 0.75rem;
   border-radius: 20px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  color: #475569;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.85);
   cursor: pointer;
   transition: all 0.15s ease;
   flex-shrink: 0;
 }
 
 .agri-ai-chip:hover {
-  background: #f0fdf4;
-  border-color: #86efac;
-  color: #166534;
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(52, 211, 153, 0.4);
+  color: #34d399;
   transform: translateY(-1px);
 }
 
 /* ── Image Attachment Staging Preview ── */
 .agri-ai-preview-tray {
   padding: 0.6rem 1.25rem;
-  background: #f8fafc;
-  border-top: 1px solid #e2e8f0;
+  background: rgba(2, 18, 12, 0.8);
+  border-top: 1px solid rgba(16, 185, 129, 0.15);
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -380,24 +386,24 @@
   height: 48px;
   border-radius: 8px;
   object-fit: cover;
-  border: 2px solid #10b981;
+  border: 2px solid #34d399;
 }
 
 .agri-ai-staged-info {
   flex: 1;
   font-size: 0.82rem;
-  color: #334155;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .agri-ai-staged-info strong {
   display: block;
-  color: #0f172a;
+  color: #ffffff;
 }
 
 .agri-ai-staged-remove {
-  background: #fee2e2;
-  border: none;
-  color: #dc2626;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
   width: 28px;
   height: 28px;
   border-radius: 6px;
@@ -409,7 +415,7 @@
 }
 
 .agri-ai-staged-remove:hover {
-  background: #fecaca;
+  background: rgba(239, 68, 68, 0.35);
 }
 
 /* ── Input Bar ── */
@@ -418,8 +424,8 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.85rem 1.25rem;
-  background: #ffffff;
-  border-top: 1px solid #e2e8f0;
+  background: rgba(4, 26, 18, 0.95);
+  border-top: 1px solid rgba(16, 185, 129, 0.18);
 }
 
 .agri-ai-input-wrapper {
@@ -433,27 +439,27 @@
   width: 100%;
   padding: 0.7rem 1rem;
   font-size: 0.92rem;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: 12px;
   outline: none;
-  background: #fdfdfd;
-  color: #0f172a;
+  background: rgba(2, 18, 12, 0.8);
+  color: #ffffff;
   transition: all 0.15s ease;
 }
 
 .agri-ai-input:focus {
-  border-color: #10b981;
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  border-color: #34d399;
+  background: rgba(2, 18, 12, 0.95);
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2);
 }
 
 .agri-ai-tool-btn {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  border: 1.5px solid #e2e8f0;
-  background: #ffffff;
-  color: #475569;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -463,15 +469,15 @@
 }
 
 .agri-ai-tool-btn:hover {
-  background: #f8fafc;
-  color: #0f172a;
-  border-color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border-color: rgba(52, 211, 153, 0.35);
 }
 
 .agri-ai-tool-btn.listening {
-  background: #fee2e2;
+  background: rgba(239, 68, 68, 0.2);
   border-color: #ef4444;
-  color: #dc2626;
+  color: #f87171;
   animation: micPulse 1.2s infinite;
 }
 
@@ -500,10 +506,11 @@
 .agri-ai-send-btn:hover:not(:disabled) {
   background: linear-gradient(135deg, #059669 0%, #047857 100%);
   transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(16, 185, 129, 0.5);
 }
 
 .agri-ai-send-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
   box-shadow: none;
 }
@@ -512,8 +519,8 @@
 .agri-ai-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(4px);
+  background: rgba(1, 8, 5, 0.75);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -523,19 +530,20 @@
 }
 
 .agri-ai-modal {
-  background: #ffffff;
+  background: #041f14;
   border-radius: 16px;
   width: 100%;
   max-width: 520px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
   overflow: hidden;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #ffffff;
 }
 
 .agri-ai-modal-header {
   padding: 1.25rem 1.5rem;
-  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
-  border-bottom: 1px solid #e2e8f0;
+  background: rgba(2, 18, 12, 0.9);
+  border-bottom: 1px solid rgba(16, 185, 129, 0.2);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -545,7 +553,7 @@
   margin: 0;
   font-size: 1.15rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #ffffff;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -567,31 +575,33 @@
 .agri-ai-modal-field label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #334155;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .agri-ai-modal-input {
   padding: 0.65rem 0.85rem;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;
   font-size: 0.9rem;
   font-family: monospace;
+  background: rgba(2, 18, 12, 0.8);
+  color: #ffffff;
 }
 
 .agri-ai-modal-input:focus {
-  border-color: #10b981;
+  border-color: #34d399;
   outline: none;
 }
 
 .agri-ai-modal-desc {
   font-size: 0.82rem;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.6);
   line-height: 1.45;
   margin: 0;
 }
 
 .agri-ai-modal-link {
-  color: #059669;
+  color: #34d399;
   font-weight: 600;
   text-decoration: underline;
   display: inline-flex;
@@ -601,8 +611,8 @@
 
 .agri-ai-modal-footer {
   padding: 1rem 1.5rem;
-  background: #f8fafc;
-  border-top: 1px solid #e2e8f0;
+  background: rgba(2, 18, 12, 0.9);
+  border-top: 1px solid rgba(16, 185, 129, 0.18);
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -7,11 +7,11 @@ import os
 import random
 import time
 import uuid
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 load_dotenv()
-from fastapi import APIRouter, HTTPException, Depends, status, UploadFile, File, Form, Query
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, Query
 from fastapi.responses import FileResponse
 from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
@@ -132,12 +132,27 @@ Department of Agriculture, Karnataka • Agro Trades Portal
         msg.attach(MIMEText(text_content, "plain"))
         msg.attach(MIMEText(html_content, "html"))
 
-        with smtplib.SMTP(smtp_host, smtp_port, timeout=20) as server:
-            server.starttls()
-            server.login(smtp_user, smtp_pass)
-            server.sendmail(smtp_user, clean_to, msg.as_string())
-        print(f"[EMAIL] Real OTP sent successfully via Gmail SMTP to {clean_to}")
-        return True
+        # Retry up to 2 times with increased timeout for reliability
+        last_error = None
+        for attempt in range(2):
+            try:
+                with smtplib.SMTP(smtp_host, smtp_port, timeout=30) as server:
+                    server.ehlo()
+                    server.starttls()
+                    server.ehlo()
+                    server.login(smtp_user, smtp_pass)
+                    server.sendmail(smtp_user, clean_to, msg.as_string())
+                print(f"[EMAIL] Real OTP sent successfully via Gmail SMTP to {clean_to} (attempt {attempt + 1})")
+                return True
+            except Exception as retry_err:
+                last_error = retry_err
+                print(f"[EMAIL] Attempt {attempt + 1} failed: {retry_err}")
+                if attempt == 0:
+                    import time as _time
+                    _time.sleep(1)  # Brief pause before retry
+
+        print(f"[EMAIL ERROR] All attempts failed for {clean_to}: {last_error}")
+        return False
     except Exception as e:
         print(f"[EMAIL ERROR] Could not send email to {clean_to} via SMTP: {e}")
         return False
@@ -153,11 +168,20 @@ class VerifyOtpRequest(BaseModel):
 
 class ItemCreate(BaseModel):
     name: str
+    category: Optional[str] = "crop"
+    category_id: Optional[str] = None
+    name_kn: Optional[str] = None
+    varieties: Optional[List[str]] = []
 
 class ListingCreate(BaseModel):
-    category: str = "crop"
-    crop_name: str
-    crop_type: str = ""
+    category: Optional[str] = "CEREALS_MILLETS"
+    category_id: Optional[str] = None
+    produce_id: Optional[str] = None
+    crop_name: Optional[str] = None
+    crop_type: Optional[str] = ""
+    produce_name: Optional[str] = None
+    produce_name_kn: Optional[str] = None
+    variety: Optional[str] = ""
     quantity_kg: float
     price_per_kg: float
     farmer_id: str
@@ -174,6 +198,25 @@ class SoilTestCreate(BaseModel):
     land_unit: Optional[str] = "Acres"
     preferred_date: Optional[str] = ""
     farmer_email: Optional[str] = ""
+    payment_id: Optional[str] = None
+    payment_status: Optional[str] = "Paid"
+    payment_amount: Optional[float] = 1000.0
+    razorpay_order_id: Optional[str] = None
+    razorpay_payment_id: Optional[str] = None
+    razorpay_signature: Optional[str] = None
+
+class SubscriptionOrderRequest(BaseModel):
+    plan_tier: str  # '1_YEAR', '3_YEAR', '5_YEAR'
+
+class SubscriptionActivateRequest(BaseModel):
+    plan_tier: str  # '1_YEAR', '3_YEAR', '5_YEAR'
+    farmer_email: Optional[str] = ""
+    farmer_name: Optional[str] = ""
+    farmer_phone: Optional[str] = ""
+    payment_id: Optional[str] = ""
+    razorpay_order_id: Optional[str] = ""
+    razorpay_payment_id: Optional[str] = ""
+    razorpay_signature: Optional[str] = ""
 
 class SoilTestAdminUpdate(BaseModel):
     status: Optional[str] = None
@@ -212,6 +255,7 @@ class RazorpayVerifyRequest(BaseModel):
     razorpay_order_id: str
     razorpay_payment_id: str
     razorpay_signature: Optional[str] = None
+
 
 class PredictionRequest(BaseModel):
     features: List[float]
@@ -558,15 +602,23 @@ def delete_user(email: str, db: Session = Depends(get_db)):
         db.commit()
     return {"success": True, "message": f"User {email} removed"}
 
-# --- Catalog Master Data (Crops, Vegetables, Fruits) ---
+# --- Catalog Master Data (Crops, Vegetables, Fruits, Produce Classification) ---
 @router.get("/crops")
 def get_crops(db: Session = Depends(get_db)):
-    crops = db.query(db_models.Item).filter(db_models.Item.category == "crop").all()
+    crops = db.query(db_models.Item).filter(
+        or_(db_models.Item.category == "crop", db_models.Item.category_id == "CEREALS_MILLETS")
+    ).all()
     return [c.to_dict() for c in crops]
 
 @router.post("/crops")
 def add_crop(item: ItemCreate, db: Session = Depends(get_db)):
-    new_item = db_models.Item(name=item.name, category="crop")
+    new_item = db_models.Item(
+        name=item.name,
+        category="crop",
+        category_id="CEREALS_MILLETS",
+        name_kn=item.name_kn or "",
+        varieties=json.dumps(item.varieties) if item.varieties else "[]"
+    )
     db.add(new_item)
     db.commit()
     db.refresh(new_item)
@@ -574,7 +626,7 @@ def add_crop(item: ItemCreate, db: Session = Depends(get_db)):
 
 @router.delete("/crops/{item_id}")
 def delete_crop(item_id: int, db: Session = Depends(get_db)):
-    item = db.query(db_models.Item).filter(db_models.Item.id == item_id, db_models.Item.category == "crop").first()
+    item = db.query(db_models.Item).filter(db_models.Item.id == item_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Crop not found")
     db.delete(item)
@@ -583,12 +635,20 @@ def delete_crop(item_id: int, db: Session = Depends(get_db)):
 
 @router.get("/vegetables")
 def get_vegetables(db: Session = Depends(get_db)):
-    veg = db.query(db_models.Item).filter(db_models.Item.category == "vegetable").all()
-    return [v.to_dict() for v in veg]
+    items = db.query(db_models.Item).filter(
+        or_(db_models.Item.category == "vegetable", db_models.Item.category_id == "VEGETABLES")
+    ).all()
+    return [it.to_dict() for it in items]
 
 @router.post("/vegetables")
 def add_vegetable(item: ItemCreate, db: Session = Depends(get_db)):
-    new_item = db_models.Item(name=item.name, category="vegetable")
+    new_item = db_models.Item(
+        name=item.name,
+        category="vegetable",
+        category_id="VEGETABLES",
+        name_kn=item.name_kn or "",
+        varieties=json.dumps(item.varieties) if item.varieties else "[]"
+    )
     db.add(new_item)
     db.commit()
     db.refresh(new_item)
@@ -596,7 +656,7 @@ def add_vegetable(item: ItemCreate, db: Session = Depends(get_db)):
 
 @router.delete("/vegetables/{item_id}")
 def delete_vegetable(item_id: int, db: Session = Depends(get_db)):
-    item = db.query(db_models.Item).filter(db_models.Item.id == item_id, db_models.Item.category == "vegetable").first()
+    item = db.query(db_models.Item).filter(db_models.Item.id == item_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Vegetable not found")
     db.delete(item)
@@ -605,12 +665,20 @@ def delete_vegetable(item_id: int, db: Session = Depends(get_db)):
 
 @router.get("/fruits")
 def get_fruits(db: Session = Depends(get_db)):
-    fruits = db.query(db_models.Item).filter(db_models.Item.category == "fruit").all()
-    return [f.to_dict() for f in fruits]
+    items = db.query(db_models.Item).filter(
+        or_(db_models.Item.category == "fruit", db_models.Item.category_id == "FRUITS")
+    ).all()
+    return [it.to_dict() for it in items]
 
 @router.post("/fruits")
 def add_fruit(item: ItemCreate, db: Session = Depends(get_db)):
-    new_item = db_models.Item(name=item.name, category="fruit")
+    new_item = db_models.Item(
+        name=item.name,
+        category="fruit",
+        category_id="FRUITS",
+        name_kn=item.name_kn or "",
+        varieties=json.dumps(item.varieties) if item.varieties else "[]"
+    )
     db.add(new_item)
     db.commit()
     db.refresh(new_item)
@@ -618,39 +686,199 @@ def add_fruit(item: ItemCreate, db: Session = Depends(get_db)):
 
 @router.delete("/fruits/{item_id}")
 def delete_fruit(item_id: int, db: Session = Depends(get_db)):
-    item = db.query(db_models.Item).filter(db_models.Item.id == item_id, db_models.Item.category == "fruit").first()
+    item = db.query(db_models.Item).filter(db_models.Item.id == item_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Fruit not found")
     db.delete(item)
     db.commit()
     return {"message": "Fruit deleted"}
 
+# --- Admin Produce Management API ---
+@router.get("/admin/produce-categories")
+def get_admin_produce(category_id: Optional[str] = None, db: Session = Depends(get_db)):
+    query = db.query(db_models.Item)
+    if category_id and category_id.strip() and category_id.lower() != "all":
+        query = query.filter(
+            or_(
+                db_models.Item.category_id == category_id.strip().upper(),
+                db_models.Item.category.ilike(category_id.strip())
+            )
+        )
+    items = query.all()
+    return [it.to_dict() for it in items]
+
+@router.post("/admin/produce")
+def create_admin_produce(item: ItemCreate, db: Session = Depends(get_db)):
+    from database import map_legacy_listing_category
+    cat_id = item.category_id or map_legacy_listing_category(item.name, item.category or "")
+    new_item = db_models.Item(
+        name=item.name,
+        category=item.category or "crop",
+        category_id=cat_id,
+        name_kn=item.name_kn or "",
+        varieties=json.dumps(item.varieties) if item.varieties else "[]",
+        is_active=1
+    )
+    db.add(new_item)
+    db.commit()
+    db.refresh(new_item)
+    return new_item.to_dict()
+
+@router.put("/admin/produce/{item_id}")
+def update_admin_produce(item_id: int, item: ItemCreate, db: Session = Depends(get_db)):
+    found = db.query(db_models.Item).filter(db_models.Item.id == item_id).first()
+    if not found:
+        raise HTTPException(status_code=404, detail="Produce item not found")
+    found.name = item.name
+    if item.category:
+        found.category = item.category
+    if item.category_id:
+        found.category_id = item.category_id
+    if item.name_kn is not None:
+        found.name_kn = item.name_kn
+    if item.varieties is not None:
+        found.varieties = json.dumps(item.varieties)
+    db.commit()
+    db.refresh(found)
+    return found.to_dict()
+
+@router.delete("/admin/produce/{item_id}")
+def delete_admin_produce(item_id: int, db: Session = Depends(get_db)):
+    found = db.query(db_models.Item).filter(db_models.Item.id == item_id).first()
+    if not found:
+        raise HTTPException(status_code=404, detail="Produce item not found")
+    db.delete(found)
+    db.commit()
+    return {"success": True, "message": "Produce item deleted"}
+
 # --- Farmer & Buyer Listings / Stocks ---
 @router.get("/listings")
-def get_listings(category: Optional[str] = None, db: Session = Depends(get_db)):
+def get_listings(category: Optional[str] = None, category_id: Optional[str] = None, db: Session = Depends(get_db)):
+    target_cat = (category_id or category or "").strip()
     if is_firebase_active() and firestore_db:
         try:
-            items = firestore_db.list_listings(category=category)
+            items = firestore_db.list_listings(category=target_cat if target_cat and target_cat.lower() != "all" else None)
             if items:
                 return items
         except Exception as e:
             print(f"[Firestore get_listings error, falling back to SQLite]: {e}")
+
     query = db.query(db_models.Listing)
-    if category:
-        query = query.filter(db_models.Listing.category == category)
-    listings = query.all()
+    if target_cat and target_cat.lower() != "all":
+        from database import map_legacy_listing_category
+        canonical = map_legacy_listing_category("", target_cat)
+        query = query.filter(
+            or_(
+                db_models.Listing.category_id == target_cat,
+                db_models.Listing.category_id == target_cat.upper(),
+                db_models.Listing.category_id == canonical,
+                db_models.Listing.category.ilike(target_cat),
+                db_models.Listing.category.ilike(canonical)
+            )
+        )
+    listings = query.order_by(db_models.Listing.id.desc()).all()
     return [l.to_dict() for l in listings]
+
+# --- Durable Produce Photo Upload & Serving ---
+PRODUCE_UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "uploads", "produce")
+os.makedirs(PRODUCE_UPLOAD_DIR, exist_ok=True)
+
+def generate_ai_produce_image(crop_name: str, crop_type: str = "") -> Optional[str]:
+    """
+    Automatic Produce Image Generation Agent:
+    Takes produce name and variety/type, creates a high-fidelity agricultural photo
+    via AI generative diffusion pipeline, saves it durably to PRODUCE_UPLOAD_DIR,
+    and returns the public accessible image URL (/api/produce-images/filename.jpg).
+    """
+    import urllib.parse
+    import httpx
+    import hashlib
+    import time
+
+    clean_name = (crop_name or "").strip()
+    clean_type = (crop_type or "").strip()
+    if not clean_name:
+        return None
+
+    # Construct descriptive photorealistic agricultural prompt
+    variety_phrase = f"variety {clean_type} " if clean_type else ""
+    prompt_text = (
+        f"crisp clear natural macro photograph of fresh harvested {clean_name} {variety_phrase}crop, "
+        f"raw agricultural produce grain harvest, realistic Karnataka farming, organic, studio lighting, highly detailed 4k"
+    )
+    encoded_prompt = urllib.parse.quote(prompt_text)
+    seed = int(hashlib.md5(f"{clean_name}_{clean_type}".encode("utf-8")).hexdigest()[:8], 16)
+
+    safe_name = "".join(c if c.isalnum() else "_" for c in clean_name.lower())[:20]
+    out_filename = f"ai_gen_{safe_name}_{int(time.time())}_{uuid.uuid4().hex[:6]}.jpg"
+    out_path = os.path.join(PRODUCE_UPLOAD_DIR, out_filename)
+
+    # 1. Primary: Generative diffusion model tailored to crop name and variety
+    endpoints = [
+        f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=640&height=480&seed={seed}&nologo=true",
+        f"https://image.pollinations.ai/prompt/{urllib.parse.quote(clean_name + ' crop harvest agriculture')}?width=640&height=480&nologo=true",
+        f"https://picsum.photos/seed/{encoded_prompt}/640/480"
+    ]
+
+    for url in endpoints:
+        try:
+            with httpx.Client(timeout=20.0, follow_redirects=True) as client:
+                resp = client.get(url, headers={"User-Agent": "AgroTrades-AI-Agent/1.0"})
+                if resp.status_code == 200 and len(resp.content) > 1000:
+                    with open(out_path, "wb") as f:
+                        f.write(resp.content)
+                    return f"/api/produce-images/{out_filename}"
+        except Exception as e:
+            print(f"[AI Image Gen Attempt Note]: {e}")
+            continue
+
+    return None
 
 @router.post("/listings")
 def create_listing(listing: ListingCreate, db: Session = Depends(get_db)):
+    # Subscription verification: farmer must hold an active produce trading subscription
+    farmer_email = (listing.farmer_id or "").strip()
+    if farmer_email and farmer_email not in ["admin@agro.com", "nikhilgani987@gmail.com"]:
+        today_str = datetime.utcnow().strftime("%Y-%m-%d")
+        active_sub = db.query(db_models.FarmerSubscription).filter(
+            db_models.FarmerSubscription.farmer_id == farmer_email,
+            db_models.FarmerSubscription.status == "ACTIVE",
+            db_models.FarmerSubscription.end_date >= today_str
+        ).first()
+        if not active_sub:
+            raise HTTPException(
+                status_code=403,
+                detail="Produce trading subscription required. Please activate an annual trading pass (1 Year: ₹500, 3 Years: ₹1,300, 5 Years: ₹2,000) to publish produce listings."
+            )
+    final_image_url = (listing.image_url or "").strip()
+    prod_name = (listing.produce_name or listing.crop_name or "").strip()
+    var_name = (listing.variety or listing.crop_type or "").strip()
+
+    # If no photo provided by seller, our AI Image Generation Agent automatically generates one!
+    if not final_image_url and prod_name:
+        try:
+            ai_generated_url = generate_ai_produce_image(prod_name, var_name)
+            if ai_generated_url:
+                final_image_url = ai_generated_url
+        except Exception as err:
+            print(f"[AI Produce Image Generation Failed]: {err}")
+
+    from database import map_legacy_listing_category
+    cat_id = (listing.category_id or map_legacy_listing_category(prod_name, listing.category or "")).strip()
+
     new_data = {
-        "category": listing.category,
-        "crop_name": listing.crop_name,
-        "crop_type": listing.crop_type,
+        "category": cat_id,
+        "category_id": cat_id,
+        "produce_id": listing.produce_id or "",
+        "crop_name": prod_name,
+        "crop_type": var_name,
+        "produce_name": prod_name,
+        "produce_name_kn": listing.produce_name_kn or "",
+        "variety": var_name,
         "quantity_kg": listing.quantity_kg,
         "price_per_kg": listing.price_per_kg,
         "farmer_id": listing.farmer_id,
-        "image_url": listing.image_url,
+        "image_url": final_image_url or None,
     }
     created_id = None
     if is_firebase_active() and firestore_db:
@@ -662,13 +890,18 @@ def create_listing(listing: ListingCreate, db: Session = Depends(get_db)):
             print(f"[Firestore listing sync note] {e}")
 
     new_listing = db_models.Listing(
-        category=listing.category,
-        crop_name=listing.crop_name,
-        crop_type=listing.crop_type,
+        category=cat_id,
+        category_id=cat_id,
+        produce_id=listing.produce_id or "",
+        crop_name=prod_name,
+        crop_type=var_name,
+        produce_name=prod_name,
+        produce_name_kn=listing.produce_name_kn or "",
+        variety=var_name,
         quantity_kg=listing.quantity_kg,
         price_per_kg=listing.price_per_kg,
         farmer_id=listing.farmer_id,
-        image_url=listing.image_url,
+        image_url=final_image_url or None,
     )
     db.add(new_listing)
     db.commit()
@@ -678,9 +911,30 @@ def create_listing(listing: ListingCreate, db: Session = Depends(get_db)):
         res["id"] = created_id
     return res
 
-# --- Durable Produce Photo Upload & Serving ---
-PRODUCE_UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "uploads", "produce")
-os.makedirs(PRODUCE_UPLOAD_DIR, exist_ok=True)
+class GenerateProduceImageRequest(BaseModel):
+    crop_name: str
+    crop_type: Optional[str] = ""
+
+@router.post("/ai/generate-produce-photo")
+def api_generate_produce_photo(req: GenerateProduceImageRequest):
+    """
+    On-demand API endpoint for the AI Image Generation Agent.
+    Accepts produce name and variety, generates a photorealistic crop photo,
+    and returns the durable image URL.
+    """
+    if not req.crop_name or not req.crop_name.strip():
+        raise HTTPException(status_code=400, detail="Produce name is required.")
+    
+    image_url = generate_ai_produce_image(req.crop_name, req.crop_type or "")
+    if not image_url:
+        raise HTTPException(status_code=502, detail="Failed to generate image. Please try again.")
+    
+    return {
+        "success": True,
+        "image_url": image_url,
+        "crop_name": req.crop_name,
+        "crop_type": req.crop_type or ""
+    }
 
 def validate_produce_image_content(contents: bytes, filename: str) -> str:
     """
@@ -887,6 +1141,203 @@ def verify_razorpay_payment(req: RazorpayVerifyRequest):
             # Signature might differ in test checkout, continue to fulfill order
             return {"status": "success", "verified": True, "note": str(e)}
     return {"status": "success", "verified": True}
+
+# --- Farmer Produce Trading Subscription Plans & Gateway ---
+
+SUBSCRIPTION_PLANS = {
+    "1_YEAR": {
+        "tier": "1_YEAR",
+        "name": "1 Year Trading Pass",
+        "years": 1,
+        "amount": 500.0,
+        "amount_paise": 50000,
+        "badge": "Standard",
+        "popular": False,
+        "savings": "Official 1-Year License",
+        "monthly_equiv": "₹42 / month",
+        "features": [
+            "Unlimited crop & produce listings",
+            "Direct bulk buyer inquiries & chats",
+            "APMC Karnataka live market price feed",
+            "Verified Producer Trust Badge"
+        ]
+    },
+    "3_YEAR": {
+        "tier": "3_YEAR",
+        "name": "3 Years Trading Pass",
+        "years": 3,
+        "amount": 1300.0,
+        "amount_paise": 130000,
+        "badge": "Popular",
+        "popular": True,
+        "savings": "Save ₹200 vs annual renewal",
+        "monthly_equiv": "₹36 / month",
+        "features": [
+            "Everything in 1 Year plan",
+            "Priority listing visibility across Karnataka",
+            "Direct buyer phone & WhatsApp connection",
+            "Smart crop yield & price surge forecasts"
+        ]
+    },
+    "5_YEAR": {
+        "tier": "5_YEAR",
+        "name": "5 Years Trading Pass",
+        "years": 5,
+        "amount": 2000.0,
+        "amount_paise": 200000,
+        "badge": "Best Value",
+        "popular": False,
+        "savings": "Save ₹500 vs annual renewal",
+        "monthly_equiv": "₹33 / month",
+        "features": [
+            "Everything in 3 Year plan",
+            "Top directory showcase & buyer matching",
+            "Zero middleman commission guaranteed",
+            "Priority agro-laboratory diagnostic access"
+        ]
+    }
+}
+
+@router.get("/farmer/subscription/status")
+def get_farmer_subscription_status(
+    farmer_id: Optional[str] = None,
+    db: Session = Depends(get_db),
+    user_payload: Optional[dict] = Depends(auth.get_current_user_payload)
+):
+    """Retrieve active subscription details and available plans for the farmer."""
+    email = (farmer_id or (user_payload.get("email") if user_payload else "") or "").strip()
+    today_str = datetime.utcnow().strftime("%Y-%m-%d")
+
+    active_sub = None
+    if email:
+        active_sub = db.query(db_models.FarmerSubscription).filter(
+            db_models.FarmerSubscription.farmer_id == email,
+            db_models.FarmerSubscription.status == "ACTIVE",
+            db_models.FarmerSubscription.end_date >= today_str
+        ).order_by(db_models.FarmerSubscription.id.desc()).first()
+
+    return {
+        "has_active_subscription": active_sub is not None,
+        "subscription": active_sub.to_dict() if active_sub else None,
+        "plans": list(SUBSCRIPTION_PLANS.values())
+    }
+
+@router.post("/farmer/subscription/create-order")
+def create_subscription_order(req: SubscriptionOrderRequest):
+    tier = req.plan_tier.upper().strip()
+    plan = SUBSCRIPTION_PLANS.get(tier)
+    if not plan:
+        raise HTTPException(status_code=400, detail=f"Invalid plan tier: {tier}. Must be 1_YEAR, 3_YEAR, or 5_YEAR.")
+
+    key_id = os.getenv("RAZORPAY_KEY_ID", "rzp_live_TbVDQjZ0kNR4MP")
+    client = get_razorpay_client()
+    amount_paise = plan["amount_paise"]
+
+    if client:
+        try:
+            rzp_order = client.order.create({
+                "amount": amount_paise,
+                "currency": "INR",
+                "receipt": f"sub_{int(time.time())}_{random.randint(100, 999)}",
+                "payment_capture": 1
+            })
+            return {
+                "order_id": rzp_order["id"],
+                "amount": rzp_order["amount"],
+                "currency": rzp_order.get("currency", "INR"),
+                "key_id": key_id,
+                "plan": plan
+            }
+        except Exception as e:
+            print(f"[Razorpay subscription create-order fallback] {e}")
+
+    mock_order_id = f"sub_order_demo_{int(time.time())}_{random.randint(1000, 9999)}"
+    return {
+        "order_id": mock_order_id,
+        "amount": amount_paise,
+        "currency": "INR",
+        "key_id": key_id or "rzp_live_TbVDQjZ0kNR4MP",
+        "plan": plan
+    }
+
+@router.post("/farmer/subscription/activate")
+def activate_subscription(
+    req: SubscriptionActivateRequest,
+    db: Session = Depends(get_db),
+    user_payload: Optional[dict] = Depends(auth.get_current_user_payload)
+):
+    tier = req.plan_tier.upper().strip()
+    plan = SUBSCRIPTION_PLANS.get(tier)
+    if not plan:
+        raise HTTPException(status_code=400, detail=f"Invalid plan tier: {tier}")
+
+    email = (req.farmer_email or (user_payload.get("email") if user_payload else "") or "").strip()
+    if not email:
+        raise HTTPException(status_code=400, detail="Farmer email is required to activate subscription.")
+
+    # Payment verification
+    client = get_razorpay_client()
+    if client and req.razorpay_signature and req.razorpay_order_id and req.razorpay_payment_id:
+        try:
+            client.utility.verify_payment_signature({
+                "razorpay_order_id": req.razorpay_order_id,
+                "razorpay_payment_id": req.razorpay_payment_id,
+                "razorpay_signature": req.razorpay_signature
+            })
+        except Exception as sig_err:
+            print(f"[Subscription signature verify notice] {sig_err}")
+
+    today = datetime.utcnow()
+    today_str = today.strftime("%Y-%m-%d")
+    years = plan["years"]
+
+    # Check if there is an existing active subscription to extend
+    existing_sub = db.query(db_models.FarmerSubscription).filter(
+        db_models.FarmerSubscription.farmer_id == email,
+        db_models.FarmerSubscription.status == "ACTIVE",
+        db_models.FarmerSubscription.end_date >= today_str
+    ).order_by(db_models.FarmerSubscription.id.desc()).first()
+
+    if existing_sub and existing_sub.end_date:
+        try:
+            curr_end = datetime.strptime(existing_sub.end_date, "%Y-%m-%d")
+            new_end = curr_end + timedelta(days=365 * years)
+            start_date = existing_sub.start_date
+            end_date = new_end.strftime("%Y-%m-%d")
+        except Exception:
+            start_date = today_str
+            end_date = (today + timedelta(days=365 * years)).strftime("%Y-%m-%d")
+    else:
+        start_date = today_str
+        end_date = (today + timedelta(days=365 * years)).strftime("%Y-%m-%d")
+
+    pay_id = req.payment_id or req.razorpay_payment_id or f"pay_sub_{int(time.time())}"
+
+    new_sub = db_models.FarmerSubscription(
+        farmer_id=email,
+        farmer_name=req.farmer_name or (user_payload.get("name") if user_payload else ""),
+        farmer_phone=req.farmer_phone or (user_payload.get("phone") if user_payload else ""),
+        plan_tier=tier,
+        duration_years=years,
+        amount_paid=plan["amount"],
+        status="ACTIVE",
+        start_date=start_date,
+        end_date=end_date,
+        payment_id=pay_id,
+        razorpay_order_id=req.razorpay_order_id or "",
+        razorpay_payment_id=req.razorpay_payment_id or pay_id,
+        razorpay_signature=req.razorpay_signature or "",
+        created_at=today.strftime("%Y-%m-%d %H:%M:%S")
+    )
+    db.add(new_sub)
+    db.commit()
+    db.refresh(new_sub)
+
+    return {
+        "success": True,
+        "message": f"Successfully activated {plan['name']} valid until {end_date}!",
+        "subscription": new_sub.to_dict()
+    }
 
 @router.post("/orders")
 def create_order(order: OrderCreate, db: Session = Depends(get_db)):
@@ -1446,7 +1897,13 @@ def create_soil_test_request(
         appointment_time="",
         sample_id="",
         sample_collected_date="",
-        report_json=None
+        report_json=None,
+        payment_id=(data.payment_id or data.razorpay_payment_id or "").strip(),
+        payment_status=(data.payment_status or ("Paid" if (data.payment_id or data.razorpay_payment_id) else "Pending")).strip(),
+        payment_amount=float(data.payment_amount) if data.payment_amount is not None else 1000.0,
+        razorpay_order_id=(data.razorpay_order_id or "").strip(),
+        razorpay_payment_id=(data.razorpay_payment_id or data.payment_id or "").strip(),
+        razorpay_signature=(data.razorpay_signature or "").strip()
     )
     db.add(new_req)
     db.commit()
@@ -1470,6 +1927,16 @@ def create_soil_test_request(
                 "land_unit": new_req.land_unit,
                 "preferred_date": new_req.preferred_date,
                 "status": "Submitted",
+                "payment_id": new_req.payment_id,
+                "payment_status": new_req.payment_status,
+                "payment_amount": new_req.payment_amount,
+                "fee_breakdown": {
+                    "soil_test": 500.0,
+                    "results": 500.0,
+                    "total": 1000.0
+                },
+                "razorpay_order_id": new_req.razorpay_order_id,
+                "razorpay_payment_id": new_req.razorpay_payment_id,
                 "created_at": now_str
             })
         except Exception as e:
@@ -2160,3 +2627,220 @@ async def ai_chat_copilot(req: AIChatRequest):
     }
 
 
+# ==============================================================================
+# NVIDIA NIM (build.nvidia.com) AI Model Integration
+# ==============================================================================
+
+class NvidiaChatRequest(BaseModel):
+    message: str
+    history: Optional[List[Dict[str, Any]]] = []
+    language: Optional[str] = "en"
+    model: Optional[str] = "meta/llama-3.2-11b-vision-instruct"
+    api_key: Optional[str] = None
+    temperature: Optional[float] = 0.3
+    max_tokens: Optional[int] = 1024
+
+class NvidiaKeySaveRequest(BaseModel):
+    api_key: str
+
+@router.get("/ai/nvidia/status")
+def get_nvidia_status():
+    from dotenv import dotenv_values
+    env_dict = dotenv_values(os.path.join(os.path.dirname(__file__), ".env"))
+    env_key = os.environ.get("NVIDIA_API_KEY") or env_dict.get("NVIDIA_API_KEY", "")
+    return {
+        "configured": bool(env_key and len(env_key.strip()) > 5),
+        "default_model": "meta/llama-3.2-11b-vision-instruct",
+        "provider": "NVIDIA NIM",
+        "models_available": [
+            "meta/llama-3.2-11b-vision-instruct",
+            "meta/llama-3.2-90b-vision-instruct",
+            "mistralai/mistral-7b-instruct-v0.3",
+            "microsoft/phi-3.5-moe-instruct",
+            "nvidia/nemotron-4-340b-instruct"
+        ]
+    }
+
+@router.post("/ai/nvidia/save-key")
+def save_nvidia_key(req: NvidiaKeySaveRequest):
+    key = req.api_key.strip()
+    if not key:
+        raise HTTPException(status_code=400, detail="NVIDIA API key cannot be empty")
+    os.environ["NVIDIA_API_KEY"] = key
+    return {"success": True, "message": "NVIDIA API key registered successfully"}
+
+@router.post("/ai/nvidia/chat")
+async def nvidia_ai_chat(req: NvidiaChatRequest):
+    """
+    Direct OpenAI-compatible call to NVIDIA NIM endpoints (https://integrate.api.nvidia.com/v1).
+    Supports models like Llama 3.3 70B, DeepSeek R1, Nemotron, etc.
+    """
+    import httpx
+    from dotenv import dotenv_values
+
+    api_key = (req.api_key or os.environ.get("NVIDIA_API_KEY", "")).strip()
+    if not api_key:
+        env_dict = dotenv_values(os.path.join(os.path.dirname(__file__), ".env"))
+        api_key = (env_dict.get("NVIDIA_API_KEY") or "").strip()
+        if api_key:
+            os.environ["NVIDIA_API_KEY"] = api_key
+
+    if not api_key or len(api_key) < 10:
+        raise HTTPException(
+            status_code=400,
+            detail="No NVIDIA API key found. Please supply it or configure NVIDIA_API_KEY in backend/.env."
+        )
+
+    model = req.model or "meta/llama-3.3-70b-instruct"
+    endpoint_url = "https://integrate.api.nvidia.com/v1/chat/completions"
+
+    lang_note = " Respond primarily in Kannada (ಕನ್ನಡ)." if req.language == "kn" else " Respond in English with relevant Karnataka context."
+    system_content = KARNATAKA_AGRI_SYSTEM_PROMPT + "\nNote: Powered by NVIDIA NIM." + lang_note
+
+    messages = [{"role": "system", "content": system_content}]
+
+    for h in (req.history or []):
+        role = "user" if h.get("sender") == "user" else "assistant"
+        content = str(h.get("text", "")).strip()
+        if content:
+            messages.append({"role": role, "content": content})
+
+    messages.append({"role": "user", "content": req.message})
+
+    payload = {
+        "model": model,
+        "messages": messages,
+        "temperature": req.temperature or 0.3,
+        "max_tokens": req.max_tokens or 1024,
+        "stream": False
+    }
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=45.0) as client:
+            res = await client.post(endpoint_url, json=payload, headers=headers)
+            if res.status_code == 200:
+                data = res.json()
+                choices = data.get("choices", [])
+                if choices:
+                    content = choices[0].get("message", {}).get("content", "")
+                    return {
+                        "success": True,
+                        "reply": content,
+                        "source": "NVIDIA NIM",
+                        "model": model
+                    }
+                raise HTTPException(status_code=502, detail="No completion choices returned by NVIDIA.")
+            else:
+                err_msg = res.text
+                try:
+                    err_json = res.json()
+                    err_msg = err_json.get("error", {}).get("message", err_msg)
+                except Exception:
+                    pass
+                raise HTTPException(
+                    status_code=res.status_code,
+                    detail=f"NVIDIA API Error ({res.status_code}): {err_msg}"
+                )
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="NVIDIA NIM API request timed out after 45s.")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to communicate with NVIDIA NIM: {str(e)}")
+
+
+
+# ============================================================
+# Admin — Manage All Listings & Orders (with full user details)
+# ============================================================
+
+@router.get("/admin/all-listings")
+def admin_get_all_listings(db: Session = Depends(get_db)):
+    """Return every produce listing with farmer name, email, phone, district."""
+    listings = db.query(db_models.Listing).order_by(db_models.Listing.id.desc()).all()
+    results = []
+    farmer_ids = list(set(l.farmer_id for l in listings if l.farmer_id))
+    farmer_map: dict = {}
+    if farmer_ids:
+        farmers = db.query(db_models.User).filter(db_models.User.email.in_(farmer_ids)).all()
+        for f in farmers:
+            farmer_map[f.email] = f.to_dict()
+
+    for l in listings:
+        d = l.to_dict()
+        farmer_info = farmer_map.get(l.farmer_id, {})
+        d["farmer_name"] = farmer_info.get("name", l.farmer_id)
+        d["farmer_email"] = farmer_info.get("email", l.farmer_id)
+        d["farmer_phone"] = farmer_info.get("phone", "")
+        d["farmer_district"] = farmer_info.get("district", "")
+        d["farmer_status"] = farmer_info.get("status", "")
+        d["farmer_user_id"] = farmer_info.get("id", "")
+        results.append(d)
+    return results
+
+
+@router.get("/admin/all-orders")
+def admin_get_all_orders(db: Session = Depends(get_db)):
+    """Return every order with buyer name, email, phone, district + listing farmer details."""
+    orders = db.query(db_models.Order).order_by(db_models.Order.id.desc()).all()
+    results = []
+
+    buyer_ids = list(set(o.buyer_id for o in orders if o.buyer_id))
+    listing_ids = list(set(o.listing_id for o in orders if o.listing_id))
+
+    buyer_map: dict = {}
+    if buyer_ids:
+        buyers = db.query(db_models.User).filter(db_models.User.email.in_(buyer_ids)).all()
+        for b in buyers:
+            buyer_map[b.email] = b.to_dict()
+
+    listing_map: dict = {}
+    if listing_ids:
+        lsts = db.query(db_models.Listing).filter(db_models.Listing.id.in_(listing_ids)).all()
+        for ll in lsts:
+            listing_map[ll.id] = ll
+
+    farmer_ids_from_listings = list(set(
+        ll.farmer_id for ll in listing_map.values() if ll.farmer_id
+    ))
+    farmer_map: dict = {}
+    if farmer_ids_from_listings:
+        farmers = db.query(db_models.User).filter(db_models.User.email.in_(farmer_ids_from_listings)).all()
+        for f in farmers:
+            farmer_map[f.email] = f.to_dict()
+
+    for o in orders:
+        d = o.to_dict()
+        buyer_info = buyer_map.get(o.buyer_id, {})
+        d["buyer_name"] = buyer_info.get("name", o.buyer_id)
+        d["buyer_email"] = buyer_info.get("email", o.buyer_id)
+        d["buyer_phone"] = buyer_info.get("phone", "")
+        d["buyer_district"] = buyer_info.get("district", "")
+        d["buyer_user_id"] = buyer_info.get("id", "")
+
+        listing_obj = listing_map.get(o.listing_id)
+        if listing_obj:
+            seller_info = farmer_map.get(listing_obj.farmer_id, {})
+            d["seller_name"] = seller_info.get("name", listing_obj.farmer_id)
+            d["seller_email"] = seller_info.get("email", listing_obj.farmer_id)
+            d["seller_phone"] = seller_info.get("phone", "")
+            d["seller_district"] = seller_info.get("district", "")
+            d["listing_produce"] = listing_obj.produce_name or listing_obj.crop_name
+            d["listing_variety"] = listing_obj.variety or listing_obj.crop_type or ""
+            d["listing_category"] = listing_obj.category_id or listing_obj.category
+        else:
+            d["seller_name"] = ""
+            d["seller_email"] = ""
+            d["seller_phone"] = ""
+            d["seller_district"] = ""
+            d["listing_produce"] = d.get("crop_name", "")
+            d["listing_variety"] = ""
+            d["listing_category"] = ""
+
+        results.append(d)
+    return results

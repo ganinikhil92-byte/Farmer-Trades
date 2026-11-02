@@ -1,10 +1,14 @@
-/* ProduceDetailModal.css — Farmer Trades */
+/* ==========================================================================
+   Farmer Trades — Produce Detail & Offer Modal Styling
+   Botanical Obsidian & Emerald Glass Theme
+   ========================================================================== */
 
 .ft-modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(4px);
+  background-color: rgba(1, 10, 6, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -14,25 +18,24 @@
 }
 
 @keyframes ftModalFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .ft-modal-container {
-  background-color: #ffffff;
-  border-radius: 1rem;
+  background-color: rgba(4, 26, 18, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 1.25rem;
   width: 100%;
   max-width: 860px;
   max-height: 92vh;
   overflow-y: auto;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(16, 185, 129, 0.12);
   display: flex;
   flex-direction: column;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #ffffff;
 }
 
 .ft-modal-header {
@@ -40,8 +43,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #f1f5f9;
-  background-color: #fafbfc;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+  background-color: rgba(2, 18, 12, 0.9);
 }
 
 .ft-modal-header-badges {
@@ -52,8 +55,9 @@
 }
 
 .ft-badge-category {
-  background-color: #dcfce7;
-  color: #15803d;
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.35);
   font-weight: 700;
   font-size: 0.75rem;
   padding: 0.25rem 0.625rem;
@@ -63,18 +67,19 @@
 }
 
 .ft-badge-organic {
-  background-color: #ecfdf5;
-  color: #047857;
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
   font-weight: 600;
   font-size: 0.75rem;
   padding: 0.25rem 0.625rem;
   border-radius: 9999px;
-  border: 1px solid #a7f3d0;
+  border: 1px solid rgba(52, 211, 153, 0.3);
 }
 
 .ft-badge-grade {
-  background-color: #fef3c7;
-  color: #b45309;
+  background-color: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
   font-weight: 700;
   font-size: 0.75rem;
   padding: 0.25rem 0.625rem;
@@ -88,35 +93,37 @@
 }
 
 .ft-icon-btn {
-  background: #f1f5f9;
-  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #475569;
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
 }
 
 .ft-icon-btn:hover {
-  background: #e2e8f0;
-  color: #1e293b;
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
 }
 
 .ft-icon-btn.active-fav {
-  background: #fee2e2;
-  color: #dc2626;
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #f87171;
 }
 
 .ft-copied-tooltip {
   position: absolute;
   top: 115%;
   right: 0;
-  background: #1e293b;
+  background: #02120b;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
   font-size: 0.7rem;
   padding: 0.25rem 0.5rem;
@@ -134,14 +141,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .ft-close-btn:hover {
-  background: #fee2e2;
-  color: #dc2626;
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
 }
 
 /* Modal Body */
@@ -162,9 +169,10 @@
   position: relative;
   border-radius: 0.75rem;
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  background: #0f172a;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  background: #02120b;
   height: 260px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .ft-modal-main-img {
@@ -178,7 +186,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  background: linear-gradient(to top, rgba(2, 15, 9, 0.95), transparent);
   color: #ffffff;
   padding: 1rem 0.75rem 0.5rem;
   display: flex;
@@ -190,8 +198,8 @@
 .ft-farmer-summary-card {
   margin-top: 1rem;
   padding: 1rem;
-  background: #f8faf7;
-  border: 1px solid #e5e7eb;
+  background: rgba(2, 18, 12, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 0.75rem;
 }
 
@@ -205,7 +213,7 @@
 .ft-farmer-avatar {
   width: 2.75rem;
   height: 2.75rem;
-  background: #15803d;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
   border-radius: 50%;
   display: flex;
@@ -213,12 +221,13 @@
   justify-content: center;
   font-weight: 800;
   font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
 }
 
 .ft-farmer-name {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #1f2937;
+  color: #ffffff;
   display: flex;
   align-items: center;
   gap: 0.375rem;
@@ -229,8 +238,9 @@
   align-items: center;
   gap: 0.2rem;
   font-size: 0.7rem;
-  color: #15803d;
-  background: #dcfce7;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(52, 211, 153, 0.35);
   padding: 0.1rem 0.4rem;
   border-radius: 9999px;
   font-weight: 600;
@@ -238,7 +248,7 @@
 
 .ft-farmer-rating {
   font-size: 0.75rem;
-  color: #4b5563;
+  color: rgba(255, 255, 255, 0.6);
   margin-top: 0.125rem;
 }
 
@@ -247,8 +257,8 @@
   flex-direction: column;
   gap: 0.5rem;
   font-size: 0.825rem;
-  color: #374151;
-  border-top: 1px solid #e5e7eb;
+  color: rgba(255, 255, 255, 0.75);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 0.75rem;
 }
 
@@ -259,7 +269,7 @@
 }
 
 .ft-detail-icon {
-  color: #15803d;
+  color: #34d399;
   flex-shrink: 0;
 }
 
@@ -267,19 +277,19 @@
 .ft-modal-title {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #111827;
+  color: #ffffff;
   line-height: 1.25;
 }
 
 .ft-modal-variety {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.55);
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
 
 .ft-modal-price-box {
-  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-  border: 1px solid #bbf7d0;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.3);
   border-radius: 0.75rem;
   padding: 0.875rem 1.25rem;
   margin: 1rem 0;
@@ -288,7 +298,7 @@
 .ft-price-primary {
   font-size: 1.75rem;
   font-weight: 800;
-  color: #15803d;
+  color: #34d399;
   display: flex;
   align-items: baseline;
   gap: 0.375rem;
@@ -297,22 +307,22 @@
 .ft-price-unit {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #166534;
+  color: #a7f3d0;
 }
 
 .ft-price-secondary {
   font-size: 0.825rem;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.8);
   margin-top: 0.25rem;
 }
 
 .ft-price-subtext {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .ft-modal-tabs {
   display: flex;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 1.25rem;
 }
 
@@ -325,20 +335,20 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.65);
   border-bottom: 2px solid transparent;
   margin-bottom: -2px;
   transition: all 0.2s ease;
 }
 
 .ft-tab-btn.active {
-  color: #15803d;
-  border-bottom-color: #15803d;
+  color: #34d399;
+  border-bottom-color: #34d399;
 }
 
 .ft-modal-desc {
   font-size: 0.875rem;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.75);
   line-height: 1.6;
   margin-bottom: 1.25rem;
 }
@@ -351,8 +361,8 @@
 }
 
 .ft-spec-card {
-  background: #f9fafb;
-  border: 1px solid #f3f4f6;
+  background: rgba(2, 18, 12, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 0.5rem;
   padding: 0.625rem 0.875rem;
   display: flex;
@@ -361,7 +371,7 @@
 
 .ft-spec-label {
   font-size: 0.7rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
   font-weight: 600;
 }
@@ -369,7 +379,7 @@
 .ft-spec-val {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #111827;
+  color: #ffffff;
   margin-top: 0.25rem;
 }
 
@@ -377,31 +387,32 @@
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  background: #fffbeb;
-  border: 1px solid #fef3c7;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   font-size: 0.75rem;
-  color: #92400e;
+  color: #fde68a;
   margin-bottom: 1.25rem;
 }
 
 .ft-btn-primary-action {
   width: 100%;
-  background-color: #15803d;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
   padding: 0.875rem;
-  border-radius: 0.5rem;
+  border-radius: 9999px;
   font-size: 0.95rem;
   font-weight: 700;
-  border: none;
+  border: 1px solid rgba(52, 211, 153, 0.4);
   cursor: pointer;
-  box-shadow: 0 4px 6px -1px rgba(21, 128, 61, 0.3);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
   transition: all 0.2s ease;
 }
 
 .ft-btn-primary-action:hover {
-  background-color: #166534;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.5);
 }
 
 /* Offer Form */
@@ -415,9 +426,9 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: #fef2f2;
-  border: 1px solid #fee2e2;
-  color: #b91c1c;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
   padding: 0.625rem 0.875rem;
   border-radius: 0.375rem;
   font-size: 0.8rem;
@@ -444,64 +455,67 @@
 .ft-input-group label {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .ft-input-group input,
 .ft-input-group textarea {
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.5rem;
   padding: 0.5rem 0.75rem;
   font-size: 0.85rem;
-  color: #111827;
+  color: #ffffff;
   outline: none;
+  background: rgba(2, 18, 12, 0.8);
   transition: border-color 0.15s ease;
 }
 
 .ft-input-group input:focus,
 .ft-input-group textarea:focus {
-  border-color: #15803d;
-  box-shadow: 0 0 0 2px rgba(21, 128, 61, 0.15);
+  border-color: #34d399;
+  box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.2);
 }
 
 .ft-price-input-wrap {
   display: flex;
   align-items: center;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.5rem;
   overflow: hidden;
+  background: rgba(2, 18, 12, 0.8);
 }
 
 .ft-currency-prefix {
-  background: #f3f4f6;
+  background: rgba(255, 255, 255, 0.08);
   padding: 0.5rem 0.75rem;
   font-weight: 700;
-  color: #374151;
+  color: #34d399;
   font-size: 0.85rem;
-  border-right: 1px solid #d1d5db;
+  border-right: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .ft-price-input-wrap input {
   border: none;
   border-radius: 0;
   width: 100%;
+  background: transparent;
 }
 
 .ft-input-hint {
   font-size: 0.7rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .ft-calc-box {
-  background: #f8fafc;
-  border: 1px dashed #cbd5e1;
+  background: rgba(2, 18, 12, 0.6);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
   border-radius: 0.5rem;
   padding: 0.75rem;
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
   font-size: 0.8rem;
-  color: #475569;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .ft-calc-row {
@@ -510,27 +524,27 @@
 }
 
 .ft-calc-total {
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 0.5rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #ffffff;
 }
 
 .ft-calc-total-num {
   font-size: 1.1rem;
-  color: #15803d;
+  color: #34d399;
 }
 
 .ft-submit-offer-btn {
-  background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
   padding: 0.75rem;
-  border-radius: 0.5rem;
+  border-radius: 9999px;
   font-size: 0.95rem;
   font-weight: 700;
-  border: none;
+  border: 1px solid rgba(52, 211, 153, 0.4);
   cursor: pointer;
-  box-shadow: 0 4px 6px -1px rgba(21, 128, 61, 0.3);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
   transition: transform 0.15s ease;
 }
 
@@ -548,42 +562,43 @@
 }
 
 .ft-success-icon {
-  color: #15803d;
+  color: #34d399;
 }
 
 .ft-offer-success-box h3 {
   font-size: 1.25rem;
   font-weight: 800;
-  color: #111827;
+  color: #ffffff;
 }
 
 .ft-offer-success-box p {
   font-size: 0.85rem;
-  color: #4b5563;
+  color: rgba(255, 255, 255, 0.7);
   max-width: 380px;
 }
 
 .ft-offer-receipt {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.28);
   padding: 0.75rem 1.25rem;
   border-radius: 0.5rem;
   font-size: 0.85rem;
-  color: #166534;
+  color: #34d399;
   margin: 0.5rem 0;
 }
 
 .ft-btn-secondary {
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
+  border-radius: 9999px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #374151;
+  color: #ffffff;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .ft-btn-secondary:hover {
-  background: #e5e7eb;
+  background: rgba(255, 255, 255, 0.15);
 }

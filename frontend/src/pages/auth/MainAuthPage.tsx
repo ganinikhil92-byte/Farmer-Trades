@@ -1,6 +1,7 @@
-import React, { useState, useEffect, FormEvent } from 'react';
+import React, { useState, useEffect, useRef, FormEvent } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth, UserRole } from '../../context/AuthContext';
+import { useVideoScrub } from '../../hooks/useVideoScrub';
 import {
   Mail,
   Lock,
@@ -13,54 +14,27 @@ import {
   ShieldCheck,
   KeyRound,
   User,
-  Phone
+  Phone,
+  Sprout,
+  ShoppingCart,
+  Check,
+  X,
+  RotateCcw,
 } from 'lucide-react';
 import { KARNATAKA_DISTRICTS } from '../../data/farmerTradesData';
 import './MainAuthPage.css';
 
-/* ── Mint Twin Leaf Logo ── */
-const FarmerTradesLogo: React.FC = () => (
-  <div className="ft-logo-container">
-    <svg width="34" height="34" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M12 28C8 21 4 14 12 8C19 8 20 18 12 28Z" fill="#6EE7B7" opacity="0.9" />
-      <path d="M14 27C17 18 24 10 32 10C35 18 26 27 14 27Z" fill="#A7F3D0" />
-      <path d="M12 28C14 32 17 35 20 37" stroke="#6EE7B7" strokeWidth="2.5" strokeLinecap="round" />
-    </svg>
-    <div className="ft-logo-text-group">
-      <span className="ft-logo-title">Farmer Trades</span>
-      <span className="ft-logo-tagline">GROW SMARTER. TRADE BETTER.</span>
-    </div>
-  </div>
-);
-
-/* ── Farmer Outline Icon (Straw Hat & Leaf) ── */
-const FarmerOutlineIcon: React.FC = () => (
-  <svg width="46" height="46" viewBox="0 0 48 48" fill="none" stroke="#86EFAC" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M7 23 C13 21, 18 15, 24 15 C30 15, 35 21, 41 23 C35 24, 13 24, 7 23 Z" />
-    <path d="M18 15 C18 11, 20 8, 24 8 C28 8, 30 11, 30 15" />
-    <circle cx="24" cy="27" r="5" />
-    <path d="M15 41 C15 35, 18 33, 24 33 C30 33, 33 35, 33 41" />
-    <path d="M37 34 C40 31, 42 27, 41 23" />
-    <path d="M41 23 C38 23, 36 25, 37 27 C38 29, 40 27, 41 23 Z" />
-    <path d="M39 28 C42 28, 44 30, 43 32 C42 34, 40 32, 39 28 Z" />
-  </svg>
-);
-
-/* ── Buyer Outline Icon (Shopping Cart with Leaf) ── */
-const BuyerOutlineIcon: React.FC = () => (
-  <svg width="46" height="46" viewBox="0 0 48 48" fill="none" stroke="#86EFAC" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <circle cx="16" cy="39" r="2.5" />
-    <circle cx="35" cy="39" r="2.5" />
-    <path d="M8 12 L13 12 L18 32 L36 32 L40 16 L14 16" />
-    <path d="M24 25 C22 21, 23 17, 28 17 C28 22, 26 25, 24 25 Z" fill="rgba(134, 239, 172, 0.25)" />
-    <path d="M24 25 C26 23, 27 20, 28 17" strokeWidth="1.2" />
-  </svg>
-);
+/* ── Hero Video Asset ── */
+const HERO_VIDEO_SRC = '/videos/farmer-trades-hero.mp4';
 
 export const MainAuthPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, login, signup, sendOtp, verifyOtp, resetPassword, loginWithGoogle } = useAuth();
+  const { user, login, signup, sendOtp, verifyOtp, resetPassword } = useAuth();
+
+  /* ── Video Background & Mouse-Scrub ── */
+  const videoRef = useRef<HTMLVideoElement>(null);
+  useVideoScrub(videoRef);
 
   // If already logged in, redirect directly to dashboard
   useEffect(() => {
@@ -71,17 +45,43 @@ export const MainAuthPage: React.FC = () => {
     }
   }, [user, navigate]);
 
-  // View state: 'welcome' (the exact card from the image) | 'login' | 'signup' | 'forgot'
-  const [viewMode, setViewMode] = useState<'welcome' | 'login' | 'signup' | 'forgot'>(() => {
-    if (location.pathname === '/signup') return 'signup';
-    return 'welcome';
-  });
+  // View state: 'welcome' | 'login' | 'signup' | 'forgot'
+  const [viewMode, setViewMode] = useState<'welcome' | 'login' | 'signup' | 'forgot'>('login');
+
+  // Sync viewMode from URL
+  useEffect(() => {
+    if (location.pathname === '/signup') {
+      setViewMode('signup');
+      clearMessages();
+    } else {
+      setViewMode('login');
+      clearMessages();
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const r = params.get('role');
+    if (r === 'buyer') {
+      setLoginRole('buyer');
+      setSignupRole('buyer');
+    } else if (r === 'farmer') {
+      setLoginRole('farmer');
+      setSignupRole('farmer');
+    }
+  }, [location.search]);
 
   // Role selections
-  const [loginRole, setLoginRole] = useState<UserRole>('farmer');
-  const [signupRole, setSignupRole] = useState<UserRole>('farmer');
+  const [loginRole, setLoginRole] = useState<UserRole>(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('role') === 'buyer' ? 'buyer' : 'farmer';
+  });
+  const [signupRole, setSignupRole] = useState<UserRole>(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('role') === 'buyer' ? 'buyer' : 'farmer';
+  });
 
-  // Form states (empty by default for user to enter their credentials)
+  // Form states
   const [loginEmail, setLoginEmail] = useState(() => {
     return localStorage.getItem('agro_remembered_email') || '';
   });
@@ -140,37 +140,26 @@ export const MainAuthPage: React.FC = () => {
     setSuccessMsg('');
   };
 
-  // Switch role without prefilling dummy credentials
+  // Switch role without losing fields
   const handleSelectLoginRole = (role: UserRole) => {
     setLoginRole(role);
     clearMessages();
   };
 
-  // ── Action Handlers from Welcome Screen ──
-  const openFarmerLogin = () => {
-    setLoginRole('farmer');
+  const handleSelectSignupRole = (role: UserRole) => {
+    setSignupRole(role);
     clearMessages();
-    setViewMode('login');
   };
 
-  const openFarmerRegister = () => {
-    setSignupRole('farmer');
+  // Clear form fields and saved email
+  const handleClearLoginForm = () => {
+    setLoginEmail('');
+    setLoginPassword('');
+    localStorage.removeItem('agro_remembered_email');
+    localStorage.removeItem('agro_remember_me');
+    setRememberMe(false);
     clearMessages();
-    setViewMode('signup');
   };
-
-  const openBuyerLogin = () => {
-    setLoginRole('buyer');
-    clearMessages();
-    setViewMode('login');
-  };
-
-  const openBuyerRegister = () => {
-    setSignupRole('buyer');
-    clearMessages();
-    setViewMode('signup');
-  };
-
 
   // ── Handle Email/Password Login ──
   const handleLoginSubmit = async (e: FormEvent) => {
@@ -257,7 +246,6 @@ export const MainAuthPage: React.FC = () => {
     e.preventDefault();
     clearMessages();
 
-    // Validate all required fields
     if (!signupName.trim()) {
       setErrorMsg('Please enter your full name.');
       return;
@@ -374,624 +362,703 @@ export const MainAuthPage: React.FC = () => {
   };
 
   return (
-    <div className="ft-hero-page-root">
-      <div className="ft-hero-overlay"></div>
+    <div className="ft-auth-root">
+      {/* ── 1. Full-Screen Agricultural Background Video with Fallback ── */}
+      <div className="ft-auth-bg-wrapper">
+        <video
+          ref={videoRef}
+          className="ft-auth-video"
+          muted
+          playsInline
+          preload="auto"
+          poster="/farmer_hero_bg.jpg"
+          aria-hidden="true"
+        >
+          <source src={HERO_VIDEO_SRC} type="video/mp4" />
+        </video>
+        <div
+          className="ft-auth-bg-fallback"
+          style={{ backgroundImage: "url('/farmer_hero_bg.jpg')" }}
+          aria-hidden="true"
+        />
+        {/* ── 2. Ambient Dark Mood Vignette ── */}
+        <div className="ft-auth-overlay" aria-hidden="true" />
+      </div>
 
-      {/* Main Grid Container */}
-      <div className="ft-hero-container">
-        {/* ── LEFT COLUMN: Brand Title, Slogan & Agricultural Still Life ── */}
-        <div className="ft-hero-left-col">
-          <FarmerTradesLogo />
+      {/* ── Main Content: Responsive Container ── */}
+      <main className="relative z-10 flex-1 flex flex-col justify-center items-center w-full min-h-screen py-8 px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1440px] mx-auto">
+        
+        {/* Mobile Brand Header: Visible below lg */}
+        <div className="lg:hidden flex flex-col items-center text-center mb-8 px-2 w-full max-w-[480px]">
+          <div className="flex items-center gap-3 mb-1.5">
+            <Sprout size={32} className="text-[#86efac]" strokeWidth={2.4} />
+            <h1
+              className="text-[28px] font-bold text-white leading-tight tracking-tight"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
+              Farmer Trades
+            </h1>
+          </div>
+          <p className="text-[#86efac] text-[10px] font-bold tracking-[0.22em] uppercase">
+            GROW SMARTER. TRADE BETTER.
+          </p>
+        </div>
 
-          <div className="ft-hero-text-block">
-            <h1 className="ft-hero-main-title">
-              Smart Agricultural<br />
-              Crop Prediction and<br />
+        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-8">
+          
+          {/* ── 3. LEFT HERO CONTENT / BRANDING SECTION (Desktop only) ── */}
+          <div className="hidden lg:flex lg:w-[52%] max-w-2xl flex-col justify-center ft-hero-entrance pl-2 lg:pl-6 xl:pl-10 pr-6">
+            
+            {/* Brand Logo & Tagline */}
+            <div className="flex items-center gap-3.5 mb-8">
+              <div className="text-[#86efac]">
+                <Sprout size={36} strokeWidth={2.4} />
+              </div>
+              <div>
+                <h3
+                  className="text-white text-[28px] sm:text-[32px] font-bold tracking-tight leading-none"
+                  style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                >
+                  Farmer Trades
+                </h3>
+                <p className="text-[#86efac] text-[10.5px] font-bold tracking-[0.22em] uppercase mt-1">
+                  GROW SMARTER. TRADE BETTER.
+                </p>
+              </div>
+            </div>
+
+            {/* Large Serif Headline */}
+            <h1
+              className="text-white tracking-tight font-bold leading-[1.08] mb-6 select-none text-[44px] sm:text-[54px] lg:text-[62px]"
+              style={{
+                fontFamily: "'Playfair Display', Georgia, serif",
+                textShadow: '0 4px 20px rgba(0, 0, 0, 0.65)',
+              }}
+            >
+              Smart Agricultural
+              <br />
+              Crop Prediction and
+              <br />
               Trading Platform
             </h1>
 
-            <p className="ft-hero-main-desc">
+            {/* Left Description */}
+            <p
+              className="text-[#e2e8f0]/85 leading-relaxed max-w-xl mb-8 select-none text-[16px] sm:text-[17px]"
+              style={{
+                textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
+              }}
+            >
               Make informed crop choices, explore market prices, and connect farmers with buyers—all in one place.
             </p>
 
-            <div className="ft-hero-motto-wrap">
-              <div className="ft-hero-motto-divider"></div>
-              <p className="ft-hero-motto-text">
-                SMARTER FARMING.<br />
-                BETTER CONNECTIONS.<br />
+            {/* Small Olive/Emerald Line & Tagline */}
+            <div className="mt-2">
+              <div className="w-12 h-[2px] bg-[#86efac] mb-5 opacity-90" />
+              <p className="uppercase tracking-[0.22em] text-[12px] font-semibold text-[#a7f3d0]/80 select-none leading-relaxed">
+                SMARTER FARMING.
+                <br />
+                BETTER CONNECTIONS.
+                <br />
                 NEW POSSIBILITIES.
               </p>
             </div>
           </div>
-        </div>
 
-        {/* ── RIGHT COLUMN: Glassmorphic Dark Emerald Card with Floating Animation ── */}
-        <div className="ft-hero-right-col">
-          <div className="ft-auth-card animate-float">
-            {/* Feedback Alerts */}
-            {errorMsg && (
-              <div className="ft-alert ft-alert-error" role="alert">
-                <AlertCircle size={16} className="ft-alert-icon" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
+          {/* ── 4. RIGHT EXACT LOGIN PANEL ── */}
+          <div className="w-full lg:w-[46%] flex flex-col items-center lg:items-end">
+            {/* Back to Home Button (outside the card so card interior matches screenshot exactly) */}
+            <div className="w-full max-w-[460px] mx-auto lg:mx-0 mb-3 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                className="inline-flex items-center gap-1.5 text-[#a7f3d0]/75 hover:text-[#74ebb0] transition-colors text-[13px] font-medium cursor-pointer bg-transparent border-none p-0 outline-none"
+              >
+                <ArrowLeft size={15} />
+                <span>Back to Home</span>
+              </button>
+            </div>
 
-            {successMsg && (
-              <div className="ft-alert ft-alert-success" role="status">
-                <CheckCircle2 size={16} className="ft-alert-icon" />
-                <span>{successMsg}</span>
-              </div>
-            )}
-
-            {/* ══════════════════════════════════════════════════════════════
-                VIEW 1: WELCOME TO FARMER TRADES (Exact Mockup Match)
-               ══════════════════════════════════════════════════════════════ */}
-            {viewMode === 'welcome' && (
-              <div className="ft-welcome-view animate-fadeIn">
-                <div className="ft-card-header">
-                  <h2 className="ft-card-heading">Welcome to Farmer Trades</h2>
-                  <p className="ft-card-subheading">Choose how you want to get started.</p>
+            <div className="w-full max-w-[460px] ft-exact-card mx-auto lg:mx-0 p-8 sm:p-9 ft-card-entrance">
+              {/* Feedback Alerts */}
+              {errorMsg && (
+                <div
+                  className="bg-rose-500/10 border border-rose-500/25 text-rose-200 rounded-lg px-3.5 py-2.5 mb-4 flex items-start gap-2 text-[13px]"
+                  role="alert"
+                >
+                  <AlertCircle size={15} className="text-rose-400 shrink-0 mt-0.5" />
+                  <span>{errorMsg}</span>
                 </div>
+              )}
 
-                {/* Section 1: For Farmers */}
-                <div className="ft-role-section">
-                  <div className="ft-role-section-top">
-                    <div className="ft-role-icon-box">
-                      <FarmerOutlineIcon />
-                    </div>
-                    <div className="ft-role-info">
-                      <h3 className="ft-role-title">For Farmers</h3>
-                      <p className="ft-role-desc">
-                        Explore crop recommendations and bring your harvest to market.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="ft-role-btn-row">
-                    <button type="button" onClick={openFarmerLogin} className="ft-btn-solid">
-                      <span>Farmer Login</span>
-                      <ArrowRight size={16} className="ft-btn-arrow" />
-                    </button>
-                    <button type="button" onClick={openFarmerRegister} className="ft-btn-outline">
-                      Register as Farmer
-                    </button>
-                  </div>
+              {successMsg && (
+                <div
+                  className="bg-emerald-500/10 border border-emerald-500/25 text-emerald-200 rounded-lg px-3.5 py-2.5 mb-4 flex items-start gap-2 text-[13px]"
+                  role="status"
+                >
+                  <CheckCircle2 size={15} className="text-emerald-400 shrink-0 mt-0.5" />
+                  <span>{successMsg}</span>
                 </div>
+              )}
 
-                <div className="ft-section-divider"></div>
-
-                {/* Section 2: For Buyers */}
-                <div className="ft-role-section">
-                  <div className="ft-role-section-top">
-                    <div className="ft-role-icon-box">
-                      <BuyerOutlineIcon />
-                    </div>
-                    <div className="ft-role-info">
-                      <h3 className="ft-role-title">For Buyers</h3>
-                      <p className="ft-role-desc">
-                        Discover fresh produce and connect directly with farmers.
-                      </p>
-                    </div>
+              {/* ══════════════════════════════════════════════════════════════
+                  VIEW 1: SIGN IN VIEW (Pixel-perfect match to screenshot)
+                 ══════════════════════════════════════════════════════════════ */}
+              {(viewMode === 'login' || viewMode === 'welcome') && (
+                <div>
+                  {/* Dynamic Heading */}
+                  <div className="mb-5">
+                    <h2
+                      className="text-[30px] sm:text-[32px] font-bold text-white tracking-tight leading-tight"
+                      style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                    >
+                      {loginRole === 'farmer' ? 'Farmer Sign In' : 'Buyer Sign In'}
+                    </h2>
+                    <p className="text-[#9ca3af] text-[13.5px] mt-1.5 leading-relaxed">
+                      {loginRole === 'farmer'
+                        ? 'Access crop listings, trade offers, and smart agriculture tools'
+                        : 'Access fresh produce, negotiate directly, and manage trades'}
+                    </p>
                   </div>
 
-                  <div className="ft-role-btn-row">
-                    <button type="button" onClick={openBuyerLogin} className="ft-btn-solid">
-                      <span>Buyer Login</span>
-                      <ArrowRight size={16} className="ft-btn-arrow" />
+                  {/* Segmented Farmer / Buyer Selector */}
+                  <div className="ft-exact-role-bar mb-5">
+                    <button
+                      type="button"
+                      onClick={() => handleSelectLoginRole('farmer')}
+                      className={`ft-exact-role-btn ${loginRole === 'farmer' ? 'active' : ''}`}
+                    >
+                      <span className="text-[16px]">🌾</span>
+                      <span>Farmer</span>
                     </button>
-                    <button type="button" onClick={openBuyerRegister} className="ft-btn-outline">
-                      Register as Buyer
+                    <button
+                      type="button"
+                      onClick={() => handleSelectLoginRole('buyer')}
+                      className={`ft-exact-role-btn ${loginRole === 'buyer' ? 'active' : ''}`}
+                    >
+                      <span className="text-[15px]">🛒</span>
+                      <span>Buyer</span>
                     </button>
                   </div>
-                </div>
 
-                {/* Card Footer Motto */}
-                <div className="ft-card-footer">
-                  <span className="ft-card-footer-line"></span>
-                  <span className="ft-card-footer-text">Growing opportunities, together.</span>
-                  <span className="ft-card-footer-line"></span>
-                </div>
-              </div>
-            )}
-
-            {/* ══════════════════════════════════════════════════════════════
-                VIEW 2: SIGN IN FORM (With Back Button & Role Toggle)
-               ══════════════════════════════════════════════════════════════ */}
-            {viewMode === 'login' && (
-              <div className="ft-form-view animate-fadeIn">
-                <div className="ft-form-top-bar">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setViewMode('welcome');
-                      clearMessages();
-                    }}
-                    className="ft-btn-back"
-                  >
-                    <ArrowLeft size={16} />
-                    <span>Back to Options</span>
-                  </button>
-                </div>
-
-                <div className="ft-card-header" style={{ marginBottom: '1.25rem' }}>
-                  <h2 className="ft-card-heading">
-                    {loginRole === 'farmer' ? 'Farmer Sign In' : 'Buyer Sign In'}
-                  </h2>
-                  <p className="ft-card-subheading">
-                    {loginRole === 'farmer'
-                      ? 'Access crop listings, trade offers, and smart agriculture tools'
-                      : 'Browse fresh farm produce, manage orders, and connect with growers'}
-                  </p>
-                </div>
-
-                {/* Dual Role Toggle */}
-                <div className="ft-role-toggle-bar">
-                  <button
-                    type="button"
-                    className={`ft-toggle-tab ${loginRole === 'farmer' ? 'active' : ''}`}
-                    onClick={() => handleSelectLoginRole('farmer')}
-                  >
-                    <span>🌾 Farmer</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`ft-toggle-tab ${loginRole === 'buyer' ? 'active' : ''}`}
-                    onClick={() => handleSelectLoginRole('buyer')}
-                  >
-                    <span>🛒 Buyer</span>
-                  </button>
-                </div>
-
-                <form onSubmit={handleLoginSubmit} className="ft-form">
-                  <div className="ft-input-group">
-                    <label className="ft-input-label">Email Address</label>
-                    <div className="ft-input-wrapper">
-                      <Mail size={18} className="ft-input-icon" />
-                      <input
-                        type="email"
-                        required
-                        value={loginEmail}
-                        onChange={(e) => setLoginEmail(e.target.value)}
-                        placeholder="e.g. yourname@gmail.com"
-                        className="ft-text-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="ft-input-group">
-                    <div className="ft-label-row">
-                      <label className="ft-input-label">Password</label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setViewMode('forgot');
-                          setForgotEmail(loginEmail);
-                          clearMessages();
-                        }}
-                        className="ft-link-text"
-                      >
-                        Forgot password?
-                      </button>
-                    </div>
-                    <div className="ft-input-wrapper">
-                      <Lock size={18} className="ft-input-icon" />
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        required
-                        value={loginPassword}
-                        onChange={(e) => setLoginPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className="ft-text-input"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="ft-eye-btn"
-                        aria-label={showPassword ? 'Hide password' : 'Show password'}
-                      >
-                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="ft-remember-row">
-                    <label className="ft-checkbox-label">
-                      <input
-                        type="checkbox"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                        className="ft-checkbox"
-                      />
-                      <span>Remember me on this device</span>
-                    </label>
-                  </div>
-
-                  <button type="submit" disabled={loading} className="ft-btn-submit">
-                    <span>{loading ? 'Signing In…' : `Sign In as ${loginRole === 'farmer' ? 'Farmer' : 'Buyer'}`}</span>
-                    <ArrowRight size={17} />
-                  </button>
-                </form>
-
-                <div className="ft-switch-prompt">
-                  <span>Don't have an account? </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSignupRole(loginRole);
-                      setViewMode('signup');
-                      clearMessages();
-                    }}
-                    className="ft-link-highlight"
-                  >
-                    Register as {loginRole === 'farmer' ? 'Farmer' : 'Buyer'}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* ══════════════════════════════════════════════════════════════
-                VIEW 3: REGISTRATION FORM (With OTP Verification)
-               ══════════════════════════════════════════════════════════════ */}
-            {viewMode === 'signup' && (
-              <div className="ft-form-view animate-fadeIn">
-                <div className="ft-form-top-bar">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setViewMode('welcome');
-                      clearMessages();
-                    }}
-                    className="ft-btn-back"
-                  >
-                    <ArrowLeft size={16} />
-                    <span>Back to Options</span>
-                  </button>
-                </div>
-
-                <div className="ft-card-header" style={{ marginBottom: '1.25rem' }}>
-                  <h2 className="ft-card-heading">
-                    Create {signupRole === 'farmer' ? 'Farmer' : 'Buyer'} Account
-                  </h2>
-                  <p className="ft-card-subheading">
-                    Join Smart Agricultural Crop Prediction and Trading Platform
-                  </p>
-                </div>
-
-                {/* Dual Role Toggle */}
-                <div className="ft-role-toggle-bar">
-                  <button
-                    type="button"
-                    className={`ft-toggle-tab ${signupRole === 'farmer' ? 'active' : ''}`}
-                    onClick={() => setSignupRole('farmer')}
-                  >
-                    <span>🌾 Farmer</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`ft-toggle-tab ${signupRole === 'buyer' ? 'active' : ''}`}
-                    onClick={() => setSignupRole('buyer')}
-                  >
-                    <span>🛒 Buyer</span>
-                  </button>
-                </div>
-
-                <form onSubmit={handleSignupSubmit} className="ft-form">
-                  <div className="ft-input-group">
-                    <label className="ft-input-label">Full Name *</label>
-                    <div className="ft-input-wrapper">
-                      <User size={18} className="ft-input-icon" />
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. Ramesh Gowda"
-                        value={signupName}
-                        onChange={(e) => setSignupName(e.target.value)}
-                        className="ft-text-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="ft-input-group">
-                    <div className="ft-label-row">
-                      <label className="ft-input-label">Email Address *</label>
-                      {isEmailVerified && (
-                        <span className="ft-verified-badge">
-                          <CheckCircle2 size={13} /> Verified
-                        </span>
-                      )}
-                    </div>
-                    <div className="ft-otp-send-row">
-                      <div className="ft-input-wrapper" style={{ flex: 1 }}>
-                        <Mail size={18} className="ft-input-icon" />
+                  {/* Sign In Form */}
+                  <form onSubmit={handleLoginSubmit} className="space-y-4">
+                    {/* Email Input */}
+                    <div>
+                      <label className="block text-[13px] text-[#9ca3af] font-medium mb-1.5">
+                        Email Address
+                      </label>
+                      <div className="relative flex items-center">
+                        <Mail size={16} className="absolute left-3.5 z-10 text-[#86efac]/40 pointer-events-none" />
                         <input
                           type="email"
                           required
-                          disabled={isEmailVerified}
-                          placeholder="you@example.com"
-                          value={signupEmail}
-                          onChange={(e) => {
-                            setSignupEmail(e.target.value);
-                            if (signupOtpSent) {
-                              setSignupOtpSent(false);
-                              setIsEmailVerified(false);
-                            }
-                          }}
-                          className="ft-text-input"
+                          value={loginEmail}
+                          onChange={(e) => setLoginEmail(e.target.value)}
+                          placeholder="nikhilgani293@gmail.com"
+                          autoComplete="email"
+                          className="ft-exact-input ft-input-with-icon"
                         />
                       </div>
-                      {!isEmailVerified ? (
-                        <button
-                          type="button"
-                          className="ft-btn-action-otp"
-                          disabled={otpLoading || !signupEmail.includes('@') || otpTimer > 0}
-                          onClick={handleRequestSignupOtp}
-                        >
-                          {otpLoading
-                            ? 'Sending…'
-                            : otpTimer > 0
-                            ? `Resend (${otpTimer}s)`
-                            : signupOtpSent
-                            ? 'Resend OTP'
-                            : 'Verify Email'}
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          className="ft-btn-action-otp"
-                          style={{ background: '#334155' }}
-                          onClick={() => {
-                            setIsEmailVerified(false);
-                            setSignupOtpSent(false);
-                            setSignupOtpCode('');
-                          }}
-                        >
-                          Change
-                        </button>
-                      )}
                     </div>
+
+                    {/* Password Input */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-[13px] text-[#9ca3af] font-medium">
+                          Password
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setViewMode('forgot');
+                            setForgotEmail(loginEmail);
+                            clearMessages();
+                          }}
+                          className="text-[#74ebb0] hover:underline text-[13px] font-medium transition-colors cursor-pointer bg-transparent border-none p-0 outline-none"
+                        >
+                          Forgot password?
+                        </button>
+                      </div>
+                      <div className="relative flex items-center">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          required
+                          value={loginPassword}
+                          onChange={(e) => setLoginPassword(e.target.value)}
+                          placeholder="••••••••••"
+                          autoComplete="current-password"
+                          className="ft-exact-input px-4 h-[48px]"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Remember Me */}
+                    <div
+                      className="flex items-center gap-2.5 pt-0.5 select-none cursor-pointer"
+                      onClick={() => setRememberMe(!rememberMe)}
+                    >
+                      <div
+                        className={`w-[18px] h-[18px] rounded flex items-center justify-center transition-colors ${
+                          rememberMe
+                            ? 'bg-[#74ebb0] text-[#052e16]'
+                            : 'border border-[#74ebb0]/40 bg-black/40'
+                        }`}
+                      >
+                        {rememberMe && <Check size={12} strokeWidth={3.5} />}
+                      </div>
+                      <span className="text-[#9ca3af] text-[13.5px] font-medium">
+                        Remember me on this device
+                      </span>
+                    </div>
+
+                    {/* Sign In Button */}
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="ft-exact-submit-btn mt-5"
+                    >
+                      <span>
+                        {loading
+                          ? 'Signing In…'
+                          : `Sign In as ${loginRole === 'farmer' ? 'Farmer' : 'Buyer'}`}
+                      </span>
+                      <ArrowRight size={17} />
+                    </button>
+                  </form>
+
+                  {/* Register Link */}
+                  <div className="text-center mt-6 text-[13.5px]">
+                    <span className="text-[#9ca3af]">Don't have an account? </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSignupRole(loginRole);
+                        setViewMode('signup');
+                        clearMessages();
+                      }}
+                      className="text-[#74ebb0] hover:underline font-semibold cursor-pointer bg-transparent border-none p-0 outline-none"
+                    >
+                      Register as {loginRole === 'farmer' ? 'Farmer' : 'Buyer'}
+                    </button>
                   </div>
 
-                  {/* OTP Input box */}
-                  {signupOtpSent && !isEmailVerified && (
-                    <div className="ft-otp-verify-box animate-fadeIn">
-                      <div className="ft-otp-verify-title">
-                        <ShieldCheck size={17} />
-                        <span>Enter 6-Digit Email Verification Code</span>
+                  {/* Admin Portal Gateway Link */}
+                  <div className="text-center mt-3 pt-3 border-t border-white/10 text-[12.5px]">
+                    <span className="text-white/45">Official Administrator? </span>
+                    <Link
+                      to="/admin/login"
+                      className="text-[#86efac] hover:underline font-semibold cursor-pointer"
+                    >
+                      Admin Portal Login →
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* ══════════════════════════════════════════════════════════════
+                  VIEW 2: REGISTRATION VIEW
+                 ══════════════════════════════════════════════════════════════ */}
+              {viewMode === 'signup' && (
+                <div>
+                  <div className="mb-5">
+                    <h2
+                      className="text-[26px] sm:text-[30px] font-bold text-white tracking-tight leading-tight"
+                      style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                    >
+                      Create {signupRole === 'farmer' ? 'Farmer' : 'Buyer'} Account
+                    </h2>
+                    <p className="text-white/45 text-[13px] mt-1.5">
+                      Join Smart Agricultural Crop Prediction and Trading Platform
+                    </p>
+                  </div>
+
+                  {/* Segmented Farmer / Buyer Selector */}
+                  <div className="ft-exact-role-bar mb-4">
+                    <button
+                      type="button"
+                      onClick={() => handleSelectSignupRole('farmer')}
+                      className={`ft-exact-role-btn ${signupRole === 'farmer' ? 'active' : ''}`}
+                    >
+                      <span className="text-[16px]">🌾</span>
+                      <span>Farmer</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSelectSignupRole('buyer')}
+                      className={`ft-exact-role-btn ${signupRole === 'buyer' ? 'active' : ''}`}
+                    >
+                      <span className="text-[15px]">🛒</span>
+                      <span>Buyer</span>
+                    </button>
+                  </div>
+
+                  {/* Signup Form */}
+                  <form onSubmit={handleSignupSubmit} className="space-y-3.5">
+                    {/* Full Name */}
+                    <div>
+                      <label className="block text-[13px] text-white/55 font-medium mb-1">
+                        Full Name *
+                      </label>
+                      <div className="relative flex items-center">
+                        <User size={15} className="absolute left-3.5 z-10 text-[#86efac]/35 pointer-events-none" />
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Ramesh Gowda"
+                          value={signupName}
+                          onChange={(e) => setSignupName(e.target.value)}
+                          className="ft-exact-input ft-input-with-icon"
+                        />
                       </div>
-                      <div className="ft-otp-send-row">
+                    </div>
+
+                    {/* Email with OTP Verification */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[13px] text-white/55 font-medium">
+                          Email Address *
+                        </label>
+                        {isEmailVerified && (
+                          <span className="inline-flex items-center gap-1 text-emerald-400 text-xs font-medium">
+                            <CheckCircle2 size={13} /> Verified
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex gap-2.5">
+                        <div className="relative flex items-center flex-1">
+                          <Mail size={15} className="absolute left-3.5 z-10 text-[#86efac]/35 pointer-events-none" />
+                          <input
+                            type="email"
+                            required
+                            disabled={isEmailVerified}
+                            placeholder="nikhilgani293@gmail.com"
+                            value={signupEmail}
+                            onChange={(e) => {
+                              setSignupEmail(e.target.value);
+                              if (signupOtpSent) {
+                                setSignupOtpSent(false);
+                                setIsEmailVerified(false);
+                              }
+                            }}
+                            className="ft-exact-input ft-input-with-icon"
+                          />
+                        </div>
+                        {!isEmailVerified ? (
+                          <button
+                            type="button"
+                            className="ft-exact-otp-btn"
+                            disabled={otpLoading || !signupEmail.includes('@') || otpTimer > 0}
+                            onClick={handleRequestSignupOtp}
+                          >
+                            {otpLoading
+                              ? 'Sending…'
+                              : otpTimer > 0
+                              ? `Resend (${otpTimer}s)`
+                              : signupOtpSent
+                              ? 'Resend OTP'
+                              : 'Verify Email'}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="ft-exact-otp-btn"
+                            style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)', color: '#ffffff' }}
+                            onClick={() => {
+                              setIsEmailVerified(false);
+                              setSignupOtpSent(false);
+                              setSignupOtpCode('');
+                            }}
+                          >
+                            Change
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* OTP Box */}
+                    {signupOtpSent && !isEmailVerified && (
+                      <div className="bg-black/40 border border-[#86efac]/30 rounded-xl p-3.5 space-y-2.5">
+                        <div className="flex items-center gap-2 text-white/90 text-xs font-medium">
+                          <ShieldCheck size={16} className="text-[#86efac]" />
+                          <span>Enter 6-Digit Email Verification Code</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            maxLength={6}
+                            placeholder="• • • • • •"
+                            value={signupOtpCode}
+                            onChange={(e) => setSignupOtpCode(e.target.value.replace(/\D/g, ''))}
+                            className="ft-exact-input text-center tracking-[0.3em] font-mono h-[46px]"
+                          />
+                          <button
+                            type="button"
+                            disabled={otpLoading || signupOtpCode.trim().length !== 6}
+                            onClick={handleVerifySignupOtp}
+                            className="ft-exact-otp-btn h-[46px]"
+                          >
+                            {otpLoading ? 'Verifying…' : 'Submit'}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Password & Confirm Password */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[13px] text-white/55 font-medium mb-1">
+                          Password *
+                        </label>
+                        <div className="relative flex items-center">
+                          <Lock size={15} className="absolute left-3.5 z-10 text-[#86efac]/35 pointer-events-none" />
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            required
+                            placeholder="••••••••••"
+                            value={signupPassword}
+                            onChange={(e) => setSignupPassword(e.target.value)}
+                            className="ft-exact-input ft-input-with-icon text-sm"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-[13px] text-white/55 font-medium mb-1">
+                          Confirm Password *
+                        </label>
+                        <div className="relative flex items-center">
+                          <Lock size={15} className="absolute left-3.5 z-10 text-[#86efac]/35 pointer-events-none" />
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            required
+                            placeholder="Repeat password"
+                            value={signupConfirmPassword}
+                            onChange={(e) => setSignupConfirmPassword(e.target.value)}
+                            className="ft-exact-input ft-input-with-icon text-sm"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Mobile Number */}
+                    <div>
+                      <label className="block text-[13px] text-white/55 font-medium mb-1">
+                        Mobile Number (10 Digits) *
+                      </label>
+                      <div className="relative flex items-center">
+                        <Phone size={15} className="absolute left-3.5 z-10 text-[#86efac]/35 pointer-events-none" />
+                        <input
+                          type="tel"
+                          maxLength={10}
+                          required
+                          placeholder="e.g. 9876543210"
+                          value={signupPhone}
+                          onChange={(e) => setSignupPhone(e.target.value.replace(/\D/g, ''))}
+                          className="ft-exact-input ft-input-with-icon"
+                        />
+                      </div>
+                    </div>
+
+                    {/* District & Taluk */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[13px] text-white/55 font-medium mb-1">
+                          District *
+                        </label>
+                        <select
+                          value={signupDistrict}
+                          onChange={(e) => setSignupDistrict(e.target.value)}
+                          className="ft-exact-select px-4 h-[48px]"
+                        >
+                          {KARNATAKA_DISTRICTS.map((d) => (
+                            <option key={d} value={d}>
+                              {d}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[13px] text-white/55 font-medium mb-1">
+                          Taluk / Mandi
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Maddur / APMC"
+                          value={signupTaluk}
+                          onChange={(e) => setSignupTaluk(e.target.value)}
+                          className="ft-exact-input px-4 h-[48px]"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Submit Button */}
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="ft-exact-submit-btn mt-4"
+                    >
+                      <span>
+                        {loading
+                          ? 'Creating Account…'
+                          : !isEmailVerified
+                          ? '⚠ Verify Email First to Register'
+                          : 'Complete Account Registration →'}
+                      </span>
+                    </button>
+                  </form>
+
+                  {/* Switch to Sign In */}
+                  <div className="text-center mt-5 text-[13px]">
+                    <span className="text-[#9ca3af]">Already have an account? </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLoginRole(signupRole);
+                        setViewMode('login');
+                        clearMessages();
+                      }}
+                      className="text-[#86efac] hover:underline font-semibold cursor-pointer bg-transparent border-none p-0 outline-none"
+                    >
+                      Sign In here
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* ══════════════════════════════════════════════════════════════
+                  VIEW 3: RESET PASSWORD VIEW
+                 ══════════════════════════════════════════════════════════════ */}
+              {viewMode === 'forgot' && (
+                <div>
+                  <div className="mb-5">
+                    <div className="w-11 h-11 rounded-full bg-[#86efac]/10 border border-[#86efac]/20 flex items-center justify-center mb-3.5 text-[#86efac]">
+                      <KeyRound size={20} />
+                    </div>
+                    <h2
+                      className="text-[26px] sm:text-[30px] font-bold text-white tracking-tight leading-tight"
+                      style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+                    >
+                      Reset Password
+                    </h2>
+                    <p className="text-white/45 text-[13px] mt-1.5">
+                      Verify your registered email with an OTP code to update your password
+                    </p>
+                  </div>
+
+                  {!forgotOtpSent ? (
+                    <form onSubmit={handleSendForgotOtp} className="space-y-5">
+                      <div>
+                      <label className="block text-[13px] text-white/55 font-medium mb-1.5">
+                          Registered Email Address
+                        </label>
+                        <div className="relative flex items-center">
+                          <Mail size={17} className="absolute left-3.5 z-10 text-[#86efac]/40 pointer-events-none" />
+                          <input
+                            type="email"
+                            required
+                            placeholder="e.g. farmer@agro.com"
+                            value={forgotEmail}
+                            onChange={(e) => setForgotEmail(e.target.value)}
+                            className="ft-exact-input ft-input-with-icon"
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="ft-exact-submit-btn mt-4"
+                      >
+                        <span>{loading ? 'Sending Code…' : 'Send Verification OTP →'}</span>
+                      </button>
+                    </form>
+                  ) : (
+                    <form onSubmit={handleResetPasswordSubmit} className="space-y-4">
+                      <div>
+                        <label className="block text-[13px] text-white/55 font-medium mb-1">
+                          Enter 6-Digit OTP sent to {forgotEmail}
+                        </label>
                         <input
                           type="text"
                           maxLength={6}
+                          required
                           placeholder="• • • • • •"
-                          value={signupOtpCode}
-                          onChange={(e) => setSignupOtpCode(e.target.value.replace(/\D/g, ''))}
-                          className="ft-otp-code-input"
+                          value={forgotOtp}
+                          onChange={(e) => setForgotOtp(e.target.value.replace(/\D/g, ''))}
+                          className="ft-exact-input text-center tracking-[0.3em] font-mono h-[48px]"
                         />
-                        <button
-                          type="button"
-                          disabled={otpLoading || signupOtpCode.trim().length !== 6}
-                          onClick={handleVerifySignupOtp}
-                          className="ft-btn-action-otp"
-                        >
-                          {otpLoading ? 'Verifying…' : 'Submit Code'}
-                        </button>
                       </div>
-                    </div>
+
+                      <div>
+                        <label className="block text-[13px] text-white/55 font-medium mb-1">
+                          New Password (minimum 8 characters)
+                        </label>
+                        <div className="relative flex items-center">
+                          <Lock size={16} className="absolute left-3.5 z-10 text-[#86efac]/40 pointer-events-none" />
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            required
+                            placeholder="••••••••"
+                            value={forgotNewPw}
+                            onChange={(e) => setForgotNewPw(e.target.value)}
+                            className="ft-exact-input ft-input-with-icon pr-10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 text-white/50 hover:text-white transition-colors cursor-pointer p-1 bg-transparent border-none outline-none"
+                          >
+                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[13px] text-white/55 font-medium mb-1">
+                          Confirm New Password
+                        </label>
+                        <div className="relative flex items-center">
+                          <Lock size={16} className="absolute left-3.5 z-10 text-[#86efac]/40 pointer-events-none" />
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            required
+                            placeholder="••••••••"
+                            value={forgotConfirmPw}
+                            onChange={(e) => setForgotConfirmPw(e.target.value)}
+                            className="ft-exact-input ft-input-with-icon"
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="ft-exact-submit-btn mt-5"
+                      >
+                        <span>{loading ? 'Updating Password…' : 'Update Password & Sign In →'}</span>
+                      </button>
+                    </form>
                   )}
 
-                  {/* Password, Mobile and District Fields Directly Available */}
-                  <div className="ft-input-row-2col">
-                    <div className="ft-input-group">
-                      <label className="ft-input-label">Password *</label>
-                      <div className="ft-input-wrapper">
-                        <Lock size={18} className="ft-input-icon" />
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          required
-                          placeholder="Min 8 characters"
-                          value={signupPassword}
-                          onChange={(e) => setSignupPassword(e.target.value)}
-                          className="ft-text-input"
-                        />
-                      </div>
-                    </div>
-                    <div className="ft-input-group">
-                      <label className="ft-input-label">Confirm Password *</label>
-                      <div className="ft-input-wrapper">
-                        <Lock size={18} className="ft-input-icon" />
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          required
-                          placeholder="Repeat password"
-                          value={signupConfirmPassword}
-                          onChange={(e) => setSignupConfirmPassword(e.target.value)}
-                          className="ft-text-input"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="ft-input-group">
-                    <label className="ft-input-label">Mobile Number (10 Digits) *</label>
-                    <div className="ft-input-wrapper">
-                      <Phone size={18} className="ft-input-icon" />
-                      <input
-                        type="tel"
-                        maxLength={10}
-                        required
-                        placeholder="e.g. 9876543210"
-                        value={signupPhone}
-                        onChange={(e) => setSignupPhone(e.target.value.replace(/\D/g, ''))}
-                        className="ft-text-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="ft-input-row-2col">
-                    <div className="ft-input-group">
-                      <label className="ft-input-label">District *</label>
-                      <select
-                        value={signupDistrict}
-                        onChange={(e) => setSignupDistrict(e.target.value)}
-                        className="ft-select-input"
-                      >
-                        {KARNATAKA_DISTRICTS.map((d) => (
-                          <option key={d} value={d} style={{ color: '#0f172a', background: '#ffffff' }}>
-                            {d}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="ft-input-group">
-                      <label className="ft-input-label">Taluk / Mandi</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Maddur / APMC"
-                        value={signupTaluk}
-                        onChange={(e) => setSignupTaluk(e.target.value)}
-                        className="ft-text-input"
-                      />
-                    </div>
-                  </div>
-
-                  <button type="submit" disabled={loading} className="ft-btn-submit" style={{ marginTop: '0.5rem' }}>
-                    <span>{loading ? 'Creating Account…' : !isEmailVerified ? '⚠ Verify Email First to Register' : 'Complete Account Registration'}</span>
-                    <ArrowRight size={17} />
-                  </button>
-
-                </form>
-
-                <div className="ft-switch-prompt">
-                  <span>Already have an account? </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLoginRole(signupRole);
-                      setViewMode('login');
-                      clearMessages();
-                    }}
-                    className="ft-link-highlight"
-                  >
-                    Sign In here
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* ══════════════════════════════════════════════════════════════
-                VIEW 4: RESET PASSWORD VIEW
-               ══════════════════════════════════════════════════════════════ */}
-            {viewMode === 'forgot' && (
-              <div className="ft-form-view animate-fadeIn">
-                <div className="ft-form-top-bar">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setViewMode('login');
-                      clearMessages();
-                    }}
-                    className="ft-btn-back"
-                  >
-                    <ArrowLeft size={16} />
-                    <span>Back to Sign In</span>
-                  </button>
-                </div>
-
-                <div className="ft-card-header" style={{ marginBottom: '1.25rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.5rem' }}>
-                    <KeyRound size={32} style={{ color: '#86efac' }} />
-                  </div>
-                  <h2 className="ft-card-heading">Reset Password</h2>
-                  <p className="ft-card-subheading">
-                    Verify your registered email with an OTP code to update your password
-                  </p>
-                </div>
-
-                {!forgotOtpSent ? (
-                  <form onSubmit={handleSendForgotOtp} className="ft-form">
-                    <div className="ft-input-group">
-                      <label className="ft-input-label">Registered Email Address</label>
-                      <div className="ft-input-wrapper">
-                        <Mail size={18} className="ft-input-icon" />
-                        <input
-                          type="email"
-                          required
-                          placeholder="e.g. farmer@agro.com"
-                          value={forgotEmail}
-                          onChange={(e) => setForgotEmail(e.target.value)}
-                          className="ft-text-input"
-                        />
-                      </div>
-                    </div>
-
-                    <button type="submit" disabled={loading} className="ft-btn-submit">
-                      <span>{loading ? 'Sending Code…' : 'Send Verification OTP'}</span>
-                      <ArrowRight size={17} />
+                  <div className="text-center mt-6 text-[14px]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setViewMode('login');
+                        clearMessages();
+                      }}
+                      className="text-[#86efac] hover:underline transition-colors cursor-pointer bg-transparent border-none p-0 outline-none"
+                    >
+                      ← Back to Sign In
                     </button>
-                  </form>
-                ) : (
-                  <form onSubmit={handleResetPasswordSubmit} className="ft-form">
-                    <div className="ft-input-group">
-                      <label className="ft-input-label">Enter 6-Digit OTP sent to {forgotEmail}</label>
-                      <input
-                        type="text"
-                        maxLength={6}
-                        required
-                        placeholder="• • • • • •"
-                        value={forgotOtp}
-                        onChange={(e) => setForgotOtp(e.target.value.replace(/\D/g, ''))}
-                        className="ft-otp-code-input"
-                      />
-                    </div>
-
-                    <div className="ft-input-group">
-                      <label className="ft-input-label">New Password (minimum 8 characters)</label>
-                      <div className="ft-input-wrapper">
-                        <Lock size={18} className="ft-input-icon" />
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          required
-                          placeholder="••••••••"
-                          value={forgotNewPw}
-                          onChange={(e) => setForgotNewPw(e.target.value)}
-                          className="ft-text-input"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="ft-eye-btn"
-                        >
-                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="ft-input-group">
-                      <label className="ft-input-label">Confirm New Password</label>
-                      <div className="ft-input-wrapper">
-                        <Lock size={18} className="ft-input-icon" />
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          required
-                          placeholder="••••••••"
-                          value={forgotConfirmPw}
-                          onChange={(e) => setForgotConfirmPw(e.target.value)}
-                          className="ft-text-input"
-                        />
-                      </div>
-                    </div>
-
-                    <button type="submit" disabled={loading} className="ft-btn-submit">
-                      <span>{loading ? 'Updating Password…' : 'Update Password & Sign In'}</span>
-                      <ArrowRight size={17} />
-                    </button>
-                  </form>
-                )}
-              </div>
-            )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
+
         </div>
-      </div>
+      </main>
     </div>
   );
 };

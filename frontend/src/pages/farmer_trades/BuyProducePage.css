@@ -1,16 +1,23 @@
-/* BuyProducePage.css — Farmer Trades */
+/* ==========================================================================
+   Farmer Trades — Buy Produce Marketplace Catalog Styling
+   Botanical Obsidian & Emerald Glass Theme
+   ========================================================================== */
 
 .ft-buy-page {
-  background-color: #f8faf7;
+  background-color: var(--color-surface-dim);
+  color: var(--color-text);
   min-height: 100vh;
   padding-bottom: 4rem;
 }
 
 /* Banner */
 .ft-buy-banner {
-  background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+  background: linear-gradient(180deg, rgba(6, 44, 30, 0.85) 0%, rgba(2, 15, 9, 0.95) 100%),
+              radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.18), transparent 70%);
   color: #ffffff;
   padding: 3rem 1.5rem 2.5rem;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+  position: relative;
 }
 
 .ft-buy-banner-inner {
@@ -22,25 +29,28 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(52, 211, 153, 0.35);
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #fef08a;
+  color: #34d399;
   margin-bottom: 0.75rem;
+  letter-spacing: 0.02em;
 }
 
 .ft-buy-banner h1 {
   font-size: 2.25rem;
   font-weight: 900;
   margin-bottom: 0.5rem;
+  color: #ffffff;
+  letter-spacing: -0.025em;
 }
 
 .ft-buy-banner p {
   font-size: 1rem;
-  color: #dcfce7;
+  color: rgba(255, 255, 255, 0.75);
   max-width: 650px;
   line-height: 1.5;
 }
@@ -54,11 +64,13 @@
 
 /* Search Toolbar */
 .ft-search-toolbar {
-  background: #ffffff;
-  border-radius: 0.875rem;
+  background: rgba(6, 44, 30, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 1rem;
   padding: 0.875rem 1.25rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(16, 185, 129, 0.2);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -73,14 +85,20 @@
   gap: 0.5rem;
   flex: 1;
   min-width: 260px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: rgba(2, 18, 12, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 0.5rem;
   padding: 0.5rem 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.ft-search-box:focus-within {
+  border-color: #34d399;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2);
 }
 
 .ft-search-ico {
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.45);
   flex-shrink: 0;
 }
 
@@ -89,16 +107,25 @@
   background: transparent;
   outline: none;
   font-size: 0.9rem;
-  color: #1f2937;
+  color: #ffffff;
   width: 100%;
+}
+
+.ft-search-box input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .ft-clear-search {
   background: none;
   border: none;
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.45);
   cursor: pointer;
   font-size: 0.85rem;
+  transition: color 0.15s ease;
+}
+
+.ft-clear-search:hover {
+  color: #ffffff;
 }
 
 .ft-sort-wrap {
@@ -106,16 +133,16 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.85rem;
-  color: #4b5563;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .ft-sort-wrap select {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: rgba(2, 18, 12, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 0.5rem;
   padding: 0.5rem 0.75rem;
   font-size: 0.85rem;
-  color: #1f2937;
+  color: #ffffff;
   outline: none;
   font-weight: 600;
   cursor: pointer;
@@ -133,27 +160,29 @@
 }
 
 .ft-cat-pill {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 9999px;
   padding: 0.45rem 1rem;
   font-size: 0.8rem;
   font-weight: 700;
-  color: #4b5563;
+  color: rgba(255, 255, 255, 0.8);
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .ft-cat-pill:hover {
-  border-color: #15803d;
-  color: #15803d;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-color: rgba(52, 211, 153, 0.35);
 }
 
 .ft-cat-pill.active {
-  background: #15803d;
-  color: #ffffff;
-  border-color: #15803d;
+  background: rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.5);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
 }
 
 /* Main Layout */
@@ -172,11 +201,13 @@
 
 /* Sidebar Filters */
 .ft-filter-sidebar {
-  background: #ffffff;
-  border-radius: 0.875rem;
-  border: 1px solid #e5e7eb;
+  background: rgba(6, 44, 30, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 1rem;
+  border: 1px solid rgba(16, 185, 129, 0.2);
   padding: 1.25rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -186,14 +217,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: 0.75rem;
 }
 
 .ft-filter-title {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #111827;
+  color: #ffffff;
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -202,13 +233,15 @@
 .ft-reset-filters-btn {
   background: none;
   border: none;
-  color: #15803d;
+  color: #34d399;
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
+  transition: color 0.15s ease;
 }
 
 .ft-reset-filters-btn:hover {
+  color: #6ee7b7;
   text-decoration: underline;
 }
 
@@ -221,19 +254,23 @@
 .ft-filter-group label {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #4b5563;
+  color: rgba(255, 255, 255, 0.6);
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
 
 .ft-filter-select {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.375rem;
+  background: rgba(2, 18, 12, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
   padding: 0.5rem;
   font-size: 0.85rem;
-  color: #1f2937;
+  color: #ffffff;
   outline: none;
+}
+
+.ft-filter-select:focus {
+  border-color: #34d399;
 }
 
 .ft-grade-buttons {
@@ -243,21 +280,27 @@
 }
 
 .ft-grade-btn {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 0.375rem;
   padding: 0.4rem;
   font-size: 0.78rem;
   font-weight: 600;
-  color: #4b5563;
+  color: rgba(255, 255, 255, 0.75);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
+.ft-grade-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
 .ft-grade-btn.active {
-  background: #fef3c7;
-  color: #92400e;
-  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
 }
 
 .ft-slider-label-row {
@@ -268,12 +311,12 @@
 
 .ft-slider-val {
   font-weight: 800;
-  color: #15803d;
+  color: #34d399;
   font-size: 0.85rem;
 }
 
 .ft-price-range-slider {
-  accent-color: #15803d;
+  accent-color: #10b981;
   cursor: pointer;
 }
 
@@ -281,12 +324,12 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.7rem;
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .ft-organic-toggle-row {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.28);
   padding: 0.75rem;
   border-radius: 0.5rem;
 }
@@ -298,14 +341,14 @@
   cursor: pointer;
   font-size: 0.8rem;
   font-weight: 700;
-  color: #166534;
+  color: #34d399;
   text-transform: none !important;
 }
 
 .ft-sidebar-summary {
   font-size: 0.78rem;
-  color: #6b7280;
-  border-top: 1px solid #f3f4f6;
+  color: rgba(255, 255, 255, 0.55);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 0.75rem;
   text-align: center;
 }
@@ -330,27 +373,29 @@
 }
 
 .ft-lot-card {
-  background: #ffffff;
-  border-radius: 0.875rem;
-  border: 1px solid #e5e7eb;
+  background: rgba(6, 44, 30, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 1rem;
+  border: 1px solid rgba(16, 185, 129, 0.18);
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
 }
 
 .ft-lot-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.1);
-  border-color: #86efac;
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55), 0 0 20px rgba(16, 185, 129, 0.15);
+  border-color: rgba(52, 211, 153, 0.45);
 }
 
 .ft-lot-img-wrap {
   position: relative;
   height: 160px;
-  background: #1e293b;
+  background: #02120b;
 }
 
 .ft-lot-img-wrap img {
@@ -363,8 +408,8 @@
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  background: rgba(17, 24, 39, 0.5);
-  border: none;
+  background: rgba(2, 15, 9, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
@@ -372,10 +417,14 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  color: #ffffff;
+  transition: all 0.2s ease;
 }
 
 .ft-lot-fav-btn.active {
-  background: #fee2e2;
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #f87171;
 }
 
 .ft-lot-badge-row {
@@ -398,26 +447,26 @@
   align-items: center;
   gap: 0.3rem;
   font-size: 0.725rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.55);
   margin-bottom: 0.3rem;
 }
 
 .ft-lot-title {
   font-size: 1rem;
   font-weight: 800;
-  color: #111827;
+  color: #ffffff;
   line-height: 1.25;
 }
 
 .ft-lot-variety {
   font-size: 0.75rem;
-  color: #4b5563;
+  color: rgba(255, 255, 255, 0.6);
   margin-bottom: 0.75rem;
 }
 
 .ft-lot-price-box {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.28);
   border-radius: 0.5rem;
   padding: 0.4rem 0.6rem;
   display: flex;
@@ -429,18 +478,18 @@
 .ft-lot-price {
   font-size: 1.15rem;
   font-weight: 800;
-  color: #15803d;
+  color: #34d399;
 }
 
 .ft-lot-unit {
   font-size: 0.7rem;
   font-weight: 600;
-  color: #166534;
+  color: #a7f3d0;
 }
 
 .ft-lot-perkg {
   font-size: 0.725rem;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.75);
   font-weight: 600;
 }
 
@@ -448,7 +497,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
-  background: #f9fafb;
+  background: rgba(2, 18, 12, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 0.4rem 0.6rem;
   border-radius: 0.375rem;
   margin-bottom: 0.75rem;
@@ -457,13 +507,13 @@
 .ft-metric-lbl {
   display: block;
   font-size: 0.65rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .ft-metric-val {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #111827;
+  color: #ffffff;
 }
 
 .ft-lot-farmer-bar {
@@ -471,7 +521,7 @@
   align-items: center;
   justify-content: space-between;
   font-size: 0.725rem;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 0.5rem;
   margin-bottom: 0.875rem;
 }
@@ -485,7 +535,7 @@
 .ft-farmer-avatar-sm {
   width: 1.25rem;
   height: 1.25rem;
-  background: #15803d;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
   border-radius: 50%;
   display: flex;
@@ -497,11 +547,11 @@
 
 .ft-farmer-name-sm {
   font-weight: 600;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .ft-lot-date {
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .ft-lot-actions {
@@ -512,11 +562,11 @@
 }
 
 .ft-btn-lot-details {
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #e5e7eb;
-  padding: 0.45rem;
-  border-radius: 0.375rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 0.5rem;
+  border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 700;
   display: flex;
@@ -524,52 +574,64 @@
   justify-content: center;
   gap: 0.25rem;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ft-btn-lot-details:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .ft-btn-lot-buy {
-  background: #15803d;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
-  border: none;
-  padding: 0.45rem;
-  border-radius: 0.375rem;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  padding: 0.5rem;
+  border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s ease;
 }
 
 .ft-btn-lot-buy:hover {
-  background: #166534;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.5);
 }
 
 /* No Results */
 .ft-no-results {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.875rem;
+  background: rgba(6, 44, 30, 0.55);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 1rem;
   padding: 4rem 2rem;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: #ffffff;
 }
 
 .ft-no-results h3 {
   font-size: 1.25rem;
   font-weight: 800;
-  color: #111827;
+  color: #ffffff;
   margin-bottom: 0.5rem;
 }
 
 .ft-no-results p {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   max-width: 450px;
   margin-bottom: 1.5rem;
 }
 
 .ft-btn-large {
-  background: #15803d !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
   color: #ffffff !important;
   padding: 0.625rem 1.5rem !important;
-  border-radius: 0.375rem !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35) !important;
 }

@@ -17,7 +17,8 @@ import {
   DollarSign,
   Droplets,
   Calendar,
-  CheckCircle2
+  CheckCircle2,
+  Crown
 } from 'lucide-react';
 import './FarmerDashboard.css';
 
@@ -27,6 +28,8 @@ export default function FarmerDashboard() {
   const [totalEstimatedValue, setTotalEstimatedValue] = useState<number>(0);
   const [soilStatus, setSoilStatus] = useState<string>('Ready for Analysis');
   const [loading, setLoading] = useState(true);
+  const [hasSub, setHasSub] = useState<boolean>(false);
+  const [subDetails, setSubDetails] = useState<any | null>(null);
 
   // Time-based greeting
   const hour = new Date().getHours();
@@ -35,13 +38,18 @@ export default function FarmerDashboard() {
   useEffect(() => {
     async function loadFarmerMetrics() {
       try {
-        const [listingsRes, soilRes] = await Promise.all([
+        const [listingsRes, soilRes, subRes] = await Promise.all([
           api.get('/listings').catch(() => ({ data: [] })),
-          api.get('/soil-test-requests').catch(() => ({ data: [] }))
+          api.get('/soil-test-requests').catch(() => ({ data: [] })),
+          user?.email ? api.get('/farmer/subscription/status', { params: { farmer_id: user.email } }).catch(() => ({ data: null })) : Promise.resolve({ data: null })
         ]);
 
+        if (subRes.data) {
+          setHasSub(Boolean(subRes.data.has_active_subscription));
+          setSubDetails(subRes.data.subscription || null);
+        }
+
         const rawListings = Array.isArray(listingsRes.data) ? listingsRes.data : [];
-        // Filter by logged-in farmer if email matches, or show platform listings
         const myListings = user?.email
           ? rawListings.filter((l: any) => l.farmer_id === user.email)
           : rawListings;
@@ -89,16 +97,86 @@ export default function FarmerDashboard() {
             {greeting}, {user?.name || 'Farmer'} 🌾
           </h1>
           <p>
-            Welcome to your unified <strong>Karnataka Agro Trades</strong> command center.
+            Welcome to your unified <strong>Farmer Trades</strong> command center.
           </p>
         </div>
 
-        <div className="farmer-hero-badge">
-          <span className="pulse-beacon" />
-          <ShieldCheck size={15} style={{ color: 'var(--color-primary-700)' }} />
-          <span>Verified Producer • Mandya Zone</span>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div className="farmer-hero-badge">
+            <span className="pulse-beacon" />
+            <ShieldCheck size={16} className="text-emerald-400" />
+            <span>Verified Producer • Mandya Agro Zone</span>
+          </div>
+
+          {hasSub ? (
+            <div className="farmer-hero-badge" style={{ background: 'rgba(22, 163, 74, 0.2)', border: '1px solid rgba(22, 163, 74, 0.4)' }}>
+              <Crown size={15} style={{ color: '#4ade80' }} />
+              <span>Trading Pass Active • {subDetails?.plan_tier ? subDetails.plan_tier.replace('_', ' ') : 'Annual'}</span>
+            </div>
+          ) : (
+            <Link
+              to="/farmer/trade"
+              className="farmer-hero-badge"
+              style={{
+                background: 'rgba(245, 158, 11, 0.15)',
+                border: '1px solid rgba(245, 158, 11, 0.4)',
+                color: '#fef3c7',
+                textDecoration: 'none'
+              }}
+            >
+              <Crown size={15} style={{ color: '#fbbf24' }} />
+              <span>Trading Pass Required (from ₹500/yr) →</span>
+            </Link>
+          )}
         </div>
       </section>
+
+      {/* ── Subscription Reminder Banner if Unsubscribed ── */}
+      {!hasSub && !loading && (
+        <section
+          style={{
+            background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(217, 119, 6, 0.06))',
+            border: '1px solid rgba(245, 158, 11, 0.3)',
+            borderRadius: '1rem',
+            padding: '1rem 1.25rem',
+            marginBottom: '1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '1rem',
+            flexWrap: 'wrap'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <Crown size={22} style={{ color: '#fbbf24', flexShrink: 0 }} />
+            <div>
+              <p style={{ margin: 0, fontWeight: 700, fontSize: '0.92rem', color: '#fef3c7' }}>
+                Produce Trading Membership Required
+              </p>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: '#cbd5e1' }}>
+                Activate your trading pass (1 Year: ₹500, 3 Years: ₹1,300, 5 Years: ₹2,000) to list produce directly for Karnataka bulk buyers.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/farmer/trade"
+            className="btn btn-sm"
+            style={{
+              background: '#16a34a',
+              color: '#ffffff',
+              fontWeight: 700,
+              textDecoration: 'none',
+              padding: '0.45rem 1rem',
+              borderRadius: '0.5rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem'
+            }}
+          >
+            Activate Subscription →
+          </Link>
+        </section>
+      )}
 
       {/* ── 2. AI Morning Agri-Briefing Card ── */}
       <section className="farmer-ai-briefing-card" aria-label="AI Agri-Briefing">
@@ -194,7 +272,7 @@ export default function FarmerDashboard() {
       {/* ── 4. Quick Actions Hub ── */}
       <section aria-label="Farmer Quick Actions">
         <h2 className="farmer-section-title">
-          <Sparkles size={18} color="#15803d" />
+          <Sparkles size={18} className="text-emerald-400" />
           Smart Agricultural Tools
         </h2>
 
@@ -206,24 +284,24 @@ export default function FarmerDashboard() {
             </div>
             <div>
               <h3>Trade Produce Lots</h3>
-              <p>Post fresh crops, vegetables, or fruits directly to verified Karnataka buyers.</p>
+              <p>Post fresh crops directly to verified Karnataka buyers with 0% brokerage.</p>
             </div>
           </Link>
 
           {/* Action 2: Ask Agri Copilot */}
           <Link to="/farmer/chatbot" className="farmer-action-card">
-            <div className="farmer-action-icon" style={{ background: '#ecfdf5', color: '#059669' }}>
+            <div className="farmer-action-icon" style={{ background: 'rgba(52, 211, 153, 0.15)', color: '#34d399' }}>
               <Bot size={22} />
             </div>
             <div>
               <h3>AI Crop Doctor & Advisor</h3>
-              <p>Upload leaf photos for disease diagnosis or get instant agronomic answers via Gemini 2.0 Flash.</p>
+              <p>Upload leaf photos for disease diagnosis or get instant agronomic advice 24/7.</p>
             </div>
           </Link>
 
           {/* Action 3: Soil Testing */}
           <Link to="/farmer/soil-test" className="farmer-action-card">
-            <div className="farmer-action-icon" style={{ background: '#fffbeb', color: '#d97706' }}>
+            <div className="farmer-action-icon" style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24' }}>
               <FlaskConical size={22} />
             </div>
             <div>
@@ -234,7 +312,7 @@ export default function FarmerDashboard() {
 
           {/* Action 4: Weather Radar */}
           <Link to="/farmer/weather" className="farmer-action-card">
-            <div className="farmer-action-icon" style={{ background: '#eff6ff', color: '#2563eb' }}>
+            <div className="farmer-action-icon" style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8' }}>
               <CloudRain size={22} />
             </div>
             <div>
@@ -245,7 +323,7 @@ export default function FarmerDashboard() {
 
           {/* Action 5: Nearest APMC */}
           <Link to="/farmer/apmc" className="farmer-action-card">
-            <div className="farmer-action-icon" style={{ background: '#fdf2f8', color: '#db2777' }}>
+            <div className="farmer-action-icon" style={{ background: 'rgba(244, 114, 182, 0.15)', color: '#f472b6' }}>
               <MapPin size={22} />
             </div>
             <div>
@@ -256,7 +334,7 @@ export default function FarmerDashboard() {
 
           {/* Action 6: Fertilizer Calculator */}
           <Link to="/farmer/recommend-fertilizer" className="farmer-action-card">
-            <div className="farmer-action-icon" style={{ background: '#f5f3ff', color: '#7c3aed' }}>
+            <div className="farmer-action-icon" style={{ background: 'rgba(168, 85, 247, 0.15)', color: '#c084fc' }}>
               <Droplets size={22} />
             </div>
             <div>
@@ -273,7 +351,7 @@ export default function FarmerDashboard() {
         <div className="farmer-panel">
           <div className="farmer-panel-header">
             <h3>
-              <TrendingUp size={18} color="#15803d" />
+              <TrendingUp size={18} className="text-emerald-400" />
               Karnataka APMC Mandi Rate Watch
             </h3>
             <Link to="/farmer/apmc" className="farmer-panel-link">
@@ -301,38 +379,38 @@ export default function FarmerDashboard() {
         <div className="farmer-panel">
           <div className="farmer-panel-header">
             <h3>
-              <Award size={18} color="#15803d" />
+              <Award size={18} className="text-emerald-400" />
               Farmer Direct Privileges
             </h3>
             <span className="badge badge-green">Active</span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.88rem' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
-              <CheckCircle2 size={16} color="#15803d" style={{ marginTop: '2px', flexShrink: 0 }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.95rem', fontSize: '0.88rem' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
+              <CheckCircle2 size={16} className="text-emerald-400" style={{ marginTop: '3px', flexShrink: 0 }} />
               <div>
-                <strong>Zero Middleman Brokerage</strong>
-                <p style={{ margin: '0.15rem 0 0', color: '#64748b', fontSize: '0.8rem' }}>
+                <strong style={{ color: '#ffffff' }}>Zero Middleman Brokerage</strong>
+                <p style={{ margin: '0.15rem 0 0', color: 'rgba(255, 255, 255, 0.65)', fontSize: '0.82rem' }}>
                   Direct buyer transactions save 6-10% in traditional commission charges.
                 </p>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
-              <CheckCircle2 size={16} color="#15803d" style={{ marginTop: '2px', flexShrink: 0 }} />
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
+              <CheckCircle2 size={16} className="text-emerald-400" style={{ marginTop: '3px', flexShrink: 0 }} />
               <div>
-                <strong>Instant Razorpay Escrow Settlement</strong>
-                <p style={{ margin: '0.15rem 0 0', color: '#64748b', fontSize: '0.8rem' }}>
+                <strong style={{ color: '#ffffff' }}>Instant Escrow Settlement</strong>
+                <p style={{ margin: '0.15rem 0 0', color: 'rgba(255, 255, 255, 0.65)', fontSize: '0.82rem' }}>
                   Payments are credited directly to your registered bank account upon delivery verification.
                 </p>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem' }}>
-              <CheckCircle2 size={16} color="#15803d" style={{ marginTop: '2px', flexShrink: 0 }} />
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
+              <CheckCircle2 size={16} className="text-emerald-400" style={{ marginTop: '3px', flexShrink: 0 }} />
               <div>
-                <strong>Google AI Studio Diagnostics</strong>
-                <p style={{ margin: '0.15rem 0 0', color: '#64748b', fontSize: '0.8rem' }}>
+                <strong style={{ color: '#ffffff' }}>AI Agronomist Diagnostics</strong>
+                <p style={{ margin: '0.15rem 0 0', color: 'rgba(255, 255, 255, 0.65)', fontSize: '0.82rem' }}>
                   Unlimited visual crop doctor analysis and agricultural advisory support.
                 </p>
               </div>

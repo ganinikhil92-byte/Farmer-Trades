@@ -1,16 +1,23 @@
-/* FavoritesPage.css — Farmer Trades */
+/* ==========================================================================
+   Farmer Trades — Favorites & Saved Produce Page Styling
+   Botanical Obsidian & Emerald Glass Theme
+   ========================================================================== */
 
 .ft-fav-page {
-  background-color: #f8faf7;
+  background-color: var(--color-surface-dim);
+  color: var(--color-text);
   min-height: 100vh;
   padding-bottom: 5rem;
 }
 
 /* Banner */
 .ft-fav-banner {
-  background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+  background: linear-gradient(180deg, rgba(6, 44, 30, 0.85) 0%, rgba(2, 15, 9, 0.95) 100%),
+              radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.18), transparent 70%);
   color: #ffffff;
   padding: 3rem 1.5rem 2.5rem;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+  position: relative;
 }
 
 .ft-fav-banner-inner {
@@ -22,25 +29,28 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(52, 211, 153, 0.35);
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #fef08a;
+  color: #34d399;
   margin-bottom: 0.75rem;
+  letter-spacing: 0.02em;
 }
 
 .ft-fav-banner h1 {
   font-size: 2.25rem;
   font-weight: 900;
   margin-bottom: 0.5rem;
+  color: #ffffff;
+  letter-spacing: -0.025em;
 }
 
 .ft-fav-banner p {
   font-size: 1rem;
-  color: #dcfce7;
+  color: rgba(255, 255, 255, 0.75);
   max-width: 650px;
   line-height: 1.5;
 }
@@ -54,11 +64,13 @@
 
 /* Tabs */
 .ft-fav-tabs-bar {
-  background: #ffffff;
-  border-radius: 0.875rem;
+  background: rgba(6, 44, 30, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 1rem;
   padding: 0.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(16, 185, 129, 0.2);
   display: flex;
   gap: 0.5rem;
   margin-bottom: 2rem;
@@ -73,19 +85,26 @@
   border-radius: 0.5rem;
   font-size: 0.875rem;
   font-weight: 700;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.65);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
   white-space: nowrap;
 }
 
-.ft-fav-tab-btn.active {
-  background: #15803d;
+.ft-fav-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
+}
+
+.ft-fav-tab-btn.active {
+  background: rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
 }
 
 /* Grid */
@@ -107,179 +126,48 @@
   }
 }
 
-.ft-fav-lot-card {
-  background: #ffffff;
-  border-radius: 0.875rem;
-  border: 1px solid #e5e7eb;
-  overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-}
-
-.ft-fav-img-wrap {
-  position: relative;
-  height: 160px;
-  background: #1e293b;
-}
-
-.ft-fav-img-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.ft-btn-del-fav {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: rgba(220, 38, 38, 0.9);
-  color: #ffffff;
-  border: none;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.ft-btn-del-fav:hover {
-  background: #b91c1c;
-}
-
-.ft-fav-card-body {
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.ft-fav-loc {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.75rem;
-  color: #6b7280;
-  margin-bottom: 0.35rem;
-}
-
-.ft-fav-card-body h4 {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: #111827;
-  margin-bottom: 0.25rem;
-}
-
-.ft-fav-crop-sci {
-  font-size: 0.75rem;
-  font-style: italic;
-  color: #6b7280;
-  margin-bottom: 0.75rem;
-}
-
-.ft-fav-price-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  padding: 0.4rem 0.6rem;
-  border-radius: 0.375rem;
-  margin-bottom: 1rem;
-}
-
-.ft-fav-price {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #15803d;
-}
-
-.ft-fav-stock {
-  font-size: 0.75rem;
-  color: #374151;
-}
-
-.ft-fav-card-actions {
-  margin-top: auto;
-}
-
-.ft-btn-view-fav {
-  display: block;
-  width: 100%;
-  background: #15803d;
-  color: #ffffff;
-  text-decoration: none;
-  border: none;
-  padding: 0.55rem;
-  border-radius: 0.375rem;
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.ft-btn-view-fav:hover {
-  background: #166534;
-}
-
-/* Farmer Card */
-.ft-fav-farmer-card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.875rem;
-  padding: 1.25rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-}
-
-.ft-fav-farmer-top {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-}
-
-.ft-fav-farmer-img {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #15803d;
-}
-
-/* Empty State */
-.ft-fav-empty {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.875rem;
+.ft-empty-favs {
+  grid-column: 1 / -1;
+  background: rgba(6, 44, 30, 0.55);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  border-radius: 1rem;
   padding: 4rem 2rem;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: #ffffff;
 }
 
-.ft-fav-empty h3 {
+.ft-empty-favs h3 {
   font-size: 1.25rem;
   font-weight: 800;
-  color: #111827;
+  color: #ffffff;
+  margin-top: 1rem;
   margin-bottom: 0.5rem;
 }
 
-.ft-fav-empty p {
+.ft-empty-favs p {
   font-size: 0.875rem;
-  color: #6b7280;
-  max-width: 450px;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 420px;
   margin-bottom: 1.5rem;
 }
 
-.ft-btn-browse-fav {
-  background: #15803d;
+.ft-btn-browse-favs {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
-  text-decoration: none;
   padding: 0.65rem 1.5rem;
-  border-radius: 0.375rem;
+  border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s ease;
+}
+
+.ft-btn-browse-favs:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.5);
 }

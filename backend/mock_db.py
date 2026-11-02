@@ -28,19 +28,10 @@ fruits = [
     Item(id=5, name="Jackfruit"),
 ]
 
-# Initial mock listings
-listings = [
-    Listing(id=1, category="crop", crop_name="Ragi (Finger Millet)", crop_type="Kharif", quantity_kg=200, price_per_kg=38, farmer_id="farmer@agro.com"),
-    Listing(id=2, category="crop", crop_name="Paddy (Rice)", crop_type="Kharif", quantity_kg=350, price_per_kg=28, farmer_id="farmer@agro.com"),
-    Listing(id=3, category="crop", crop_name="Jowar (Sorghum)", crop_type="Rabi", quantity_kg=150, price_per_kg=32, farmer_id="farmer@agro.com"),
-    Listing(id=4, category="vegetable", crop_name="Tomato", crop_type="Root", quantity_kg=100, price_per_kg=45, farmer_id="farmer@agro.com"),
-    Listing(id=5, category="fruit", crop_name="Mango (Alphonso)", crop_type="Tropical", quantity_kg=80, price_per_kg=120, farmer_id="farmer@agro.com"),
-]
+# No mock listings — all listings created fresh via app
+listings = []
 
-orders = [
-    Order(id=1, listing_id=1, crop_name="Ragi (Finger Millet)", quantity=50, total_price=1900, buyer_id="buyer@agro.com"),
-    Order(id=2, listing_id=2, crop_name="Paddy (Rice)", quantity=100, total_price=2800, buyer_id="buyer@agro.com")
-]
+orders = []
 
 # Farmers directory
 farmers = [

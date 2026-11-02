@@ -1,5 +1,6 @@
 /* ==========================================================================
-   Agro Trades — Floating Agri-AI Copilot Widget
+   Farmer Trades — Floating Agri-AI Copilot Widget
+   Botanical Obsidian & Emerald Glass Theme
    ========================================================================== */
 
 .agri-widget-trigger {
@@ -13,18 +14,18 @@
   background: linear-gradient(135deg, #10b981 0%, #059669 60%, #0284c7 100%);
   color: #ffffff;
   padding: 0.75rem 1.15rem;
-  border-radius: 30px;
-  border: none;
+  border-radius: 9999px;
+  border: 1px solid rgba(52, 211, 153, 0.35);
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4), 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .agri-widget-trigger:hover {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 12px 30px rgba(16, 185, 129, 0.5);
+  box-shadow: 0 12px 30px rgba(16, 185, 129, 0.55);
 }
 
 .agri-widget-icon-spin {
@@ -42,15 +43,18 @@
   max-width: calc(100vw - 32px);
   height: 520px;
   max-height: calc(100vh - 120px);
-  background: #ffffff;
+  background: rgba(4, 26, 18, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-radius: 18px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.25), 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), 0 4px 12px rgba(16, 185, 129, 0.1);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   z-index: 95;
   animation: agriSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #ffffff;
 }
 
 @keyframes agriSlideUp {
@@ -60,8 +64,8 @@
 
 .agri-widget-header {
   padding: 0.85rem 1rem;
-  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
-  border-bottom: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, rgba(6, 44, 30, 0.95) 0%, rgba(2, 18, 12, 0.95) 100%);
+  border-bottom: 1px solid rgba(16, 185, 129, 0.2);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -73,7 +77,7 @@
   gap: 0.5rem;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #ffffff;
 }
 
 .agri-widget-header-actions {
@@ -88,7 +92,7 @@
   border-radius: 6px;
   border: none;
   background: transparent;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -97,8 +101,8 @@
 }
 
 .agri-widget-btn-icon:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 .agri-widget-messages {
@@ -108,7 +112,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  background: #f8fafc;
+  background: rgba(2, 14, 9, 0.85);
 }
 
 .agri-widget-msg {
@@ -122,24 +126,25 @@
 
 .agri-widget-msg.user {
   align-self: flex-end;
-  background: #15803d;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
   border-bottom-right-radius: 2px;
 }
 
 .agri-widget-msg.bot {
   align-self: flex-start;
-  background: #ffffff;
-  color: #1e293b;
-  border: 1px solid #e2e8f0;
+  background: rgba(6, 44, 30, 0.7);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  border: 1px solid rgba(16, 185, 129, 0.2);
   border-bottom-left-radius: 2px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .agri-widget-input-bar {
   padding: 0.65rem 0.75rem;
-  background: #ffffff;
-  border-top: 1px solid #e2e8f0;
+  background: rgba(4, 26, 18, 0.95);
+  border-top: 1px solid rgba(16, 185, 129, 0.18);
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -148,14 +153,16 @@
 .agri-widget-input {
   flex: 1;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;
   font-size: 0.85rem;
   outline: none;
+  background: rgba(2, 18, 12, 0.8);
+  color: #ffffff;
 }
 
 .agri-widget-input:focus {
-  border-color: #10b981;
+  border-color: #34d399;
 }
 
 .agri-widget-send-btn {
@@ -163,12 +170,18 @@
   height: 32px;
   border-radius: 8px;
   border: none;
-  background: #15803d;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+  transition: all 0.15s ease;
+}
+
+.agri-widget-send-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
 }
 
 .agri-widget-send-btn:disabled {

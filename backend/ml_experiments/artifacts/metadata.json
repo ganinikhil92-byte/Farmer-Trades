@@ -2,7 +2,6 @@
   "model_artifact": {
     "file_name": "crop_classifier.joblib",
     "size_bytes": 3528770,
-    "sha256_checksum": "ae89f6360203eb0a6331f893d681701e89221503f7aafdb9e412829682c712cc",
     "pipeline_structure": [
       {
         "step": "scaler",
@@ -21,8 +20,8 @@
   },
   "environment": {
     "python_version": "3.14.0 (tags/v3.14.0:ebf955d, Oct  7 2025, 10:15:03) [MSC v.1944 64 bit (AMD64)]",
-    "scikit_learn_version": "1.9.1",
-    "numpy_version": "2.5.3",
+    "scikit_learn_version": "1.9.0",
+    "numpy_version": "2.5.2",
     "joblib_version": "1.6.0"
   },
   "features": {
@@ -36,15 +35,6 @@
       "rainfall"
     ],
     "feature_count": 7,
-    "training_data_ranges": {
-      "N": { "min": 0.0, "max": 140.0 },
-      "P": { "min": 5.0, "max": 145.0 },
-      "K": { "min": 5.0, "max": 205.0 },
-      "temperature": { "min": 8.825674745, "max": 43.36051537 },
-      "humidity": { "min": 14.25803981, "max": 99.98187601 },
-      "ph": { "min": 3.504752314, "max": 9.93509073 },
-      "rainfall": { "min": 20.21126747, "max": 298.5601175 }
-    },
     "target_column": "label",
     "crop_labels": [
       "apple",
@@ -74,11 +64,9 @@
   },
   "dataset": {
     "name": "Crop Recommendation Dataset",
-    "original_publication_url": "https://www.kaggle.com/datasets/atharvaingle/crop-recommendation-dataset",
-    "original_repository_url": "https://github.com/atharvaingle/crop-recommendation-dataset",
-    "attempted_primary_download_url": "https://raw.githubusercontent.com/atharvaingle/crop-recommendation-dataset/master/Crop_recommendation.csv (HTTP 404 recorded during download)",
-    "actual_download_url": "https://raw.githubusercontent.com/Gladiator07/Harvestify/master/Data-processed/crop_recommendation.csv",
-    "license": "Apache License 2.0 (as declared on original Kaggle publication)",
+    "source_primary_url": "https://raw.githubusercontent.com/atharvaingle/crop-recommendation-dataset/master/Crop_recommendation.csv",
+    "kaggle_url": "https://www.kaggle.com/datasets/atharvaingle/crop-recommendation-dataset",
+    "license": "Apache License 2.0",
     "author": "Atharva Ingle",
     "icar_fao_origin": "Unknown / Unverified in source documentation",
     "generation_method": "Undocumented (author describes building dataset by 'augmenting existing datasets', but mathematical generation code is not published)",

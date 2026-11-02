@@ -5,9 +5,10 @@ import { resolveProduceImage, handleImageError } from '../utils/producePhoto';
 
 interface ListingItem {
   id: number | string;
-  crop_name: string;
+  crop_name?: string;
+  produce_name?: string;
   image_url?: string;
-  farmer_id: string;
+  farmer_id?: string;
   category?: string;
 }
 
@@ -144,7 +145,7 @@ export default function ListingPhotoModal({ listing, isOpen, onClose, onSuccess 
               Update Produce Photo
             </h3>
             <p style={{ margin: '0.2rem 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-              {listing.crop_name} (Listing #{listing.id})
+              {listing.crop_name || listing.produce_name || 'Produce'} (Listing #{listing.id})
             </p>
           </div>
           <button

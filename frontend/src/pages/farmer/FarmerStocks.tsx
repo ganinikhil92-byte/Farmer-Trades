@@ -1,88 +1,88 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import api from '../../utils/api';
-import { Wheat, Salad, Apple, Camera, ArrowLeft, PlusCircle, Package, Search } from 'lucide-react';
+import {
+  Wheat,
+  Sprout,
+  Sun,
+  Factory,
+  Coffee,
+  Flame,
+  Salad,
+  Apple,
+  Camera,
+  ArrowLeft,
+  PlusCircle,
+  Package,
+  Search,
+  Filter,
+  Layers
+} from 'lucide-react';
 import { resolveProduceImage, handleImageError } from '../../utils/producePhoto';
 import { useAuth } from '../../context/AuthContext';
 import ListingPhotoModal from '../../components/ListingPhotoModal';
-
-type StockCategory = 'crop' | 'vegetable' | 'fruit';
+import {
+  PRODUCE_CATEGORIES,
+  ProduceCategoryId,
+  getCategoryById,
+  findProduceByName,
+  mapLegacyCategory
+} from '../../data/produceMaster';
 
 interface Listing {
   id: number | string;
-  category: string;
-  crop_name: string;
-  crop_type: string;
+  category?: string;
+  category_id?: string;
+  crop_name?: string;
+  crop_type?: string;
+  produce_id?: string;
+  produce_name?: string;
+  produce_name_kn?: string;
+  variety?: string;
   quantity_kg: number;
   price_per_kg: number;
   farmer_id: string;
   image_url?: string;
 }
 
-const CATEGORY_CONFIG: Record<
-  StockCategory,
-  {
-    label: string;
-    singular: string;
-    icon: React.ReactNode;
-    color: string;
-    bg: string;
-    accent: string;
-    border: string;
-    description: string;
-  }
-> = {
-  crop: {
-    label: 'Crop Stock',
-    singular: 'Crop',
-    icon: <Wheat size={36} />,
-    color: '#ca8a04',
-    bg: 'linear-gradient(135deg, #fefce8 0%, #fef9c3 100%)',
-    accent: '#fef08a',
-    border: '#fde047',
-    description: 'Grain, cereal, paddy, wheat, and cash crop inventories',
-  },
-  vegetable: {
-    label: 'Vegetable Stock',
-    singular: 'Vegetable',
-    icon: <Salad size={36} />,
-    color: '#16a34a',
-    bg: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
-    accent: '#bbf7d0',
-    border: '#86efac',
-    description: 'Fresh vegetables, tomatoes, greens, onions, and root crops',
-  },
-  fruit: {
-    label: 'Fruit Stock',
-    singular: 'Fruit',
-    icon: <Apple size={36} />,
-    color: '#dc2626',
-    bg: 'linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%)',
-    accent: '#fecdd3',
-    border: '#fca5a5',
-    description: 'Orchard harvests, mangoes, bananas, citrus, and seasonal fruits',
-  },
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  all: <Layers size={18} />,
+  CEREALS_MILLETS: <Wheat size={18} />,
+  PULSES: <Sprout size={18} />,
+  OILSEEDS: <Sun size={18} />,
+  COMMERCIAL_CROPS: <Factory size={18} />,
+  PLANTATION_CROPS: <Coffee size={18} />,
+  SPICES: <Flame size={18} />,
+  VEGETABLES: <Salad size={18} />,
+  FRUITS: <Apple size={18} />,
 };
 
-export default function FarmerStocks() {
+interface FarmerStocksProps {
+  defaultCategory?: string;
+}
+
+export default function FarmerStocks({ defaultCategory }: FarmerStocksProps) {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Read category from query if provided: ?category=crop | vegetable | fruit | all
-  const urlCategory = searchParams.get('category') as StockCategory | 'all' | null;
-  const [selectedCategory, setSelectedCategory] = useState<StockCategory | 'all' | null>(urlCategory);
+  // URL query or props
+  const queryCat = searchParams.get('category');
+  const activeCategoryParam = (defaultCategory || queryCat || '').trim();
+
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    activeCategoryParam ? activeCategoryParam : null
+  );
 
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [photoModalListing, setPhotoModalListing] = useState<Listing | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Sync state if URL query changes
   useEffect(() => {
-    if (urlCategory) {
-      setSelectedCategory(urlCategory);
+    if (activeCategoryParam) {
+      setSelectedCategory(activeCategoryParam);
     }
-  }, [urlCategory]);
+  }, [activeCategoryParam]);
 
   useEffect(() => {
     setLoading(true);
@@ -94,393 +94,391 @@ export default function FarmerStocks() {
         }
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        console.error('Failed to fetch listings', err);
+        setLoading(false);
+      });
   }, []);
 
-  const handleSelectCategory = (cat: StockCategory | 'all' | null) => {
+  const handleSelectCategory = (cat: string | null) => {
     setSelectedCategory(cat);
-    if (cat) {
+    if (cat && cat !== 'all') {
       setSearchParams({ category: cat });
+    } else if (cat === 'all') {
+      setSearchParams({ category: 'all' });
     } else {
       setSearchParams({});
     }
   };
 
-  // Filter listings by selected category & search
-  const filteredListings = listings.filter((item) => {
-    if (selectedCategory && selectedCategory !== 'all') {
-      if (item.category?.toLowerCase() !== selectedCategory.toLowerCase()) {
-        return false;
+  // Helper to get normalized category ID for a listing
+  const getListingCategoryId = (item: Listing): string => {
+    if (item.category_id && item.category_id.trim()) {
+      return item.category_id.trim().toUpperCase();
+    }
+    return mapLegacyCategory(item.category, item.produce_name || item.crop_name);
+  };
+
+  // Helper to get produce display details
+  const getListingProduceDetails = (item: Listing) => {
+    const rawName = item.produce_name || item.crop_name || 'Produce';
+    let knName = item.produce_name_kn || '';
+    if (!knName) {
+      const match = findProduceByName(rawName);
+      if (match) knName = match.nameKn;
+    }
+    const varName = item.variety || item.crop_type || 'Standard';
+    return { name: rawName, nameKn: knName, variety: varName };
+  };
+
+  // Filter listings
+  const filteredListings = useMemo(() => {
+    return listings.filter((item) => {
+      // 1. Category Filter
+      if (selectedCategory && selectedCategory.toLowerCase() !== 'all') {
+        const itemCat = getListingCategoryId(item);
+        const target = selectedCategory.toUpperCase();
+        if (itemCat !== target) {
+          // Check legacy match
+          const legacyCat = (item.category || '').toLowerCase();
+          if (target === 'CEREALS_MILLETS' && legacyCat !== 'crop') return false;
+          if (target === 'VEGETABLES' && legacyCat !== 'vegetable') return false;
+          if (target === 'FRUITS' && legacyCat !== 'fruit') return false;
+          if (!['CEREALS_MILLETS', 'VEGETABLES', 'FRUITS'].includes(target)) return false;
+        }
       }
-    }
-    if (searchTerm.trim()) {
-      const q = searchTerm.toLowerCase();
-      const matchName = item.crop_name?.toLowerCase().includes(q);
-      const matchType = item.crop_type?.toLowerCase().includes(q);
-      return matchName || matchType;
-    }
-    return true;
-  });
 
-  // Category counts
-  const cropCount = listings.filter((l) => l.category?.toLowerCase() === 'crop').length;
-  const vegCount = listings.filter((l) => l.category?.toLowerCase() === 'vegetable').length;
-  const fruitCount = listings.filter((l) => l.category?.toLowerCase() === 'fruit').length;
+      // 2. Search Filter
+      if (searchTerm.trim()) {
+        const q = searchTerm.toLowerCase();
+        const { name, nameKn, variety } = getListingProduceDetails(item);
+        const matchName = name.toLowerCase().includes(q);
+        const matchKn = nameKn.toLowerCase().includes(q);
+        const matchVar = variety.toLowerCase().includes(q);
+        const matchFarmer = (item.farmer_id || '').toLowerCase().includes(q);
+        return matchName || matchKn || matchVar || matchFarmer;
+      }
 
-  const getCategoryCount = (key: StockCategory) => {
-    if (key === 'crop') return cropCount;
-    if (key === 'vegetable') return vegCount;
-    return fruitCount;
-  };
+      return true;
+    });
+  }, [listings, selectedCategory, searchTerm]);
 
-  const getCategoryTotalKg = (key: StockCategory) => {
-    return listings
-      .filter((l) => l.category?.toLowerCase() === key.toLowerCase())
-      .reduce((sum, item) => sum + (Number(item.quantity_kg) || 0), 0);
-  };
+  // Inventory stats per category
+  const categoryStats = useMemo(() => {
+    const stats: Record<string, { count: number; totalKg: number }> = {};
+    PRODUCE_CATEGORIES.forEach((cat) => {
+      stats[cat.id] = { count: 0, totalKg: 0 };
+    });
+
+    listings.forEach((l) => {
+      const catId = getListingCategoryId(l);
+      if (stats[catId]) {
+        stats[catId].count += 1;
+        stats[catId].totalKg += Number(l.quantity_kg) || 0;
+      }
+    });
+
+    return stats;
+  }, [listings]);
+
+  const activeCategoryMeta = selectedCategory && selectedCategory !== 'all'
+    ? getCategoryById(selectedCategory)
+    : null;
 
   /* ─────────────────────────────────────────────────────────────
-     VIEW 1: 3-OPTION CARDS (Mirroring Trade Selection Screen)
+     VIEW 1: Overview Cards (When no category is filtered)
      ───────────────────────────────────────────────────────────── */
   if (selectedCategory === null) {
     return (
-      <div className="animate-fadeIn" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <div className="page-header" style={{ marginBottom: '2rem' }}>
-          <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', fontSize: '1.875rem' }}>
-            <Package size={30} style={{ color: '#059669' }} /> Produce Stocks
-          </h1>
-          <p style={{ color: '#64748b', fontSize: '1rem', marginTop: '0.25rem' }}>
-            Select an inventory category to view active listings, manage produce quantities, and update real photos
-          </p>
-        </div>
-
-        {/* 3 Option Cards (Crop Stock, Vegetable Stock, Fruit Stock) */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '1.5rem',
-            marginBottom: '2rem',
-          }}
-        >
-          {(Object.entries(CATEGORY_CONFIG) as [StockCategory, typeof CATEGORY_CONFIG[StockCategory]][]).map(
-            ([key, config]) => {
-              const count = getCategoryCount(key);
-              const totalKg = getCategoryTotalKg(key);
-
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => handleSelectCategory(key)}
-                  style={{
-                    background: config.bg,
-                    border: `2px solid ${config.border}`,
-                    borderRadius: '1.25rem',
-                    padding: '2.5rem 1.75rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    textAlign: 'center',
-                    gap: '1rem',
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
-                    transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-6px)';
-                    e.currentTarget.style.boxShadow = '0 14px 28px rgba(0, 0, 0, 0.12)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.05)';
-                  }}
-                >
-                  <span style={{ color: config.color, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.08))' }}>
-                    {config.icon}
-                  </span>
-                  <div>
-                    <h3 style={{ fontSize: '1.35rem', fontWeight: 700, color: config.color, margin: 0 }}>
-                      {config.label}
-                    </h3>
-                    <p style={{ fontSize: '0.875rem', color: '#475569', marginTop: '0.35rem', marginBottom: 0 }}>
-                      {config.description}
-                    </p>
-                  </div>
-
-                  {/* Stock Pill */}
-                  <div
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      background: 'rgba(255, 255, 255, 0.85)',
-                      padding: '0.375rem 0.875rem',
-                      borderRadius: '9999px',
-                      fontSize: '0.8125rem',
-                      fontWeight: 600,
-                      color: config.color,
-                      border: `1px solid ${config.accent}`,
-                      marginTop: '0.5rem',
-                    }}
-                  >
-                    <span>{count} {count === 1 ? 'Listing' : 'Listings'}</span>
-                    <span style={{ color: '#cbd5e1' }}>•</span>
-                    <span>{totalKg.toLocaleString()} kg</span>
-                  </div>
-
-                  <span
-                    style={{
-                      fontSize: '0.875rem',
-                      fontWeight: 600,
-                      color: config.color,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.25rem',
-                      marginTop: '0.25rem',
-                    }}
-                  >
-                    Open {config.singular} Stock →
-                  </span>
-                </button>
-              );
-            }
-          )}
-        </div>
-
-        {/* View All Stocks Link Card */}
-        <div
-          style={{
-            background: '#ffffff',
-            border: '1px solid #e2e8f0',
-            borderRadius: '1rem',
-            padding: '1.25rem 1.75rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-          }}
-        >
+      <div className="animate-fadeIn" style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '3rem' }}>
+        <div className="page-header" style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 600, color: '#1e293b' }}>
-              Want to see your full combined inventory?
-            </h4>
-            <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.875rem', color: '#64748b' }}>
-              View all {listings.length} crops, vegetables, and fruits in a single unified table.
+            <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', fontSize: '1.875rem' }}>
+              <Package size={30} style={{ color: '#059669' }} /> Produce Inventory & Stocks
+            </h1>
+            <p style={{ color: '#64748b', fontSize: '1rem', marginTop: '0.25rem' }}>
+              Karnataka agricultural produce inventory, active marketplace listings & photo management
             </p>
           </div>
           <button
-            type="button"
             onClick={() => handleSelectCategory('all')}
             className="btn btn-secondary"
-            style={{ fontWeight: 600 }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
           >
-            View All Combined Stocks ({listings.length})
+            <Layers size={16} /> View All Produce ({listings.length})
           </button>
+        </div>
+
+        {/* 8 Top-Level Category Overview Cards */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+            gap: '1.25rem',
+          }}
+        >
+          {PRODUCE_CATEGORIES.map((cat) => {
+            const stat = categoryStats[cat.id] || { count: 0, totalKg: 0 };
+            return (
+              <div
+                key={cat.id}
+                onClick={() => handleSelectCategory(cat.id)}
+                style={{
+                  background: '#ffffff',
+                  border: `2px solid ${cat.border}`,
+                  borderRadius: '1rem',
+                  padding: '1.5rem',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.04)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1rem',
+                  transition: 'all 200ms ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = '0 12px 28px rgba(0,0,0,0.08)';
+                  e.currentTarget.style.borderColor = cat.color;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.04)';
+                  e.currentTarget.style.borderColor = cat.border;
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div
+                    style={{
+                      width: '48px',
+                      height: '48px',
+                      borderRadius: '12px',
+                      background: cat.bg,
+                      color: cat.color,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {CATEGORY_ICONS[cat.id]}
+                  </div>
+                  <span
+                    style={{
+                      background: stat.count > 0 ? cat.bg : '#f1f5f9',
+                      color: stat.count > 0 ? cat.color : '#64748b',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      padding: '0.2rem 0.6rem',
+                      borderRadius: '1rem',
+                    }}
+                  >
+                    {stat.count} {stat.count === 1 ? 'listing' : 'listings'}
+                  </span>
+                </div>
+
+                <div>
+                  <h3 style={{ margin: '0 0 0.2rem', fontSize: '1.1rem', color: '#1e293b', fontWeight: 700 }}>
+                    {cat.label}
+                  </h3>
+                  <span style={{ fontSize: '0.85rem', color: cat.color, fontWeight: 600 }}>
+                    {cat.labelKn}
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    marginTop: 'auto',
+                    paddingTop: '0.75rem',
+                    borderTop: '1px solid #f1f5f9',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    fontSize: '0.8rem',
+                    color: '#64748b',
+                  }}
+                >
+                  <span>Total stock: <strong>{stat.totalKg.toLocaleString()} kg</strong></span>
+                  <span style={{ color: cat.color, fontWeight: 600 }}>Explore →</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     );
   }
 
   /* ─────────────────────────────────────────────────────────────
-     VIEW 2: STOCK INVENTORY TABLE (With Option Switcher Pills)
+     VIEW 2: Filtered Table View with Category Pill Tabs
      ───────────────────────────────────────────────────────────── */
-  const activeConfig = selectedCategory !== 'all' ? CATEGORY_CONFIG[selectedCategory] : null;
-
   return (
-    <div className="animate-fadeIn" style={{ maxWidth: '1440px', margin: '0 auto' }}>
-      {/* Top Header Row with Back Button, Category Tabs, and Add Stock button */}
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '1rem',
-          marginBottom: '1.5rem',
-        }}
-      >
+    <div className="animate-fadeIn" style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '3rem' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <button
-            type="button"
             onClick={() => handleSelectCategory(null)}
             className="btn btn-secondary btn-sm"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
           >
-            <ArrowLeft size={16} /> Back to Stocks
+            <ArrowLeft size={15} /> All Categories
           </button>
-
-          <h1 style={{ fontSize: '1.5rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            {activeConfig ? (
-              <>
-                <span style={{ color: activeConfig.color }}>{activeConfig.icon}</span>
-                <span>{activeConfig.label}</span>
-              </>
-            ) : (
-              <>
-                <Package size={26} style={{ color: '#059669' }} />
-                <span>All Produce Stocks</span>
-              </>
-            )}
-          </h1>
+          <div>
+            <h1 style={{ fontSize: '1.65rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {activeCategoryMeta ? (
+                <>
+                  <span style={{ color: activeCategoryMeta.color }}>{CATEGORY_ICONS[activeCategoryMeta.id]}</span>
+                  <span>{activeCategoryMeta.label} Stocks</span>
+                  <span style={{ fontSize: '1.1rem', color: activeCategoryMeta.color, fontWeight: 500 }}>
+                    ({activeCategoryMeta.labelKn})
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Layers size={24} style={{ color: '#059669' }} />
+                  <span>All Produce Stocks</span>
+                </>
+              )}
+            </h1>
+          </div>
         </div>
 
-        {/* Quick action: Add new listing via Trade */}
         <Link
-          to={`/farmer/trade${selectedCategory && selectedCategory !== 'all' ? `?category=${selectedCategory}` : ''}`}
+          to={selectedCategory && selectedCategory !== 'all' ? `/farmer/trade?category=${selectedCategory}` : '/farmer/trade'}
           className="btn btn-primary btn-sm"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', textDecoration: 'none' }}
         >
-          <PlusCircle size={16} />
-          <span>Add New {activeConfig ? activeConfig.singular : 'Produce'} (Trade)</span>
+          <PlusCircle size={16} /> List New Produce
         </Link>
       </div>
 
-      {/* Category Filter Pills (Crop Stock, Vegetable Stock, Fruit Stock, All) */}
+      {/* Category Pills Bar */}
       <div
         style={{
           display: 'flex',
-          alignItems: 'center',
           gap: '0.5rem',
-          marginBottom: '1.25rem',
           overflowX: 'auto',
-          paddingBottom: '0.25rem',
+          paddingBottom: '0.5rem',
+          marginBottom: '1.25rem',
         }}
       >
         <button
-          type="button"
           onClick={() => handleSelectCategory('all')}
           style={{
-            padding: '0.5rem 1rem',
-            borderRadius: '9999px',
-            fontSize: '0.875rem',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            padding: '0.45rem 0.85rem',
+            borderRadius: '2rem',
+            fontSize: '0.85rem',
             fontWeight: 600,
             cursor: 'pointer',
-            border: selectedCategory === 'all' ? '2px solid #059669' : '1px solid #e2e8f0',
-            background: selectedCategory === 'all' ? '#064e3b' : '#ffffff',
-            color: selectedCategory === 'all' ? '#ffffff' : '#475569',
-            transition: 'all 150ms ease',
+            border: selectedCategory === 'all' ? '2px solid #059669' : '1px solid #cbd5e1',
+            background: selectedCategory === 'all' ? '#ecfdf5' : '#ffffff',
+            color: selectedCategory === 'all' ? '#047857' : '#475569',
+            whiteSpace: 'nowrap',
           }}
         >
-          All Produce ({listings.length})
+          <Layers size={14} /> All Produce ({listings.length})
         </button>
 
-        {(Object.entries(CATEGORY_CONFIG) as [StockCategory, typeof CATEGORY_CONFIG[StockCategory]][]).map(
-          ([key, conf]) => {
-            const isActive = selectedCategory === key;
-            const count = getCategoryCount(key);
-
-            return (
-              <button
-                key={key}
-                type="button"
-                onClick={() => handleSelectCategory(key)}
-                style={{
-                  padding: '0.5rem 1rem',
-                  borderRadius: '9999px',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  border: isActive ? `2px solid ${conf.color}` : '1px solid #e2e8f0',
-                  background: isActive ? conf.bg : '#ffffff',
-                  color: isActive ? conf.color : '#475569',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  transition: 'all 150ms ease',
-                }}
-              >
-                <span>{conf.label}</span>
-                <span
-                  style={{
-                    background: isActive ? '#ffffff' : '#f1f5f9',
-                    padding: '0.125rem 0.45rem',
-                    borderRadius: '9999px',
-                    fontSize: '0.75rem',
-                  }}
-                >
-                  {count}
-                </span>
-              </button>
-            );
-          }
-        )}
-
-        {/* Live Search */}
-        <div style={{ marginLeft: 'auto', position: 'relative', minWidth: '220px' }}>
-          <Search
-            size={16}
-            style={{
-              position: 'absolute',
-              left: '10px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: '#94a3b8',
-            }}
-          />
-          <input
-            type="text"
-            placeholder="Search produce name or type…"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '0.45rem 0.75rem 0.45rem 2.25rem',
-              borderRadius: '0.5rem',
-              border: '1px solid #cbd5e1',
-              fontSize: '0.875rem',
-              outline: 'none',
-            }}
-          />
-        </div>
+        {PRODUCE_CATEGORIES.map((cat) => {
+          const isSelected = selectedCategory?.toUpperCase() === cat.id;
+          const stat = categoryStats[cat.id] || { count: 0 };
+          return (
+            <button
+              key={cat.id}
+              onClick={() => handleSelectCategory(cat.id)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                padding: '0.45rem 0.85rem',
+                borderRadius: '2rem',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                border: isSelected ? `2px solid ${cat.color}` : '1px solid #cbd5e1',
+                background: isSelected ? cat.bg : '#ffffff',
+                color: isSelected ? cat.color : '#475569',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {CATEGORY_ICONS[cat.id]}
+              <span>{cat.label}</span>
+              <span style={{ opacity: 0.75, fontSize: '0.75rem' }}>({stat.count})</span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Table Content */}
+      {/* Search Bar */}
+      <div style={{ position: 'relative', marginBottom: '1.25rem' }}>
+        <input
+          type="text"
+          className="input"
+          placeholder="Search by produce name (English or Kannada), variety, or farmer..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ paddingLeft: '2.5rem' }}
+        />
+        <Search
+          size={18}
+          style={{
+            position: 'absolute',
+            left: '0.85rem',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: '#94a3b8',
+            pointerEvents: 'none',
+          }}
+        />
+      </div>
+
+      {/* Listings Table */}
       {loading ? (
         <div className="card" style={{ textAlign: 'center', padding: '3.5rem' }}>
-          <div className="animate-pulse" style={{ fontSize: '1rem', color: '#64748b' }}>
-            Loading stock inventory…
+          <div className="animate-pulse" style={{ color: '#059669', fontWeight: 600 }}>
+            Loading produce inventory…
           </div>
         </div>
       ) : (
-        <div className="table-container" style={{ background: '#ffffff', borderRadius: '0.75rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div className="table-container">
           <table>
             <thead>
               <tr>
-                <th style={{ width: '45px' }}>#</th>
-                <th style={{ width: '75px' }}>Photo</th>
-                <th>Produce Name</th>
+                <th style={{ width: '40px' }}>#</th>
+                <th style={{ width: '70px' }}>Photo</th>
+                <th>Produce Name / ಹೆಸರು</th>
+                <th>Variety / ತಳಿ</th>
                 <th>Category</th>
-                <th>Type / Variety</th>
                 <th>Quantity (kg)</th>
                 <th>Price / kg</th>
                 <th>Total Value</th>
                 <th>Status</th>
-                <th style={{ width: '130px' }}>Actions</th>
+                <th>Photo Action</th>
               </tr>
             </thead>
             <tbody>
               {filteredListings.length === 0 ? (
                 <tr>
-                  <td colSpan={10} style={{ textAlign: 'center', padding: '3rem 1.5rem', color: '#64748b' }}>
-                    <Package size={36} style={{ margin: '0 auto 0.5rem auto', opacity: 0.4 }} />
-                    <p style={{ margin: 0, fontWeight: 500 }}>
-                      No {activeConfig ? activeConfig.singular.toLowerCase() : 'produce'} listings found in this category.
-                    </p>
-                    <Link
-                      to={`/farmer/trade${selectedCategory && selectedCategory !== 'all' ? `?category=${selectedCategory}` : ''}`}
-                      className="btn btn-primary btn-sm"
-                      style={{ marginTop: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
-                    >
-                      <PlusCircle size={15} /> Add First Listing
-                    </Link>
+                  <td colSpan={10} style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                      <Package size={36} style={{ color: '#cbd5e1' }} />
+                      <div style={{ fontWeight: 600, color: '#334155' }}>No produce listings found</div>
+                      <div style={{ fontSize: '0.85rem' }}>
+                        {searchTerm ? 'Try adjusting your search criteria.' : 'Create your first produce listing using the button above.'}
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ) : (
-                filteredListings.map((l, i) => {
+                filteredListings.map((l, idx) => {
+                  const { name, nameKn, variety: varName } = getListingProduceDetails(l);
+                  const catId = getListingCategoryId(l);
+                  const catMeta = getCategoryById(catId);
                   const imgRes = resolveProduceImage({
-                    name: l.crop_name,
-                    category: l.category,
+                    name,
+                    category: catId,
                     imageUrl: l.image_url,
                   });
                   const isOwner =
@@ -488,17 +486,16 @@ export default function FarmerStocks() {
                     l.farmer_id &&
                     (l.farmer_id.toLowerCase() === user.email.toLowerCase() || user.role === 'admin');
 
-                  const itemCat = (l.category || 'crop').toLowerCase() as StockCategory;
-                  const itemConfig = CATEGORY_CONFIG[itemCat] || CATEGORY_CONFIG.crop;
+                  const totalRowValue = (Number(l.quantity_kg) || 0) * (Number(l.price_per_kg) || 0);
 
                   return (
                     <tr key={l.id}>
-                      <td style={{ color: '#94a3b8', fontSize: '0.85rem' }}>{i + 1}</td>
-                      <td style={{ padding: '0.4rem 0.6rem' }}>
+                      <td>{idx + 1}</td>
+                      <td style={{ width: '70px', padding: '0.4rem 0.6rem' }}>
                         <div style={{ position: 'relative', width: '52px', height: '52px' }}>
                           <img
                             src={imgRes.url}
-                            alt={l.crop_name}
+                            alt={name}
                             style={{
                               width: '52px',
                               height: '52px',
@@ -510,79 +507,78 @@ export default function FarmerStocks() {
                             }}
                             onError={handleImageError}
                           />
-                          {imgRes.isSellerProvided ? (
-                            <span
-                              title="Seller-provided photo"
-                              style={{
-                                position: 'absolute',
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                background: 'rgba(22, 101, 52, 0.92)',
-                                color: '#ffffff',
-                                fontSize: '0.55rem',
-                                padding: '1px 2px',
-                                textAlign: 'center',
-                                borderBottomLeftRadius: 8,
-                                borderBottomRightRadius: 8,
-                                lineHeight: 1.1,
-                                fontWeight: 600,
-                              }}
-                            >
-                              Photo
-                            </span>
-                          ) : (
-                            <span
-                              title="Default produce image"
-                              style={{
-                                position: 'absolute',
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                background: 'rgba(100, 116, 139, 0.85)',
-                                color: '#ffffff',
-                                fontSize: '0.5rem',
-                                padding: '1px 2px',
-                                textAlign: 'center',
-                                borderBottomLeftRadius: 8,
-                                borderBottomRightRadius: 8,
-                                lineHeight: 1.1,
-                              }}
-                            >
-                              Default
-                            </span>
-                          )}
+                          <span
+                            title={imgRes.label}
+                            style={{
+                              position: 'absolute',
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              background: imgRes.isSellerProvided
+                                ? 'rgba(22, 101, 52, 0.9)'
+                                : 'rgba(100, 116, 139, 0.85)',
+                              color: '#fff',
+                              fontSize: '0.55rem',
+                              padding: '1px 2px',
+                              textAlign: 'center',
+                              borderBottomLeftRadius: 8,
+                              borderBottomRightRadius: 8,
+                              lineHeight: 1.1,
+                            }}
+                          >
+                            {imgRes.isSellerProvided ? 'Photo' : 'No photo'}
+                          </span>
                         </div>
                       </td>
-                      <td style={{ fontWeight: 600, color: '#1e293b' }}>{l.crop_name}</td>
+                      <td>
+                        <div style={{ fontWeight: 600, color: '#1e293b' }}>{name}</div>
+                        {nameKn && (
+                          <div style={{ fontSize: '0.8rem', color: '#16a34a', fontWeight: 500 }}>
+                            {nameKn}
+                          </div>
+                        )}
+                      </td>
+                      <td>
+                        <span
+                          style={{
+                            background: '#f1f5f9',
+                            color: '#334155',
+                            padding: '0.2rem 0.5rem',
+                            borderRadius: '0.35rem',
+                            fontSize: '0.8rem',
+                            fontWeight: 500,
+                          }}
+                        >
+                          {varName}
+                        </span>
+                      </td>
                       <td>
                         <span
                           style={{
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '0.3rem',
-                            padding: '0.2rem 0.55rem',
-                            borderRadius: '9999px',
+                            gap: '0.25rem',
+                            background: catMeta?.bg || '#f8fafc',
+                            color: catMeta?.color || '#334155',
+                            border: `1px solid ${catMeta?.border || '#e2e8f0'}`,
+                            padding: '0.2rem 0.5rem',
+                            borderRadius: '0.35rem',
                             fontSize: '0.75rem',
                             fontWeight: 600,
-                            background: itemConfig.bg,
-                            color: itemConfig.color,
-                            border: `1px solid ${itemConfig.accent}`,
-                            textTransform: 'capitalize',
                           }}
                         >
-                          {itemConfig.singular}
+                          {CATEGORY_ICONS[catId]}
+                          {catMeta?.label || catId}
                         </span>
                       </td>
-                      <td style={{ color: '#475569' }}>{l.crop_type || '—'}</td>
-                      <td style={{ fontWeight: 500 }}>{Number(l.quantity_kg).toLocaleString()} kg</td>
-                      <td>₹{Number(l.price_per_kg).toLocaleString()}</td>
-                      <td style={{ fontWeight: 700, color: '#166534' }}>
-                        ₹{(Number(l.quantity_kg) * Number(l.price_per_kg)).toLocaleString()}
+                      <td style={{ fontWeight: 600 }}>{l.quantity_kg} kg</td>
+                      <td>₹{l.price_per_kg}</td>
+                      <td style={{ fontWeight: 600, color: '#0f172a' }}>
+                        ₹{totalRowValue.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                       </td>
                       <td>
-                        <span className={`badge ${Number(l.quantity_kg) > 0 ? 'badge-green' : 'badge-red'}`}>
-                          {Number(l.quantity_kg) > 0 ? 'In Stock' : 'Sold Out'}
+                        <span className={`badge ${l.quantity_kg > 0 ? 'badge-green' : 'badge-red'}`}>
+                          {l.quantity_kg > 0 ? 'In Stock' : 'Sold Out'}
                         </span>
                       </td>
                       <td>
@@ -591,19 +587,13 @@ export default function FarmerStocks() {
                             type="button"
                             onClick={() => setPhotoModalListing(l)}
                             className="btn btn-secondary btn-sm"
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '0.35rem',
-                              fontSize: '0.75rem',
-                              padding: '0.3rem 0.6rem',
-                            }}
-                            title="Update or add photo for this listing"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}
+                            title="Update or add authentic photo"
                           >
                             <Camera size={13} /> {l.image_url ? 'Change Photo' : 'Add Photo'}
                           </button>
                         ) : (
-                          <span style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>—</span>
+                          <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>—</span>
                         )}
                       </td>
                     </tr>
@@ -615,6 +605,7 @@ export default function FarmerStocks() {
         </div>
       )}
 
+      {/* Photo Update Modal */}
       {photoModalListing && (
         <ListingPhotoModal
           listing={photoModalListing}

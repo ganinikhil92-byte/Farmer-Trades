@@ -1,0 +1,24 @@
+# Roo Code & Agent Rules for Farmer Trades
+
+## Project Overview
+- **Backend**: FastAPI (Python 3.11/3.12, SQLite `agro_trades.db`, SQLAlchemy ORM, Uvicorn, Razorpay integration). Located in `./backend`.
+- **Frontend**: React 18, TypeScript, Vite, Lucide Icons, CSS. Located in `./frontend`.
+
+## 1. GSD (Get Shit Done) Directives
+- **Zero Fluff**: Focus exclusively on solving problems with production-ready code.
+- **No Half-Baked Code**: Never leave `TODO`, `// implement later`, or placeholder mocks unless explicitly asked.
+- **Fast Execution**: Read existing code to detect patterns, apply direct edits, and test immediately.
+- **Respect Database Schema**: SQLite models in `backend/db_models.py` and endpoints in `backend/routes.py`. Always preserve existing database integrity.
+
+## 2. Ralph Loop (Self-Healing Feedback Cycle)
+When troubleshooting, implementing complex features, or running in autonomous mode:
+1. **Trigger Check**: Run `scripts\ralph_loop.bat` or individual checks (`npm run build` in `frontend/`, `python -m py_compile ...` in `backend/`).
+2. **Diagnose**: Pinpoint error messages, line numbers, and failure conditions.
+3. **Patch**: Apply direct code modifications to resolve root causes.
+4. **Iterate**: Re-run the verification command until 0 errors are encountered.
+
+## 3. Code Quality & CodeRabbit Standards
+- Verify all API endpoints return proper HTTP status codes and typed Pydantic models.
+- Sanitize database queries and validate payload schemas.
+- Ensure frontend state updates cleanly and handles empty/loading states gracefully.
+- Write clean, self-documenting code that will pass CodeRabbit automated pull-request reviews.

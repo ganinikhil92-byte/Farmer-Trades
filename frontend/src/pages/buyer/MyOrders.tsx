@@ -79,7 +79,7 @@ export default function MyOrders() {
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1>My Orders</h1>
-          <p>Track all your crop, vegetable, and fruit purchases</p>
+          <p>Track all your crop purchases</p>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem' }}>
           <button
@@ -217,7 +217,7 @@ export default function MyOrders() {
           </div>
           <h3 style={{ marginBottom: '0.5rem', fontWeight: 600 }}>No Orders Found</h3>
           <p style={{ color: 'var(--color-text-muted)', maxWidth: 420, margin: '0 auto 1.5rem' }}>
-            You haven't placed any orders yet. Browse through our fresh crops, vegetables, and fruits to get started!
+            You haven't placed any orders yet. Browse through our fresh crops to get started!
           </p>
           <Link to="/buyer/buy" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
             <ShoppingCart size={16} /> Browse Produce <ArrowRight size={16} />

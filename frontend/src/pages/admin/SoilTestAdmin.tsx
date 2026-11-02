@@ -73,6 +73,16 @@ interface SoilTestRequestItem {
   reviewer_name?: string;
   review_date?: string;
   report?: SoilTestReportData | null;
+  payment_id?: string;
+  payment_status?: string;
+  payment_amount?: number;
+  razorpay_order_id?: string;
+  razorpay_payment_id?: string;
+  fee_breakdown?: {
+    soil_test: number;
+    results: number;
+    total: number;
+  };
 }
 
 const PARAMETER_KEYS = [
@@ -626,6 +636,7 @@ export default function SoilTestAdmin() {
                 <th>Farmer & Contact</th>
                 <th>Field & Area</th>
                 <th>Status</th>
+                <th>Payment</th>
                 <th>Testing Provider</th>
                 <th>Confirmed Appointment</th>
                 <th>Actions</th>
@@ -679,6 +690,43 @@ export default function SoilTestAdmin() {
                       <div style={{ fontSize: '0.72rem', color: '#854d0e', marginTop: '0.2rem' }}>
                         {r.review_status}
                       </div>
+                    )}
+                  </td>
+                  <td>
+                    {r.is_farmer_upload ? (
+                      <span className="badge" style={{ background: '#f1f5f9', color: '#475569', fontSize: '0.72rem' }}>
+                        Farmer Upload
+                      </span>
+                    ) : r.payment_status === 'Paid' || r.payment_id ? (
+                      <div>
+                        <span
+                          className="badge"
+                          style={{
+                            background: '#dcfce7',
+                            color: '#166534',
+                            border: '1px solid #86efac',
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.25rem',
+                          }}
+                        >
+                          <Check size={12} /> Paid ₹1,000
+                        </span>
+                        <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '0.15rem' }}>
+                          ₹500 Test + ₹500 Results
+                        </div>
+                        {r.payment_id && (
+                          <div style={{ fontSize: '0.68rem', color: '#0f766e', marginTop: '0.1rem' }} title={r.payment_id}>
+                            <code>{r.payment_id.length > 15 ? r.payment_id.slice(0, 15) + '...' : r.payment_id}</code>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="badge badge-amber" style={{ fontSize: '0.72rem' }}>
+                        Pending
+                      </span>
                     )}
                   </td>
                   <td>
@@ -809,6 +857,10 @@ export default function SoilTestAdmin() {
               <div>📍 <strong>Field:</strong> {selectedReq.field_name} ({selectedReq.village}, {selectedReq.taluk}, {selectedReq.district})</div>
               <div>📐 <strong>Area:</strong> {selectedReq.land_acres} {selectedReq.land_unit} • 📞 <strong>Phone:</strong> {selectedReq.phone}</div>
               {selectedReq.preferred_date && <div>🗓 <strong>Farmer Preferred Date:</strong> {selectedReq.preferred_date}</div>}
+              <div style={{ marginTop: '0.4rem', paddingTop: '0.4rem', borderTop: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#166534', fontWeight: 600 }}>
+                <span>Payment: Paid ₹1,000 (₹500 Test + ₹500 Results)</span>
+                <span className="badge badge-green" style={{ fontSize: '0.7rem' }}>Razorpay Paid</span>
+              </div>
             </div>
 
             <form onSubmit={handleConfirmAccept}>

@@ -5,7 +5,7 @@ import { Shield, Lock, Mail, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide
 import '../Landing.css';
 
 export default function AdminLogin() {
-  const { user, login } = useAuth();
+  const { user, login, logout } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('nikhilgani987@gmail.com');
@@ -13,14 +13,10 @@ export default function AdminLogin() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // If already logged in as admin, redirect to dashboard
+  // If already logged in as admin, redirect to admin dashboard
   useEffect(() => {
-    if (user) {
-      if (user.role === 'admin') {
-        navigate('/admin', { replace: true });
-      } else {
-        navigate(`/${user.role}`, { replace: true });
-      }
+    if (user && user.role === 'admin') {
+      navigate('/admin', { replace: true });
     }
   }, [user, navigate]);
 
@@ -39,6 +35,9 @@ export default function AdminLogin() {
 
     setLoading(true);
     try {
+      if (user && user.role !== 'admin') {
+        logout();
+      }
       const res = await login(email.trim(), password, 'admin');
       if (res.success) {
         navigate('/admin', { replace: true });
@@ -118,6 +117,45 @@ export default function AdminLogin() {
             Official Administrator & Master Control Access
           </p>
         </div>
+
+        {user && user.role !== 'admin' && (
+          <div
+            style={{
+              background: '#eff6ff',
+              border: '1px solid #bfdbfe',
+              borderRadius: '0.75rem',
+              padding: '0.75rem 1rem',
+              marginBottom: '1.25rem',
+              fontSize: '0.85rem',
+              color: '#1e40af',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '0.5rem',
+            }}
+          >
+            <div>
+              Signed in as <strong>{user.name}</strong> ({user.role}). Sign in below to switch to Administrator.
+            </div>
+            <button
+              type="button"
+              onClick={() => logout()}
+              style={{
+                background: '#dbeafe',
+                border: '1px solid #93c5fd',
+                color: '#1e40af',
+                fontWeight: 700,
+                fontSize: '0.78rem',
+                padding: '0.25rem 0.55rem',
+                borderRadius: '0.4rem',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Sign Out First
+            </button>
+          </div>
+        )}
 
         {error && (
           <div

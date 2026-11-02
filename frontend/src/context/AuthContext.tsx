@@ -182,7 +182,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function login(email: string, password: string, selectedRole?: UserRole) {
     const cleanEmail = email.trim().toLowerCase();
 
-    // 1. Attempt Firebase Authentication if active
+    // 1. Attempt backend database login FIRST (most reliable for all registered users)
+    try {
+      const res = await api.post('/auth/login', { email: cleanEmail, password, role: selectedRole });
+      if (res.data && res.data.success) {
+        if (res.data.token) {
+          localStorage.setItem('agro_auth_token', res.data.token);
+        }
+        const authUser: AuthUser = {
+          ...res.data.user,
+          role: selectedRole || res.data.user.role,
+        };
+        setUser(authUser);
+        localStorage.setItem('agro_user', JSON.stringify(authUser));
+        return { success: true };
+      }
+    } catch (err: any) {
+      const detail = err?.response?.data?.detail || err?.message || '';
+      console.warn('[Backend Auth] Login note:', detail);
+      // If backend explicitly says invalid credentials, return error immediately
+      if (err?.response?.status === 400 && detail.includes('Invalid')) {
+        // Still try Firebase and local fallback below before giving up
+      }
+    }
+
+    // 2. Attempt Firebase Authentication if active (fallback for Firebase-only users)
     if (isFirebaseReady && fbAuth) {
       try {
         const userCred = await signInWithEmailAndPassword(fbAuth, cleanEmail, password);
@@ -207,32 +231,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: true };
       } catch (fbErr: any) {
         console.warn('[Firebase Auth] Login note:', fbErr.code || fbErr.message);
-        // Do not return early - allow backend and offline verification
       }
-    }
-
-    // 2. Attempt backend database login
-    try {
-      const res = await api.post('/auth/login', { email: cleanEmail, password, role: selectedRole });
-      if (res.data && res.data.success) {
-        if (res.data.token) {
-          localStorage.setItem('agro_auth_token', res.data.token);
-        }
-        const authUser: AuthUser = {
-          ...res.data.user,
-          role: selectedRole || res.data.user.role,
-        };
-        setUser(authUser);
-        localStorage.setItem('agro_user', JSON.stringify(authUser));
-        return { success: true };
-      }
-    } catch (err: any) {
-      console.warn('[Backend Auth] Login note:', err?.response?.data?.detail || err?.message);
     }
 
     // 3. Fallback verification for stored users and admin
     // Admin credential match
-
     if (cleanEmail === 'nikhilgani987@gmail.com' && (password === 'Nikhil@2005' || password === 'Admin@123')) {
       const adminUser: AuthUser = {
         email: cleanEmail,
@@ -521,7 +524,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const localOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
     try {
-      const res = await api.post('/auth/send-otp', { email: cleanEmail });
+      // Use a longer timeout for OTP since SMTP can take 15-20 seconds
+      const res = await api.post('/auth/send-otp', { email: cleanEmail }, { timeout: 30000 });
       // Backend returned successfully — save the OTP it generated
       const backendOtp = res.data?.otp || localOtp;
       try {

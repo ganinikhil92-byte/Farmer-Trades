@@ -1,16 +1,23 @@
-/* FarmersPage.css — Farmer Trades */
+/* ==========================================================================
+   Farmer Trades — Farmers Directory Page Styling
+   Botanical Obsidian & Emerald Glass Theme
+   ========================================================================== */
 
 .ft-farmers-page {
-  background-color: #f8faf7;
+  background-color: var(--color-surface-dim);
+  color: var(--color-text);
   min-height: 100vh;
   padding-bottom: 5rem;
 }
 
 /* Banner */
 .ft-farmers-banner {
-  background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+  background: linear-gradient(180deg, rgba(6, 44, 30, 0.85) 0%, rgba(2, 15, 9, 0.95) 100%),
+              radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.18), transparent 70%);
   color: #ffffff;
   padding: 3rem 1.5rem 2.5rem;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+  position: relative;
 }
 
 .ft-farmers-banner-inner {
@@ -22,25 +29,28 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(52, 211, 153, 0.35);
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #fef08a;
+  color: #34d399;
   margin-bottom: 0.75rem;
+  letter-spacing: 0.02em;
 }
 
 .ft-farmers-banner h1 {
   font-size: 2.25rem;
   font-weight: 900;
   margin-bottom: 0.5rem;
+  color: #ffffff;
+  letter-spacing: -0.025em;
 }
 
 .ft-farmers-banner p {
   font-size: 1rem;
-  color: #dcfce7;
+  color: rgba(255, 255, 255, 0.75);
   max-width: 650px;
   line-height: 1.5;
 }
@@ -54,11 +64,13 @@
 
 /* Filter Bar */
 .ft-farmers-filter-bar {
-  background: #ffffff;
-  border-radius: 0.875rem;
+  background: rgba(6, 44, 30, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 1rem;
   padding: 0.875rem 1.25rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e5e7eb;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(16, 185, 129, 0.2);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -73,10 +85,16 @@
   gap: 0.5rem;
   flex: 1;
   min-width: 260px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: rgba(2, 18, 12, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 0.5rem;
   padding: 0.5rem 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.ft-farmers-search:focus-within {
+  border-color: #34d399;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2);
 }
 
 .ft-farmers-search input {
@@ -84,15 +102,23 @@
   background: transparent;
   outline: none;
   font-size: 0.9rem;
-  color: #1f2937;
+  color: #ffffff;
   width: 100%;
+}
+
+.ft-farmers-search input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .ft-clear-btn {
   background: none;
   border: none;
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.45);
   cursor: pointer;
+}
+
+.ft-clear-btn:hover {
+  color: #ffffff;
 }
 
 .ft-farmers-district-select {
@@ -100,19 +126,20 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.85rem;
-  color: #4b5563;
+  color: rgba(255, 255, 255, 0.75);
   font-weight: 600;
 }
 
 .ft-farmers-district-select select {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: rgba(2, 18, 12, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 0.5rem;
   padding: 0.5rem 0.75rem;
   font-size: 0.85rem;
-  color: #1f2937;
+  color: #ffffff;
   font-weight: 600;
   outline: none;
+  cursor: pointer;
 }
 
 /* Grid */
@@ -135,21 +162,23 @@
 }
 
 .ft-farmer-dir-card {
-  background: #ffffff;
-  border-radius: 0.875rem;
-  border: 1px solid #e5e7eb;
+  background: rgba(6, 44, 30, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 1rem;
+  border: 1px solid rgba(16, 185, 129, 0.18);
   padding: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
 }
 
 .ft-farmer-dir-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 15px 20px -3px rgba(0, 0, 0, 0.1);
-  border-color: #86efac;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55), 0 0 20px rgba(16, 185, 129, 0.15);
+  border-color: rgba(52, 211, 153, 0.45);
 }
 
 .ft-farmer-dir-header {
@@ -170,14 +199,14 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #15803d;
+  border: 2px solid #34d399;
 }
 
 .ft-verified-dot {
   position: absolute;
   bottom: 0;
   right: 0;
-  background: #15803d;
+  background: #10b981;
   color: #ffffff;
   border-radius: 50%;
   width: 1.25rem;
@@ -185,7 +214,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #ffffff;
+  border: 2px solid #020f09;
 }
 
 .ft-farmer-header-info {
@@ -201,7 +230,7 @@
 .ft-dir-name {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #111827;
+  color: #ffffff;
 }
 
 .ft-dir-fav-btn {
@@ -209,6 +238,12 @@
   border: none;
   cursor: pointer;
   padding: 0.25rem;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.15s ease;
+}
+
+.ft-dir-fav-btn:hover {
+  color: #f87171;
 }
 
 .ft-dir-location {
@@ -216,7 +251,7 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.78rem;
-  color: #4b5563;
+  color: rgba(255, 255, 255, 0.6);
   margin-top: 0.2rem;
 }
 
@@ -229,9 +264,9 @@
 }
 
 .ft-stat-badge {
-  background: #f0fdf4;
-  color: #166534;
-  border: 1px solid #bbf7d0;
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.35);
   font-size: 0.7rem;
   font-weight: 700;
   padding: 0.15rem 0.45rem;
@@ -240,7 +275,7 @@
 
 .ft-dir-bio {
   font-size: 0.85rem;
-  color: #4b5563;
+  color: rgba(255, 255, 255, 0.72);
   line-height: 1.5;
   margin-bottom: 1rem;
 }
@@ -253,27 +288,28 @@
 }
 
 .ft-dir-crop-chip {
-  background: #f1f5f9;
-  color: #334155;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
   font-size: 0.725rem;
   font-weight: 600;
   padding: 0.2rem 0.55rem;
   border-radius: 9999px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .ft-dir-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 0.875rem;
   margin-top: auto;
 }
 
 .ft-dir-active-lots {
   font-size: 0.8rem;
-  color: #15803d;
+  color: #34d399;
+  font-weight: 600;
 }
 
 .ft-btn-view-farmer {
@@ -281,20 +317,27 @@
   border: none;
   font-size: 0.825rem;
   font-weight: 700;
-  color: #15803d;
+  color: #34d399;
   display: flex;
   align-items: center;
   gap: 0.2rem;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .ft-btn-view-farmer:hover {
-  text-decoration: underline;
+  color: #6ee7b7;
+  transform: translateX(2px);
 }
 
 /* Modal Content */
 .ft-farmer-modal-wrap {
   max-width: 650px;
+  background: #041a12;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  color: #ffffff;
 }
 
 .ft-farmer-modal-hero {
@@ -302,8 +345,8 @@
   align-items: center;
   gap: 1.25rem;
   padding: 1.5rem;
-  background: #f8faf7;
-  border-bottom: 1px solid #e5e7eb;
+  background: rgba(2, 15, 9, 0.85);
+  border-bottom: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .ft-farmer-modal-pic {
@@ -311,12 +354,12 @@
   height: 5rem;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #15803d;
+  border: 3px solid #34d399;
 }
 
 .ft-modal-loc {
   font-size: 0.85rem;
-  color: #4b5563;
+  color: rgba(255, 255, 255, 0.6);
   margin-top: 0.2rem;
 }
 
@@ -324,7 +367,7 @@
   display: flex;
   gap: 0.5rem;
   font-size: 0.78rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.6);
   margin-top: 0.5rem;
   flex-wrap: wrap;
 }
@@ -339,7 +382,7 @@
 .ft-farmer-modal-body h3 {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #111827;
+  color: #ffffff;
 }
 
 .ft-spec-block h4,
@@ -347,14 +390,14 @@
 .ft-farmer-lots-section h4 {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
   margin-bottom: 0.5rem;
 }
 
 .ft-contact-box {
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.25);
   border-radius: 0.5rem;
   padding: 1rem;
   display: flex;
@@ -367,6 +410,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .ft-lots-quick-list {
@@ -376,8 +420,8 @@
 }
 
 .ft-quick-lot-item {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: rgba(2, 18, 12, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   display: flex;
@@ -391,6 +435,10 @@
   gap: 0.25rem;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #15803d;
+  color: #34d399;
   text-decoration: none;
+}
+
+.ft-btn-quick-lot:hover {
+  text-decoration: underline;
 }

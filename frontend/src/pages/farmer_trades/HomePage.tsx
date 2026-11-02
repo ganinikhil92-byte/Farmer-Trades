@@ -94,7 +94,7 @@ export const HomePage: React.FC = () => {
           </h1>
 
           <p className="ft-hero-subtitle">
-            Trade farm-fresh grains, pulses, oilseeds, and vegetables directly at fair market prices.
+            Trade farm-fresh grains, pulses, and oilseeds directly at fair market prices.
             Access real-time APMC Mandi price intelligence, scientific crop agronomy, and guaranteed delivery.
           </p>
 
