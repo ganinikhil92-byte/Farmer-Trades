@@ -6,11 +6,19 @@ backend/venv/
 
 # Environment & Secrets
 .env
+.env.*
+*.env
+*.env.*
 backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.*
 *.pem
+*.key
 serviceAccountKey.json
 firebase-key.json
 backend/firebase-key.json
+backend/serviceAccountKey.json
 
 
 # Build outputs

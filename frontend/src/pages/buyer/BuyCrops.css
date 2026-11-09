@@ -63,9 +63,10 @@
 
 .agro-market-brand-text h1 {
   font-size: 1.15rem;
-  font-weight: 700;
+  font-weight: 800;
   margin: 0;
-  color: var(--market-green-dark);
+  color: #34d399;
+  letter-spacing: -0.02em;
   line-height: 1.2;
 }
 
@@ -130,8 +131,8 @@
 }
 
 .agro-market-search-clear:hover {
-  background: #e2e8f0;
-  color: var(--market-text-primary);
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
 }
 
 /* Header actions: Orders, Cart, Account */
@@ -467,8 +468,8 @@
 
 .agro-product-card:hover {
   transform: translateY(-3px);
-  box-shadow: var(--market-shadow-hover);
-  border-color: #cbd5e1;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 16px rgba(16, 185, 129, 0.18);
+  border-color: rgba(52, 211, 153, 0.45);
 }
 
 /* Card Image Area */
@@ -476,7 +477,7 @@
   position: relative;
   width: 100%;
   height: 180px;
-  background: #f1f5f9;
+  background: #03140e;
   overflow: hidden;
 }
 

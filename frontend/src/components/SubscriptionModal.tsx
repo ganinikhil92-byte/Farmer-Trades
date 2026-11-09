@@ -132,11 +132,11 @@ export default function SubscriptionModal({
     setErrorMsg(null);
 
     try {
-      // 1. Create order on backend
+      // 1. Create order on backend (receives live Razorpay key_id dynamically from backend)
       let orderId = `sub_order_${Date.now()}`;
       let amountPaise = currentPlan.price * 100;
       let currency = 'INR';
-      let keyId = 'rzp_live_TbVDQjZ0kNR4MP';
+      let keyId = '';
 
       try {
         const orderRes = await api.post('/farmer/subscription/create-order', {
@@ -146,10 +146,19 @@ export default function SubscriptionModal({
           orderId = orderRes.data.order_id || orderId;
           amountPaise = orderRes.data.amount || amountPaise;
           currency = orderRes.data.currency || currency;
-          keyId = orderRes.data.key_id || keyId;
+          keyId = orderRes.data.key_id || '';
         }
       } catch (ordErr) {
         console.warn('Backend subscription order notice:', ordErr);
+      }
+
+      if (!keyId) {
+        try {
+          const cfgRes = await api.get('/config/public');
+          if (cfgRes.data?.razorpay_key_id) {
+            keyId = cfgRes.data.razorpay_key_id;
+          }
+        } catch {}
       }
 
       // 2. Ensure Razorpay checkout script is loaded

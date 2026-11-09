@@ -32,6 +32,7 @@ import {
   toggleFavorite
 } from '../../utils/farmerTradesStore';
 import { ProduceDetailModal } from '../../components/farmer_trades/ProduceDetailModal';
+import { matchOfficialFruitPhoto } from '../../utils/producePhoto';
 import './HomePage.css';
 
 export const HomePage: React.FC = () => {
@@ -240,7 +241,7 @@ export const HomePage: React.FC = () => {
             {CROPS_ENCYCLOPEDIA.slice(0, 6).map((crop) => (
               <Link to={`/buy?category=${encodeURIComponent(crop.category)}`} key={crop.id} className="ft-cat-card">
                 <div className="ft-cat-img-wrap">
-                  <img src={crop.imageUrl} alt={crop.name} />
+                  <img src={matchOfficialFruitPhoto(crop.name, crop.category) || crop.imageUrl} alt={crop.name} />
                   <span className="ft-cat-tag">{crop.season}</span>
                 </div>
                 <div className="ft-cat-content">
@@ -276,7 +277,7 @@ export const HomePage: React.FC = () => {
               return (
                 <div key={item.id} className="ft-product-card" onClick={() => handleOpenDetail(item)}>
                   <div className="ft-product-img-container">
-                    <img src={item.imageUrl} alt={item.title} />
+                    <img src={matchOfficialFruitPhoto(item.title || item.cropName, item.category) || item.imageUrl} alt={item.title} />
                     <button
                       className={`ft-card-fav-btn ${fav ? 'active' : ''}`}
                       onClick={(e) => handleFavToggle(e, item.id)}

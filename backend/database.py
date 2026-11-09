@@ -6,7 +6,8 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 # Database configuration
 # Can connect to MySQL if configured, otherwise defaults to reliable persistent SQLite
 DEFAULT_SQLITE_URL = "sqlite:///./agro_trades.db"
-DATABASE_URL = os.environ.get("DATABASE_URL", DEFAULT_SQLITE_URL)
+from config import settings
+DATABASE_URL = settings.DATABASE_URL
 
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
@@ -196,7 +197,7 @@ def init_db():
                 db_models.User(
                     email="nikhilgani987@gmail.com",
                     name="Nikhil Gani",
-                    password_hash=auth.hash_password("Nikhil@2005"),
+                    password_hash=auth.hash_password(settings.ADMIN_INITIAL_PASSWORD),
                     role="admin",
                     district="Bengaluru Urban",
                     taluk="Bengaluru South",

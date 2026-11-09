@@ -1,13 +1,10 @@
 import os
-from dotenv import load_dotenv
-load_dotenv()
-
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from config import settings
 from routes import router as api_router
 from database import init_db
-
 import firebase_config
 
 @asynccontextmanager

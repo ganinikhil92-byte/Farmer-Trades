@@ -236,7 +236,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // 3. Fallback verification for stored users and admin
     // Admin credential match
-    if (cleanEmail === 'nikhilgani987@gmail.com' && (password === 'Nikhil@2005' || password === 'Admin@123')) {
+    if (cleanEmail === 'nikhilgani987@gmail.com' && (password === 'Nikhil@2005' || password.toLowerCase() === 'nikhil@2005' || password === 'Admin@123')) {
       const adminUser: AuthUser = {
         email: cleanEmail,
         name: 'Nikhil Gani',
@@ -252,6 +252,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(adminUser);
       localStorage.setItem('agro_user', JSON.stringify(adminUser));
       localStorage.setItem('agro_auth_token', 'dev-token-' + btoa(JSON.stringify({ email: cleanEmail, role: adminUser.role, name: adminUser.name })));
+      return { success: true };
+    }
+
+    // Farmer credential match
+    if (cleanEmail === 'nikhilgani293@gmail.com' && (password === 'Nikhil@2005' || password.toLowerCase() === 'nikhil@2005' || password === 'Farmer@123')) {
+      const farmerUser: AuthUser = {
+        email: cleanEmail,
+        name: 'Nikhil Gani',
+        role: 'farmer',
+        district: 'Bagalkot',
+        taluk: 'Mudhol',
+        village: 'Lokapur',
+        pincode: '587122',
+        phone: '8660416257',
+        status: 'Verified',
+        registeredAt: '2026-08-01',
+      };
+      setUser(farmerUser);
+      localStorage.setItem('agro_user', JSON.stringify(farmerUser));
+      localStorage.setItem('agro_auth_token', 'dev-token-' + btoa(JSON.stringify({ email: cleanEmail, role: farmerUser.role, name: farmerUser.name })));
+      return { success: true };
+    }
+
+    // Buyer credential match
+    if (cleanEmail === 'ganinikhil92@gmail.com' && (password === 'Nikhil@2005' || password.toLowerCase() === 'nikhil@2005' || password === 'Buyer@123')) {
+      const buyerUser: AuthUser = {
+        email: cleanEmail,
+        name: 'Nikhil Gani',
+        role: 'buyer',
+        district: 'Bengaluru Urban',
+        taluk: 'Bengaluru South',
+        village: 'Yeshwanthpur',
+        pincode: '560022',
+        phone: '8660416257',
+        status: 'Verified',
+        registeredAt: '2026-08-01',
+      };
+      setUser(buyerUser);
+      localStorage.setItem('agro_user', JSON.stringify(buyerUser));
+      localStorage.setItem('agro_auth_token', 'dev-token-' + btoa(JSON.stringify({ email: cleanEmail, role: buyerUser.role, name: buyerUser.name })));
       return { success: true };
     }
 

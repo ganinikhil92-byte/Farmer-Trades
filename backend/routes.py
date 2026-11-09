@@ -8,9 +8,7 @@ import random
 import time
 import uuid
 from datetime import datetime, date, timedelta
-from dotenv import load_dotenv
-load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
-load_dotenv()
+from config import settings
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, Query
 from fastapi.responses import FileResponse
 from fastapi.security import HTTPAuthorizationCredentials
@@ -41,8 +39,8 @@ except ImportError:
 def get_razorpay_client():
     if not razorpay:
         return None
-    key_id = os.getenv("RAZORPAY_KEY_ID", "rzp_live_TbVDQjZ0kNR4MP")
-    key_secret = os.getenv("RAZORPAY_KEY_SECRET", "mcdJPzNXz6kBlXuMsx1pCbzY")
+    key_id = settings.RAZORPAY_KEY_ID
+    key_secret = settings.RAZORPAY_KEY_SECRET
     if not key_id or not key_secret:
         return None
     try:
@@ -50,6 +48,15 @@ def get_razorpay_client():
     except Exception as e:
         print(f"[Razorpay Client Init Warning] {e}")
         return None
+
+@router.get("/config/public")
+def get_public_config():
+    """Returns safe, public non-sensitive configuration parameters for frontend."""
+    return {
+        "razorpay_key_id": settings.RAZORPAY_KEY_ID,
+        "environment": settings.ENVIRONMENT,
+        "ai_configured": bool(settings.NVIDIA_API_KEY or settings.GEMINI_API_KEY)
+    }
 
 # In-memory OTP storage: email -> {"otp": str, "expires_at": float, "verified": bool}
 otp_store: Dict[str, Dict[str, Any]] = {}
@@ -79,10 +86,10 @@ def normalize_email(raw_email: str) -> str:
     return email
 
 def send_email_otp(to_email: str, otp: str) -> bool:
-    smtp_user = os.environ.get("SMTP_USER", "").strip()
-    smtp_pass = os.environ.get("SMTP_PASSWORD", "").strip()
-    smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com").strip()
-    smtp_port = int(os.environ.get("SMTP_PORT", "587"))
+    smtp_user = settings.SMTP_USER
+    smtp_pass = settings.SMTP_PASSWORD
+    smtp_host = settings.SMTP_HOST
+    smtp_port = settings.SMTP_PORT
 
     if not smtp_user or not smtp_pass:
         print("[EMAIL ERROR] SMTP_USER or SMTP_PASSWORD is not configured in backend/.env")
@@ -1256,7 +1263,7 @@ def create_subscription_order(req: SubscriptionOrderRequest):
         "order_id": mock_order_id,
         "amount": amount_paise,
         "currency": "INR",
-        "key_id": key_id or "rzp_live_TbVDQjZ0kNR4MP",
+        "key_id": key_id or settings.RAZORPAY_KEY_ID,
         "plan": plan
     }
 
@@ -2373,7 +2380,7 @@ class AIKeySaveRequest(BaseModel):
 
 @router.get("/ai/status")
 def get_ai_status():
-    env_key = os.environ.get("GEMINI_API_KEY", "")
+    env_key = os.environ.get("GEMINI_API_KEY") or settings.GEMINI_API_KEY
     return {
         "configured": bool(env_key and len(env_key) > 5),
         "default_model": "gemini-2.0-flash",
@@ -2411,7 +2418,7 @@ Formatting rules:
 async def ai_chat_copilot(req: AIChatRequest):
     import httpx
     
-    api_key = req.api_key or os.environ.get("GEMINI_API_KEY", "")
+    api_key = req.api_key or os.environ.get("GEMINI_API_KEY", "") or settings.GEMINI_API_KEY
     model = req.model or "gemini-2.0-flash"
     
     # 1. If Google AI Studio API key is provided, invoke live Gemini API
@@ -2645,9 +2652,7 @@ class NvidiaKeySaveRequest(BaseModel):
 
 @router.get("/ai/nvidia/status")
 def get_nvidia_status():
-    from dotenv import dotenv_values
-    env_dict = dotenv_values(os.path.join(os.path.dirname(__file__), ".env"))
-    env_key = os.environ.get("NVIDIA_API_KEY") or env_dict.get("NVIDIA_API_KEY", "")
+    env_key = os.environ.get("NVIDIA_API_KEY") or settings.NVIDIA_API_KEY
     return {
         "configured": bool(env_key and len(env_key.strip()) > 5),
         "default_model": "meta/llama-3.2-11b-vision-instruct",
@@ -2676,14 +2681,8 @@ async def nvidia_ai_chat(req: NvidiaChatRequest):
     Supports models like Llama 3.3 70B, DeepSeek R1, Nemotron, etc.
     """
     import httpx
-    from dotenv import dotenv_values
 
-    api_key = (req.api_key or os.environ.get("NVIDIA_API_KEY", "")).strip()
-    if not api_key:
-        env_dict = dotenv_values(os.path.join(os.path.dirname(__file__), ".env"))
-        api_key = (env_dict.get("NVIDIA_API_KEY") or "").strip()
-        if api_key:
-            os.environ["NVIDIA_API_KEY"] = api_key
+    api_key = (req.api_key or os.environ.get("NVIDIA_API_KEY", "") or settings.NVIDIA_API_KEY).strip()
 
     if not api_key or len(api_key) < 10:
         raise HTTPException(

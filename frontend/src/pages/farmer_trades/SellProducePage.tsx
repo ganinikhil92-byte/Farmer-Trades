@@ -22,17 +22,21 @@ import {
   CROPS_ENCYCLOPEDIA
 } from '../../data/farmerTradesData';
 import { addProduceListing, addNotification } from '../../utils/farmerTradesStore';
+import { matchOfficialFruitPhoto } from '../../utils/producePhoto';
 import './SellProducePage.css';
 
 const DRAFT_STORAGE_KEY = 'farmer_trades_sell_draft';
 
 const SAMPLE_IMAGE_OPTIONS = [
-  { name: 'Organic Ragi (Millet)', url: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80' },
-  { name: 'Sona Masoori Paddy', url: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80' },
-  { name: 'Sharbati Wheat Grain', url: 'https://images.unsplash.com/photo-1543257580-7269da773bf5?auto=format&fit=crop&w=800&q=80' },
-  { name: 'Long Staple Cotton', url: 'https://images.unsplash.com/photo-1594488518063-2287c8052327?auto=format&fit=crop&w=800&q=80' },
-  { name: 'Byadagi Red Chilli', url: 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=800&q=80' },
-  { name: 'Fresh Vine Tomatoes', url: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=800&q=80' }
+  { name: 'Fresh Farm Watermelon', url: '/produce/fruits/watermelon.jpg' },
+  { name: 'Fresh Farm Pomegranate', url: '/produce/fruits/pomegranate.jpg' },
+  { name: 'Fresh Farm Papaya', url: '/produce/fruits/papaya.jpg' },
+  { name: 'Fresh Vineyard Grapes', url: '/produce/fruits/grapes.jpg' },
+  { name: 'Fresh Farm Banana', url: '/produce/fruits/banana.jpg' },
+  { name: 'Organic Ragi (Millet)', url: '/produce/ragi.jpg' },
+  { name: 'Sona Masoori Paddy', url: '/produce/paddy.jpg' },
+  { name: 'Sharbati Wheat Grain', url: '/produce/wheat.jpg' },
+  { name: 'Byadagi Red Chilli', url: '/produce/chilli.jpg' }
 ];
 
 export const SellProducePage: React.FC = () => {
@@ -86,13 +90,26 @@ export const SellProducePage: React.FC = () => {
   }, []);
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => {
+      const updated = { ...prev, [field]: value };
+      if (field === 'cropName' || field === 'category') {
+        const fruitPhoto = matchOfficialFruitPhoto(
+          field === 'cropName' ? value : prev.cropName,
+          field === 'category' ? value : prev.category
+        );
+        if (fruitPhoto) {
+          updated.imageUrl = fruitPhoto;
+        }
+      }
+      return updated;
+    });
     setFormError('');
   };
 
   const handleSelectPredefinedCrop = (cropName: string) => {
     const found = CROPS_ENCYCLOPEDIA.find((c) => c.name === cropName);
     if (found) {
+      const fruitPhoto = matchOfficialFruitPhoto(found.name, found.category);
       setFormData((prev) => ({
         ...prev,
         cropName: found.name,
@@ -100,7 +117,7 @@ export const SellProducePage: React.FC = () => {
         variety: found.varieties[0] || '',
         title: `Harvest Fresh ${found.name} (${found.varieties[0] || 'Grade A'})`,
         pricePerQuintal: found.benchmarkPricePerQuintal,
-        imageUrl: found.imageUrl
+        imageUrl: fruitPhoto || found.imageUrl
       }));
     }
   };
@@ -193,7 +210,7 @@ export const SellProducePage: React.FC = () => {
       harvestDate: formData.harvestDate,
       grade: formData.grade,
       organic: formData.organic,
-      imageUrl: formData.imageUrl,
+      imageUrl: matchOfficialFruitPhoto(formData.cropName, formData.category) || formData.imageUrl,
       description: formData.description,
       farmerName: formData.farmerName,
       farmerPhone: formData.farmerPhone,

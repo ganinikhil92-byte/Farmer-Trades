@@ -3,28 +3,14 @@ import json
 from typing import Optional
 import firebase_admin
 from firebase_admin import credentials, auth, firestore
+from config import settings
 
 _firebase_app: Optional[firebase_admin.App] = None
 _firestore_db = None
 
 def get_service_account_path() -> Optional[str]:
     """Find the Firebase service account JSON key if present."""
-    env_path = os.environ.get("FIREBASE_SERVICE_ACCOUNT_KEY")
-    if env_path and os.path.exists(env_path):
-        return env_path
-    
-    # Check default common paths in backend folder
-    backend_dir = os.path.dirname(os.path.abspath(__file__))
-    candidates = [
-        os.path.join(backend_dir, "firebase-key.json"),
-        os.path.join(backend_dir, "serviceAccountKey.json"),
-        os.path.join(backend_dir, "firebase-credentials.json"),
-        os.path.join(os.path.dirname(backend_dir), "firebase-key.json"),
-    ]
-    for c in candidates:
-        if os.path.exists(c):
-            return c
-    return None
+    return settings.get_firebase_cred_path()
 
 def init_firebase() -> Optional[firebase_admin.App]:
     """Initialize Firebase Admin SDK with service account credentials or default environment."""

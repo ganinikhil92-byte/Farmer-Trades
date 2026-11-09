@@ -26,6 +26,7 @@ import {
   toggleFavorite
 } from '../../utils/farmerTradesStore';
 import { ProduceDetailModal } from '../../components/farmer_trades/ProduceDetailModal';
+import { matchOfficialFruitPhoto } from '../../utils/producePhoto';
 import './BuyProducePage.css';
 
 export const BuyProducePage: React.FC = () => {
@@ -293,7 +294,11 @@ export const BuyProducePage: React.FC = () => {
                       onClick={() => handleOpenDetail(item)}
                     >
                       <div className="ft-lot-img-wrap">
-                        <img src={item.imageUrl} alt={item.title} />
+                        <img
+                          src={matchOfficialFruitPhoto(item.title || item.cropName, item.category) || item.imageUrl}
+                          alt={item.title}
+                          loading="lazy"
+                        />
                         <button
                           className={`ft-lot-fav-btn ${fav ? 'active' : ''}`}
                           onClick={(e) => handleToggleFavorite(e, item.id)}

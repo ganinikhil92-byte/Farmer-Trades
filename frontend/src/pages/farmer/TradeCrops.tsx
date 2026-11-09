@@ -36,6 +36,7 @@ import {
   getVarietiesByProduce,
   getProduceById
 } from '../../data/produceMaster';
+import { matchOfficialFruitPhoto } from '../../utils/producePhoto';
 
 const DRAFT_KEY = 'agro_trade_draft_v2';
 
@@ -232,6 +233,14 @@ export default function TradeCrops() {
     if (found) {
       setProduceName(found.name);
       setProduceNameKn(found.nameKn);
+
+      // Automatically attach and preview official fruit photo whenever a farmer publishes fruits
+      const fruitPhoto = matchOfficialFruitPhoto(found.name, found.categoryId || category || 'FRUITS');
+      if (fruitPhoto) {
+        setPhoto(null);
+        setPhotoPreview(fruitPhoto);
+        setAiGeneratedUrl(fruitPhoto);
+      }
     } else {
       setProduceName('');
       setProduceNameKn('');
@@ -400,7 +409,11 @@ export default function TradeCrops() {
         }
       }
 
-      if (!durableImageUrl && aiGeneratedUrl) {
+      // Whenever a farmer publishes fruits, automatically use only these official photos
+      const officialFruitPhoto = matchOfficialFruitPhoto(produceName, category || 'FRUITS');
+      if (officialFruitPhoto) {
+        durableImageUrl = officialFruitPhoto;
+      } else if (!durableImageUrl && aiGeneratedUrl) {
         durableImageUrl = aiGeneratedUrl;
       }
 
@@ -1178,7 +1191,11 @@ export default function TradeCrops() {
                     fontWeight: 600,
                   }}
                 >
-                  {aiGeneratedUrl ? 'AI Generated Crop Photo' : 'Authentic Seller Photo'}
+                  {matchOfficialFruitPhoto(produceName, category || 'FRUITS')
+                    ? 'Official Fruit Harvest Photo'
+                    : aiGeneratedUrl
+                    ? 'AI Generated Crop Photo'
+                    : 'Authentic Seller Photo'}
                 </span>
                 <button
                   type="button"

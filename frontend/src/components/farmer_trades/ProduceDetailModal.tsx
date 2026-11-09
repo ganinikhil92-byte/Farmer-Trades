@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { ProduceListingItem } from '../../data/farmerTradesData';
 import { isFavorite, toggleFavorite, submitPurchaseOffer } from '../../utils/farmerTradesStore';
+import { matchOfficialFruitPhoto } from '../../utils/producePhoto';
 import './ProduceDetailModal.css';
 
 interface ProduceDetailModalProps {
@@ -137,7 +138,11 @@ export const ProduceDetailModal: React.FC<ProduceDetailModalProps> = ({
           {/* Left Column: Image & Farmer Card */}
           <div className="ft-modal-left">
             <div className="ft-modal-image-wrapper">
-              <img src={produce.imageUrl} alt={produce.title} className="ft-modal-main-img" />
+              <img
+                src={matchOfficialFruitPhoto(produce.title || produce.cropName, produce.category) || produce.imageUrl}
+                alt={produce.title}
+                className="ft-modal-main-img"
+              />
               <div className="ft-img-overlay-info">
                 <span>📍 {produce.district}, {produce.state}</span>
                 <span>⚖️ Lot: {produce.quantityAvailableQuintals} Quintals</span>
