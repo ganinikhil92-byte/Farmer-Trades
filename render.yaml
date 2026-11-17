@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: farmer-trades-api
+    runtime: python
+    region: singapore
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn main:app --workers 2 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.14.0
+      - key: JWT_SECRET
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: NVIDIA_API_KEY
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        value: farmers-trades
+      - key: FIREBASE_SERVICE_ACCOUNT_KEY
+        value: firebase-key.json
+      - key: DATABASE_URL
+        value: sqlite:///./agro_trades.db
+      - key: ENVIRONMENT
+        value: production
+    disk:
+      name: farmer-trades-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
+
