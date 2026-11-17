@@ -1,93 +1,104 @@
 /* ==========================================================================
    Farmer Trades — Live APMC Mandi Market Prices Styling
-   Botanical Obsidian & Emerald Glass Theme
+   Utilitarian Agricultural Commodity Exchange Design
    ========================================================================== */
 
 .ft-prices-page {
-  background-color: var(--color-surface-dim);
-  color: var(--color-text);
+  background-color: #090e0c;
+  color: #e6ede9;
   min-height: 100vh;
   padding-bottom: 5rem;
 }
 
 /* Banner */
 .ft-prices-banner {
-  background: linear-gradient(180deg, rgba(6, 44, 30, 0.85) 0%, rgba(2, 15, 9, 0.95) 100%),
-              radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.18), transparent 70%);
-  color: #ffffff;
-  padding: 3rem 1.5rem 2.5rem;
-  border-bottom: 1px solid rgba(16, 185, 129, 0.2);
-  position: relative;
+  background-color: #0d1411;
+  border-bottom: 1px solid #202b24;
+  padding: 2.5rem 1.25rem 2rem;
 }
 
 .ft-prices-banner-inner {
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
 }
 
 .ft-prices-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(52, 211, 153, 0.35);
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #34d399;
+  gap: 0.375rem;
+  background-color: #111815;
+  border: 1px solid #202b24;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #10b981;
   margin-bottom: 0.75rem;
-  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .ft-prices-banner h1 {
-  font-size: 2.25rem;
-  font-weight: 900;
+  font-size: 1.85rem;
+  font-weight: 700;
   margin-bottom: 0.5rem;
   color: #ffffff;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 768px) {
+  .ft-prices-banner h1 {
+    font-size: 2.25rem;
+  }
 }
 
 .ft-prices-banner p {
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9375rem;
+  color: #a3b3a9;
   max-width: 700px;
   line-height: 1.5;
-  margin-bottom: 1rem;
+  margin-bottom: 0.875rem;
 }
 
 .ft-sample-disclaimer {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.78rem;
-  color: #fde68a;
+  background: #111815;
+  border: 1px solid #202b24;
+  border-radius: 4px;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.75rem;
+  color: #8c9b91;
   max-width: 750px;
+}
+
+.ft-sample-disclaimer strong {
+  color: #d1ded6;
 }
 
 /* Container */
 .ft-prices-container {
-  max-width: 1200px;
-  margin: -1.5rem auto 0;
-  padding: 0 1.5rem;
+  max-width: 1240px;
+  margin: 1.5rem auto 0;
+  padding: 0 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .ft-prices-container {
+    padding: 0 2rem;
+  }
 }
 
 /* Controls Card */
 .ft-chart-controls-card {
-  background: rgba(6, 44, 30, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 1rem;
-  padding: 1rem 1.25rem;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  background-color: #111815;
+  border: 1px solid #202b24;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -98,7 +109,7 @@
 .ft-controls-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.875rem;
   flex-wrap: wrap;
 }
 
@@ -106,42 +117,46 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(2, 18, 12, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 0.5rem;
-  padding: 0.4rem 0.75rem;
+  background: #090e0c;
+  border: 1px solid #202b24;
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
 }
 
 .ft-mandi-select {
-  border: none;
   background: transparent;
-  outline: none;
-  font-size: 0.85rem;
-  font-weight: 700;
+  border: none;
   color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  outline: none;
   cursor: pointer;
+}
+
+.ft-mandi-select option {
+  background-color: #111815;
+  color: #ffffff;
 }
 
 .ft-date-range-pills {
   display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  background: rgba(2, 18, 12, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0.25rem;
-  border-radius: 0.5rem;
+  background: #090e0c;
+  border: 1px solid #202b24;
+  border-radius: 6px;
+  padding: 0.2rem;
+  gap: 0.2rem;
 }
 
 .ft-range-pill {
-  background: none;
+  background: transparent;
   border: none;
+  color: #8c9b91;
   font-size: 0.75rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.7);
-  padding: 0.35rem 0.75rem;
-  border-radius: 0.375rem;
+  font-weight: 500;
+  padding: 0.3rem 0.65rem;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.12s ease;
 }
 
 .ft-range-pill:hover {
@@ -149,98 +164,101 @@
 }
 
 .ft-range-pill.active {
-  background: rgba(16, 185, 129, 0.25);
-  color: #34d399;
-  border: 1px solid rgba(52, 211, 153, 0.4);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+  background: #16211c;
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .ft-controls-right {
+  display: flex;
+  align-items: center;
+}
+
+.ft-add-commodity-wrap {
   position: relative;
 }
 
 .ft-btn-add-commodity {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: #ffffff;
-  border: 1px solid rgba(52, 211, 153, 0.4);
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.825rem;
-  font-weight: 700;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+  background: #16211c;
+  border: 1px solid #202b24;
+  border-radius: 6px;
+  padding: 0.45rem 0.85rem;
+  color: #10b981;
+  font-size: 0.8125rem;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .ft-btn-add-commodity:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.5);
+  background: #1f2d26;
+  border-color: #2f3e35;
 }
 
 .ft-add-commodity-dropdown {
   position: absolute;
-  top: 110%;
+  top: calc(100% + 4px);
   right: 0;
-  background: #041f14;
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  border-radius: 0.75rem;
-  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.6);
-  padding: 0.5rem;
-  z-index: 50;
-  width: 240px;
+  background: #111815;
+  border: 1px solid #202b24;
+  border-radius: 6px;
+  width: 220px;
+  padding: 0.4rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.2rem;
+  z-index: 100;
 }
 
 .ft-dropdown-header {
-  font-size: 0.7rem;
-  font-weight: 800;
-  color: rgba(255, 255, 255, 0.5);
-  padding: 0.35rem 0.6rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #637368;
   text-transform: uppercase;
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid #202b24;
 }
 
 .ft-dropdown-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border: none;
   background: none;
-  font-size: 0.825rem;
-  font-weight: 600;
-  color: #ffffff;
-  border-radius: 0.375rem;
+  border: none;
+  padding: 0.45rem 0.5rem;
+  border-radius: 4px;
+  color: #d1ded6;
+  font-size: 0.8125rem;
   cursor: pointer;
-  text-align: left;
   width: 100%;
-  transition: background 0.15s ease;
+  text-align: left;
+  transition: background-color 0.12s ease;
 }
 
 .ft-dropdown-item:hover:not(:disabled) {
-  background: rgba(16, 185, 129, 0.15);
+  background: #16211c;
+  color: #ffffff;
 }
 
-.ft-dropdown-item:disabled {
+.ft-dropdown-item.already-added {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
 .ft-dot-color {
-  width: 0.65rem;
-  height: 0.65rem;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
 .ft-added-check {
-  font-size: 0.7rem;
-  color: #34d399;
   margin-left: auto;
+  font-size: 0.6875rem;
+  color: #10b981;
 }
 
 /* Commodity Chips Bar */
@@ -253,81 +271,81 @@
 
 .ft-chips-label {
   font-size: 0.75rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  color: #8c9b91;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .ft-commodity-chip {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 9999px;
-  padding: 0.35rem 0.75rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #ffffff;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
+  background: #111815;
+  border: 1px solid #202b24;
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
-.ft-commodity-chip:hover {
-  background: rgba(255, 255, 255, 0.15);
+.ft-commodity-chip.active {
+  background: #16211c;
+  color: #ffffff !important;
 }
 
 .ft-commodity-chip.inactive {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.08);
-  opacity: 0.5;
+  background: #090e0c;
+  color: #637368 !important;
+  border-color: #202b24 !important;
 }
 
 .ft-chip-indicator {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
 }
 
 .ft-chip-remove {
-  color: rgba(255, 255, 255, 0.5);
+  color: #8c9b91;
   margin-left: 0.2rem;
 }
 
 /* Chart Card */
 .ft-chart-card {
-  background: rgba(6, 44, 30, 0.55);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: 1rem;
-  border: 1px solid rgba(16, 185, 129, 0.18);
-  padding: 1.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  background-color: #111815;
+  border: 1px solid #202b24;
+  border-radius: 8px;
+  padding: 1.25rem;
 }
 
 .ft-chart-card-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   flex-wrap: wrap;
   gap: 1rem;
 }
 
 .ft-chart-card-header h3 {
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-size: 1.125rem;
+  font-weight: 600;
   color: #ffffff;
+  margin-bottom: 0.2rem;
 }
 
 .ft-chart-subtitle {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.75rem;
+  color: #8c9b91;
 }
 
 .ft-chart-legend-custom {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.875rem;
   flex-wrap: wrap;
 }
 
@@ -336,13 +354,12 @@
   align-items: center;
   gap: 0.35rem;
   font-size: 0.75rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.75);
+  color: #d1ded6;
 }
 
 .ft-legend-color {
-  width: 0.65rem;
-  height: 0.65rem;
+  width: 8px;
+  height: 8px;
   border-radius: 2px;
 }
 
@@ -353,153 +370,150 @@
 /* Comparison Cards Grid */
 .ft-comparison-cards-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
+  grid-template-columns: 1fr;
+  gap: 1rem;
 }
 
-@media (max-width: 900px) {
+@media (min-width: 640px) {
   .ft-comparison-cards-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ft-comparison-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
 .ft-price-comp-card {
-  background: rgba(6, 44, 30, 0.55);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: 1rem;
-  border: 1px solid rgba(16, 185, 129, 0.18);
-  padding: 1.25rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-  transition: all 0.2s ease;
-}
-
-.ft-price-comp-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(52, 211, 153, 0.35);
+  background-color: #111815;
+  border: 1px solid #202b24;
+  border-radius: 6px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .ft-comp-card-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.65rem;
 }
 
 .ft-comp-name-wrap {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .ft-comp-dot {
-  width: 0.75rem;
-  height: 0.75rem;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
 }
 
 .ft-comp-crop-name {
-  font-size: 1rem;
-  font-weight: 800;
+  font-size: 0.9375rem;
+  font-weight: 600;
   color: #ffffff;
 }
 
 .ft-comp-change-pill {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.2rem;
-  font-size: 0.75rem;
-  font-weight: 800;
-  padding: 0.15rem 0.5rem;
-  border-radius: 9999px;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
 }
 
 .ft-comp-change-pill.positive {
-  background: rgba(16, 185, 129, 0.2);
+  background-color: #0c2819;
   color: #34d399;
-  border: 1px solid rgba(52, 211, 153, 0.4);
 }
 
 .ft-comp-change-pill.negative {
-  background: rgba(239, 68, 68, 0.2);
+  background-color: #281015;
   color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.4);
 }
 
 .ft-comp-current-price {
-  font-size: 1.75rem;
-  font-weight: 900;
+  font-size: 1.35rem;
+  font-weight: 700;
   color: #ffffff;
   margin-bottom: 0.75rem;
 }
 
 .ft-comp-unit {
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.55);
-  margin-left: 0.35rem;
+  font-size: 0.6875rem;
+  color: #8c9b91;
+  font-weight: 400;
+  margin-left: 0.2rem;
 }
 
 .ft-comp-details-list {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: 0.75rem;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  font-size: 0.8rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid #1a241e;
+  font-size: 0.75rem;
+  color: #8c9b91;
 }
 
 .ft-comp-detail-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: rgba(255, 255, 255, 0.7);
+}
+
+.ft-comp-detail-row strong {
+  color: #d1ded6;
 }
 
 /* Historical Table */
 .ft-historical-table-card {
-  background: rgba(6, 44, 30, 0.55);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: 1rem;
-  border: 1px solid rgba(16, 185, 129, 0.18);
-  padding: 1.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  background-color: #111815;
+  border: 1px solid #202b24;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .ft-table-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.25rem;
+  padding: 0.875rem 1.25rem;
+  border-bottom: 1px solid #202b24;
+  background-color: #0d1411;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .ft-table-header h3 {
-  font-size: 1.2rem;
-  font-weight: 800;
+  font-size: 1rem;
+  font-weight: 600;
   color: #ffffff;
+  margin-bottom: 0.15rem;
 }
 
 .ft-table-subtitle {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.6875rem;
+  color: #8c9b91;
 }
 
 .ft-table-search input {
-  background: rgba(2, 18, 12, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 0.5rem;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.85rem;
+  background: #090e0c;
+  border: 1px solid #202b24;
+  border-radius: 4px;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.8125rem;
+  color: #ffffff;
   outline: none;
   min-width: 220px;
-  color: #ffffff;
-}
-
-.ft-table-search input:focus {
-  border-color: #34d399;
 }
 
 .ft-table-overflow {
@@ -509,45 +523,55 @@
 .ft-mandi-data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
-  text-align: left;
+  font-size: 0.8125rem;
 }
 
-.ft-mandi-data-table th {
-  background: rgba(2, 20, 14, 0.85);
-  color: rgba(255, 255, 255, 0.65);
-  font-weight: 700;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.75rem;
+.ft-mandi-data-table thead th {
+  padding: 0.625rem 1rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #8c9b91;
+  background-color: #0c1210;
+  border-bottom: 1px solid #202b24;
+  text-align: left;
+  white-space: nowrap;
 }
 
-.ft-mandi-data-table td {
-  padding: 0.85rem 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  color: var(--color-text);
+.ft-mandi-data-table tbody tr {
+  border-bottom: 1px solid #16211c;
+  transition: background-color 0.12s ease;
 }
 
-.ft-mandi-data-table tr:hover td {
-  background: rgba(16, 185, 129, 0.08);
+.ft-mandi-data-table tbody tr:hover {
+  background-color: #16211c;
+}
+
+.ft-mandi-data-table tbody td {
+  padding: 0.625rem 1rem;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.ft-td-modal {
+  color: #10b981 !important;
 }
 
 .ft-trend-tag {
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.15rem 0.5rem;
-  border-radius: 0.25rem;
+  display: inline-flex;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.6875rem;
+  font-weight: 500;
 }
 
 .ft-trend-tag.up {
-  background: rgba(16, 185, 129, 0.2);
+  background: #0c2819;
   color: #34d399;
-  border: 1px solid rgba(52, 211, 153, 0.35);
 }
 
 .ft-trend-tag.down {
-  background: rgba(239, 68, 68, 0.2);
+  background: #281015;
   color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.35);
 }

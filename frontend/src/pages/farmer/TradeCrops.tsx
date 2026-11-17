@@ -129,9 +129,11 @@ export default function TradeCrops() {
   const [success, setSuccess] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
-  // Subscription status & gating
+  // Subscription status & gating (First 2 listings are free)
   const [hasSubscription, setHasSubscription] = useState<boolean>(false);
   const [subscription, setSubscription] = useState<any | null>(null);
+  const [freeListingsRemaining, setFreeListingsRemaining] = useState<number>(2);
+  const [needsSubscription, setNeedsSubscription] = useState<boolean>(false);
   const [checkingSub, setCheckingSub] = useState<boolean>(true);
   const [showSubModal, setShowSubModal] = useState<boolean>(false);
   const [subSuccessMsg, setSubSuccessMsg] = useState<string | null>(null);
@@ -150,6 +152,8 @@ export default function TradeCrops() {
       if (user.email === 'admin@agro.com' || user.email === 'nikhilgani987@gmail.com') {
         if (isMounted) {
           setHasSubscription(true);
+          setNeedsSubscription(false);
+          setFreeListingsRemaining(999);
           setCheckingSub(false);
         }
         return;
@@ -161,6 +165,8 @@ export default function TradeCrops() {
         if (isMounted && res.data) {
           setHasSubscription(Boolean(res.data.has_active_subscription));
           setSubscription(res.data.subscription || null);
+          setFreeListingsRemaining(res.data.free_listings_remaining ?? 2);
+          setNeedsSubscription(Boolean(res.data.needs_subscription));
         }
       } catch (e) {
         console.warn('Subscription status check notice:', e);
@@ -356,8 +362,8 @@ export default function TradeCrops() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!hasSubscription) {
-      setUploadError('Active Produce Trading Subscription required to publish listings. Please choose a trading pass below.');
+    if (needsSubscription && !hasSubscription) {
+      setUploadError('You have used your 2 free listings. Active Produce Trading Subscription required to publish more listings. Please choose a trading pass below.');
       setShowSubModal(true);
       return;
     }
@@ -454,30 +460,91 @@ export default function TradeCrops() {
     if (checkingSub) return null;
 
     if (!hasSubscription) {
+      if (freeListingsRemaining > 0) {
+        return (
+          <div
+            style={{
+              background: '#111815',
+              border: '1px solid #202b24',
+              borderRadius: '8px',
+              padding: '1rem 1.25rem',
+              marginBottom: '1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1rem',
+              flexWrap: 'wrap'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+              <div
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '6px',
+                  background: '#090e0c',
+                  border: '1px solid #202b24',
+                  color: '#10b981',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}
+              >
+                <Sparkles size={20} />
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.15rem' }}>
+                  <span
+                    style={{
+                      background: '#062c19',
+                      border: '1px solid #16a34a',
+                      color: '#34d399',
+                      fontSize: '0.6875rem',
+                      fontWeight: 700,
+                      padding: '0.15rem 0.45rem',
+                      borderRadius: '4px',
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    Free Trial Mode
+                  </span>
+                  <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#ffffff' }}>
+                    {freeListingsRemaining} Free Listing{freeListingsRemaining > 1 ? 's' : ''} Remaining
+                  </span>
+                </div>
+                <p style={{ margin: 0, fontSize: '0.8125rem', color: '#8c9b91' }}>
+                  Farmers can publish their first 2 produce listings for free to test our platform. After that, activate a trading subscription (from ₹500/year).
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
       return (
         <div
           style={{
-            background: 'linear-gradient(135deg, #fffbeb, #fef3c7)',
-            border: '1.5px solid #fcd34d',
-            borderRadius: '1rem',
+            background: '#111815',
+            border: '1px solid #202b24',
+            borderRadius: '8px',
             padding: '1.25rem 1.5rem',
             marginBottom: '1.75rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: '1.25rem',
-            flexWrap: 'wrap',
-            boxShadow: '0 4px 14px rgba(245, 158, 11, 0.1)'
+            flexWrap: 'wrap'
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: '280px' }}>
             <div
               style={{
-                width: '46px',
-                height: '46px',
-                borderRadius: '12px',
-                background: '#fef3c7',
-                border: '1.5px solid #f59e0b',
+                width: '42px',
+                height: '42px',
+                borderRadius: '6px',
+                background: '#090e0c',
+                border: '1px solid #d97706',
                 color: '#d97706',
                 display: 'flex',
                 alignItems: 'center',
@@ -485,30 +552,30 @@ export default function TradeCrops() {
                 flexShrink: 0
               }}
             >
-              <Crown size={24} />
+              <Crown size={22} />
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem', flexWrap: 'wrap' }}>
                 <span
                   style={{
-                    background: '#d97706',
-                    color: '#ffffff',
+                    background: '#26190b',
+                    border: '1px solid #78350f',
+                    color: '#fbbf24',
                     fontSize: '0.68rem',
-                    fontWeight: 800,
+                    fontWeight: 700,
                     padding: '0.15rem 0.5rem',
-                    borderRadius: '999px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.04em'
+                    borderRadius: '4px',
+                    textTransform: 'uppercase'
                   }}
                 >
-                  Subscription Required
+                  Subscription Required (2 Free Used)
                 </span>
-                <span style={{ fontSize: '0.98rem', fontWeight: 700, color: '#92400e' }}>
+                <span style={{ fontSize: '0.95rem', fontWeight: 600, color: '#ffffff' }}>
                   Produce Trading Membership
                 </span>
               </div>
-              <p style={{ margin: 0, fontSize: '0.84rem', color: '#b45309', lineHeight: 1.4 }}>
-                A valid subscription is required to publish produce listings and connect directly with bulk buyers across Karnataka.
+              <p style={{ margin: 0, fontSize: '0.8125rem', color: '#8c9b91', lineHeight: 1.4 }}>
+                You have used your 2 free listings. A valid subscription is required to publish produce listings and connect directly with bulk buyers.
                 Plans: <strong>1 Year: ₹500</strong> • <strong>3 Years: ₹1,300</strong> • <strong>5 Years: ₹2,000</strong>.
               </p>
             </div>
@@ -519,17 +586,17 @@ export default function TradeCrops() {
             onClick={() => setShowSubModal(true)}
             className="btn btn-primary"
             style={{
-              background: 'linear-gradient(135deg, #16a34a, #15803d)',
+              background: '#16a34a',
               border: 'none',
-              padding: '0.65rem 1.25rem',
-              fontWeight: 700,
-              fontSize: '0.88rem',
+              padding: '0.6rem 1.25rem',
+              fontWeight: 600,
+              fontSize: '0.85rem',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.45rem',
               whiteSpace: 'nowrap',
-              boxShadow: '0 4px 12px rgba(22, 163, 74, 0.25)',
-              borderRadius: '0.65rem'
+              borderRadius: '6px',
+              color: '#ffffff'
             }}
           >
             <Crown size={16} /> Get Trading Pass (from ₹500/yr)
@@ -1334,31 +1401,30 @@ export default function TradeCrops() {
         </div>
 
         {/* ── Submit button / Subscription gate ── */}
-        {!hasSubscription ? (
+        {needsSubscription && !hasSubscription ? (
           <button
             type="button"
             onClick={() => setShowSubModal(true)}
             className="btn"
             style={{
               width: '100%',
-              padding: '0.95rem',
-              fontSize: '1rem',
-              fontWeight: 700,
+              padding: '0.85rem',
+              fontSize: '0.95rem',
+              fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '0.55rem',
-              background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+              background: '#d97706',
               color: '#ffffff',
               border: 'none',
-              borderRadius: '0.75rem',
+              borderRadius: '6px',
               cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(217, 119, 6, 0.25)',
-              transition: 'all 0.2s ease'
+              transition: 'background 0.15s ease'
             }}
           >
-            <Lock size={18} />
-            <span>Subscribe to Publish Produce (From ₹500/yr)</span>
+            <Lock size={17} />
+            <span>2 Free Listings Used • Subscribe to Publish (From ₹500/yr)</span>
           </button>
         ) : (
           <button

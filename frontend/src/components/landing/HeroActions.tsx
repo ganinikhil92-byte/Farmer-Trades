@@ -1,39 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, TrendingUp, ShieldCheck } from 'lucide-react';
 
 const HeroActions: React.FC = () => {
-  const navigate = useNavigate();
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const mql = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mql.matches) {
-      setVisible(true);
-      return;
-    }
-    const timer = setTimeout(() => setVisible(true), 350);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
-    <div className={`ft-hero-pill-row ${visible ? 'pill-reveal' : 'opacity-0'}`}>
-      <button
-        type="button"
-        className="ft-hero-pill ft-hero-pill-white text-base py-3 px-8 font-semibold shadow-lg hover:shadow-xl"
-        onClick={() => navigate('/login')}
-        title="Sign in as Farmer or Buyer"
-      >
-        <span>Sign In</span>
-      </button>
+    <div className="ft-hero-actions-container">
+      <div className="ft-hero-cta-buttons">
+        <Link
+          to="/buy"
+          className="ft-btn-primary"
+          title="Browse live farm produce lots across Karnataka"
+        >
+          <span>Explore Farm Lots</span>
+          <ArrowRight className="w-4 h-4" />
+        </Link>
 
-      <button
-        type="button"
-        className="ft-hero-pill ft-hero-pill-emerald text-base py-3 px-8 font-semibold shadow-lg hover:shadow-xl"
-        onClick={() => navigate('/signup')}
-        title="Join Platform - Register as Farmer or Buyer"
-      >
-        <span>Join Platform</span>
-      </button>
+        <Link
+          to="/market-prices"
+          className="ft-btn-secondary"
+          title="View today's live APMC mandi prices and modal rates"
+        >
+          <TrendingUp className="w-4 h-4 text-emerald-400" />
+          <span>Today's Mandi Rates</span>
+        </Link>
+      </div>
+
+      <div className="ft-hero-roles-bar">
+        <div className="flex items-center gap-1.5 text-xs text-gray-300">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+          <span>Direct Trade Guarantee</span>
+        </div>
+        <span className="text-gray-600 hidden sm:inline">•</span>
+        <Link to="/signup" className="ft-hero-role-link">
+          List Harvest as Farmer →
+        </Link>
+        <span className="text-gray-600 hidden sm:inline">•</span>
+        <Link to="/signup" className="ft-hero-role-link">
+          Procure as Wholesale Buyer →
+        </Link>
+      </div>
     </div>
   );
 };

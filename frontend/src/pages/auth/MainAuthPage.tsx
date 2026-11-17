@@ -386,55 +386,46 @@ export const MainAuthPage: React.FC = () => {
       </div>
 
       {/* ── Main Content: Responsive Container ── */}
-      <main className="relative z-10 flex-1 flex flex-col justify-center items-center w-full min-h-screen py-8 px-4 sm:px-6 lg:px-12 xl:px-20 max-w-[1440px] mx-auto">
-        
-        {/* Mobile Brand Header: Visible below lg */}
-        <div className="lg:hidden flex flex-col items-center text-center mb-8 px-2 w-full max-w-[480px]">
-          <div className="flex items-center gap-3 mb-1.5">
-            <Sprout size={32} className="text-[#86efac]" strokeWidth={2.4} />
+      <main className="ft-auth-main">
+        {/* Mobile Brand Header: Visible only on small screens */}
+        <div className="ft-auth-mobile-header">
+          <div className="flex items-center gap-2.5 mb-1">
+            <Sprout size={28} className="text-[#86efac]" strokeWidth={2.4} />
             <h1
-              className="text-[28px] font-bold text-white leading-tight tracking-tight"
+              className="text-[24px] font-bold text-white leading-tight tracking-tight"
               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
             >
               Farmer Trades
             </h1>
           </div>
-          <p className="text-[#86efac] text-[10px] font-bold tracking-[0.22em] uppercase">
+          <p className="text-[#86efac] text-[9.5px] font-bold tracking-[0.2em] uppercase">
             GROW SMARTER. TRADE BETTER.
           </p>
         </div>
 
-        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-8">
-          
-          {/* ── 3. LEFT HERO CONTENT / BRANDING SECTION (Desktop only) ── */}
-          <div className="hidden lg:flex lg:w-[52%] max-w-2xl flex-col justify-center ft-hero-entrance pl-2 lg:pl-6 xl:pl-10 pr-6">
-            
+        <div className="ft-auth-container">
+          {/* ── 3. LEFT HERO CONTENT / BRANDING SECTION ── */}
+          <div className="ft-auth-hero-col ft-hero-entrance">
             {/* Brand Logo & Tagline */}
-            <div className="flex items-center gap-3.5 mb-8">
+            <div className="flex items-center gap-3 mb-6">
               <div className="text-[#86efac]">
-                <Sprout size={36} strokeWidth={2.4} />
+                <Sprout size={32} strokeWidth={2.4} />
               </div>
               <div>
                 <h3
-                  className="text-white text-[28px] sm:text-[32px] font-bold tracking-tight leading-none"
+                  className="text-white text-[24px] sm:text-[28px] font-bold tracking-tight leading-none"
                   style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
                 >
                   Farmer Trades
                 </h3>
-                <p className="text-[#86efac] text-[10.5px] font-bold tracking-[0.22em] uppercase mt-1">
+                <p className="text-[#86efac] text-[10px] font-bold tracking-[0.22em] uppercase mt-1">
                   GROW SMARTER. TRADE BETTER.
                 </p>
               </div>
             </div>
 
             {/* Large Serif Headline */}
-            <h1
-              className="text-white tracking-tight font-bold leading-[1.08] mb-6 select-none text-[44px] sm:text-[54px] lg:text-[62px]"
-              style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
-                textShadow: '0 4px 20px rgba(0, 0, 0, 0.65)',
-              }}
-            >
+            <h1 className="ft-auth-hero-title">
               Smart Agricultural
               <br />
               Crop Prediction and
@@ -443,19 +434,14 @@ export const MainAuthPage: React.FC = () => {
             </h1>
 
             {/* Left Description */}
-            <p
-              className="text-[#e2e8f0]/85 leading-relaxed max-w-xl mb-8 select-none text-[16px] sm:text-[17px]"
-              style={{
-                textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
-              }}
-            >
+            <p className="text-[#d1ded6] leading-relaxed max-w-lg mb-6 select-none text-[15px]">
               Make informed crop choices, explore market prices, and connect farmers with buyers—all in one place.
             </p>
 
             {/* Small Olive/Emerald Line & Tagline */}
-            <div className="mt-2">
-              <div className="w-12 h-[2px] bg-[#86efac] mb-5 opacity-90" />
-              <p className="uppercase tracking-[0.22em] text-[12px] font-semibold text-[#a7f3d0]/80 select-none leading-relaxed">
+            <div className="mt-1">
+              <div className="w-10 h-[2px] bg-[#86efac] mb-4 opacity-90" />
+              <p className="uppercase tracking-[0.2em] text-[11px] font-semibold text-[#8c9b91] select-none leading-relaxed">
                 SMARTER FARMING.
                 <br />
                 BETTER CONNECTIONS.
@@ -466,20 +452,20 @@ export const MainAuthPage: React.FC = () => {
           </div>
 
           {/* ── 4. RIGHT EXACT LOGIN PANEL ── */}
-          <div className="w-full lg:w-[46%] flex flex-col items-center lg:items-end">
-            {/* Back to Home Button (outside the card so card interior matches screenshot exactly) */}
-            <div className="w-full max-w-[460px] mx-auto lg:mx-0 mb-3 flex items-center justify-between">
+          <div className="ft-auth-card-col">
+            {/* Back to Home Button */}
+            <div className="w-full max-w-[430px] mb-2 flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => navigate('/')}
-                className="inline-flex items-center gap-1.5 text-[#a7f3d0]/75 hover:text-[#74ebb0] transition-colors text-[13px] font-medium cursor-pointer bg-transparent border-none p-0 outline-none"
+                className="inline-flex items-center gap-1.5 text-[#a7f3d0]/80 hover:text-[#74ebb0] transition-colors text-[13px] font-medium cursor-pointer bg-transparent border-none p-0 outline-none"
               >
-                <ArrowLeft size={15} />
+                <ArrowLeft size={14} />
                 <span>Back to Home</span>
               </button>
             </div>
 
-            <div className="w-full max-w-[460px] ft-exact-card mx-auto lg:mx-0 p-8 sm:p-9 ft-card-entrance">
+            <div className="ft-exact-card ft-card-entrance">
               {/* Feedback Alerts */}
               {errorMsg && (
                 <div
@@ -507,14 +493,14 @@ export const MainAuthPage: React.FC = () => {
               {(viewMode === 'login' || viewMode === 'welcome') && (
                 <div>
                   {/* Dynamic Heading */}
-                  <div className="mb-5">
+                  <div className="mb-4">
                     <h2
-                      className="text-[30px] sm:text-[32px] font-bold text-white tracking-tight leading-tight"
+                      className="text-[26px] sm:text-[28px] font-bold text-white tracking-tight leading-tight"
                       style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
                     >
                       {loginRole === 'farmer' ? 'Farmer Sign In' : 'Buyer Sign In'}
                     </h2>
-                    <p className="text-[#9ca3af] text-[13.5px] mt-1.5 leading-relaxed">
+                    <p className="text-[#9ca3af] text-[13px] mt-1 leading-relaxed">
                       {loginRole === 'farmer'
                         ? 'Access crop listings, trade offers, and smart agriculture tools'
                         : 'Access fresh produce, negotiate directly, and manage trades'}
@@ -522,13 +508,13 @@ export const MainAuthPage: React.FC = () => {
                   </div>
 
                   {/* Segmented Farmer / Buyer Selector */}
-                  <div className="ft-exact-role-bar mb-5">
+                  <div className="ft-exact-role-bar mb-4">
                     <button
                       type="button"
                       onClick={() => handleSelectLoginRole('farmer')}
                       className={`ft-exact-role-btn ${loginRole === 'farmer' ? 'active' : ''}`}
                     >
-                      <span className="text-[16px]">🌾</span>
+                      <Sprout size={15} />
                       <span>Farmer</span>
                     </button>
                     <button
@@ -536,7 +522,7 @@ export const MainAuthPage: React.FC = () => {
                       onClick={() => handleSelectLoginRole('buyer')}
                       className={`ft-exact-role-btn ${loginRole === 'buyer' ? 'active' : ''}`}
                     >
-                      <span className="text-[15px]">🛒</span>
+                      <ShoppingCart size={15} />
                       <span>Buyer</span>
                     </button>
                   </div>
@@ -680,7 +666,7 @@ export const MainAuthPage: React.FC = () => {
                       onClick={() => handleSelectSignupRole('farmer')}
                       className={`ft-exact-role-btn ${signupRole === 'farmer' ? 'active' : ''}`}
                     >
-                      <span className="text-[16px]">🌾</span>
+                      <Sprout size={15} />
                       <span>Farmer</span>
                     </button>
                     <button
@@ -688,7 +674,7 @@ export const MainAuthPage: React.FC = () => {
                       onClick={() => handleSelectSignupRole('buyer')}
                       className={`ft-exact-role-btn ${signupRole === 'buyer' ? 'active' : ''}`}
                     >
-                      <span className="text-[15px]">🛒</span>
+                      <ShoppingCart size={15} />
                       <span>Buyer</span>
                     </button>
                   </div>

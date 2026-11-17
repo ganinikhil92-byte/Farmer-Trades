@@ -1,19 +1,19 @@
 /* ==========================================================================
-   Farmer Trades — Executive Unified Dashboard Layout Styling
-   Botanical Obsidian & Emerald Glass Theme
+   Farmer Trades — Dashboard Layout
+   Clean Design System — No glassmorphism, no neon, no pills
    ========================================================================== */
 
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
-  background-color: var(--color-surface-dim);
-  color: var(--color-text);
+  background-color: #090e0c;
+  color: #ffffff;
 }
 
 /* ── Admin Vertical Sidebar ── */
 .sidebar {
   width: 260px;
-  background: linear-gradient(180deg, #02120b 0%, #041c12 50%, #06281a 100%);
+  background: #111815;
   color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -22,8 +22,7 @@
   left: 0;
   bottom: 0;
   z-index: 50;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 6px 0 24px rgba(0, 0, 0, 0.5);
+  border-right: 1px solid #202b24;
 }
 
 .sidebar-header {
@@ -31,8 +30,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1.5rem 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid #202b24;
 }
 
 .sidebar-nav {
@@ -49,32 +47,29 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  border-radius: var(--radius-md);
+  border-radius: 6px;
   font-size: 0.92rem;
   font-weight: 500;
-  transition: all var(--transition-fast);
-  color: rgba(255, 255, 255, 0.75);
+  transition: background 0.15s ease, color 0.15s ease;
+  color: #a3b3a9;
   text-decoration: none;
 }
 
 .sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
-  transform: translateX(2px);
+  background: #16211c;
+  color: #e6ede9;
 }
 
 .sidebar-link.active {
-  background: rgba(16, 185, 129, 0.18);
-  color: #34d399;
+  background: #16211c;
+  color: #16a34a;
   font-weight: 600;
-  border: 1px solid rgba(52, 211, 153, 0.3);
-  box-shadow: inset 3px 0 0 #34d399, 0 4px 12px rgba(16, 185, 129, 0.15);
+  border-left: 3px solid #16a34a;
 }
 
 .sidebar-footer {
   padding: 1.15rem 1.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid #202b24;
 }
 
 .sidebar-user {
@@ -92,25 +87,28 @@
   justify-content: center;
   font-weight: 700;
   font-size: 0.95rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #16211c;
+  color: #16a34a;
+  border: 1px solid #202b24;
 }
 
 .sidebar-user-name {
   font-weight: 600;
   font-size: 0.88rem;
-  color: #ffffff;
+  color: #e6ede9;
 }
 
 .sidebar-user-role {
   margin-top: 0.125rem;
+  font-size: 0.75rem;
+  color: #8c9b91;
 }
 
 /* ── Admin Main Content ── */
 .dashboard-main {
   flex: 1;
   margin-left: 260px;
-  background: var(--color-surface-dim);
+  background: #090e0c;
   min-height: 100vh;
 }
 
@@ -132,7 +130,7 @@
 }
 
 .page-header p {
-  color: var(--color-text-secondary);
+  color: #8c9b91;
   font-size: 0.95rem;
 }
 
@@ -148,70 +146,64 @@
   display: flex;
   align-items: center;
   gap: 1.15rem;
-  background: rgba(6, 44, 30, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-lg);
+  background: #111815;
+  border: 1px solid #202b24;
+  border-radius: 8px;
   padding: 1.5rem;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: var(--shadow-card);
 }
 
 .stat-card-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: var(--radius-md);
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid #202b24;
 }
 
 .stat-card-icon.green {
-  background: rgba(16, 185, 129, 0.2);
-  color: #34d399;
-  border-color: rgba(52, 211, 153, 0.3);
+  background: #16211c;
+  color: #16a34a;
 }
 
 .stat-card-icon.amber {
-  background: rgba(245, 158, 11, 0.2);
-  color: #fbbf24;
-  border-color: rgba(251, 191, 36, 0.3);
+  background: rgba(217, 119, 6, 0.12);
+  color: #d97706;
 }
 
 .stat-card-icon.blue {
-  background: rgba(14, 165, 233, 0.2);
+  background: rgba(14, 165, 233, 0.12);
   color: #38bdf8;
-  border-color: rgba(56, 189, 248, 0.3);
 }
 
 .stat-card-icon.red {
-  background: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.12);
   color: #f87171;
-  border-color: rgba(248, 113, 113, 0.3);
 }
 
 .stat-card-info h4 {
   font-size: 1.5rem;
   font-weight: 800;
   color: #ffffff;
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-card-info p {
   font-size: 0.8125rem;
-  color: var(--color-text-muted);
+  color: #8c9b91;
 }
 
 /* ==========================================================================
-   FARMER & BUYER HORIZONTAL NAVIGATION (Glassmorphic Emerald)
+   FARMER & BUYER HORIZONTAL NAVIGATION
    ========================================================================== */
 .farmer-dashboard-layout {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: var(--color-surface-dim);
+  background-color: #090e0c;
   color: #ffffff;
 }
 
@@ -220,12 +212,9 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(4, 24, 16, 0.78);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: #111815;
   color: #ffffff;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  border-bottom: 1px solid #202b24;
 }
 
 /* Top Brand & Profile Row */
@@ -234,7 +223,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.85rem 2.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid #202b24;
 }
 
 .farmer-brand-badge {
@@ -248,14 +237,13 @@
 .farmer-brand-icon-wrap {
   width: 40px;
   height: 40px;
-  border-radius: 11px;
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%);
+  border-radius: 8px;
+  background: #16211c;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #34d399;
-  border: 1px solid rgba(52, 211, 153, 0.35);
-  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.2);
+  color: #16a34a;
+  border: 1px solid #202b24;
 }
 
 .farmer-brand-titles {
@@ -264,7 +252,6 @@
 }
 
 .farmer-brand-name {
-  font-family: var(--font-heading);
   font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.025em;
@@ -275,7 +262,7 @@
 .farmer-brand-sub {
   font-size: 0.6875rem;
   font-weight: 600;
-  color: #a7f3d0;
+  color: #8c9b91;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -291,27 +278,23 @@
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 9999px;
+  background: #16211c;
+  border: 1px solid #202b24;
+  border-radius: 6px;
   padding: 0.32rem 0.95rem 0.32rem 0.4rem;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
 .farmer-avatar-circle {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: #16a34a;
   color: #ffffff;
   font-size: 0.85rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .farmer-user-details {
@@ -323,12 +306,12 @@
 .farmer-user-fullname {
   font-size: 0.84rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #e6ede9;
 }
 
 .farmer-user-tag {
   font-size: 0.6875rem;
-  color: #34d399;
+  color: #8c9b91;
 }
 
 .farmer-btn-signout {
@@ -336,28 +319,27 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.45rem 0.85rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.8);
+  border-radius: 6px;
+  border: 1px solid #202b24;
+  background: transparent;
+  color: #a3b3a9;
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .farmer-btn-signout:hover {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.4);
-  color: #fca5a5;
-  transform: translateY(-1px);
+  background: rgba(239, 68, 68, 0.12);
+  border-color: #2f3e35;
+  color: #f87171;
 }
 
 /* Horizontal Menu Bar */
 .farmer-horizontal-menu-bar {
-  background: rgba(2, 18, 12, 0.6);
+  background: #111815;
   padding: 0.35rem 2.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid #202b24;
 }
 
 .farmer-horizontal-menu-list {
@@ -367,7 +349,7 @@
   overflow-x: auto;
   white-space: nowrap;
   scrollbar-width: thin;
-  scrollbar-color: rgba(52, 211, 153, 0.2) transparent;
+  scrollbar-color: #2f3e35 transparent;
   padding: 0.2rem 0;
 }
 
@@ -376,26 +358,25 @@
   align-items: center;
   gap: 0.45rem;
   padding: 0.5rem 0.85rem;
-  border-radius: 9999px;
+  border-radius: 6px;
   font-size: 0.85rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.75);
+  color: #a3b3a9;
   text-decoration: none;
-  transition: all var(--transition-fast);
+  transition: background 0.15s ease, color 0.15s ease;
   user-select: none;
 }
 
 .farmer-horizontal-link:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.09);
+  color: #e6ede9;
+  background: #16211c;
 }
 
 .farmer-horizontal-link.active {
-  color: #34d399;
-  background: rgba(16, 185, 129, 0.16);
+  color: #16a34a;
+  background: #16211c;
   font-weight: 600;
-  border: 1px solid rgba(52, 211, 153, 0.3);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+  border-bottom: 2px solid #16a34a;
 }
 
 /* Dropdown Wrapper */
@@ -418,14 +399,12 @@
   top: calc(100% + 6px);
   left: 0;
   z-index: 200;
-  background: rgba(4, 26, 18, 0.95);
-  border: 1px solid rgba(52, 211, 153, 0.25);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.65);
+  background: #16211c;
+  border: 1px solid #2f3e35;
+  border-radius: 8px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
   min-width: 250px;
   padding: 0.45rem;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
 }
 
 .farmer-dropdown-header {
@@ -433,9 +412,9 @@
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: #a7f3d0;
+  color: #8c9b91;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid #202b24;
   margin-bottom: 0.35rem;
 }
 
@@ -444,15 +423,15 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.65rem 0.75rem;
-  border-radius: var(--radius-md);
+  border-radius: 6px;
   text-decoration: none;
-  color: #ffffff;
-  transition: all var(--transition-fast);
+  color: #d1ded6;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .farmer-dropdown-item:hover {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
+  background: #202b24;
+  color: #ffffff;
 }
 
 .farmer-dropdown-item-title {
@@ -463,7 +442,7 @@
 
 .farmer-dropdown-item-desc {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #8c9b91;
   margin-top: 0.1rem;
   display: block;
 }
@@ -471,7 +450,7 @@
 /* ── Content Container ── */
 .farmer-dashboard-main {
   flex: 1;
-  background-color: var(--color-surface-dim);
+  background-color: #090e0c;
   min-height: calc(100vh - 110px);
   width: 100%;
 }

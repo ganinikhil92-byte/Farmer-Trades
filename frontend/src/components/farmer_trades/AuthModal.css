@@ -1,14 +1,12 @@
 /* ==========================================================================
-   Farmer Trades — Auth Modal Styles
-   Botanical Obsidian & Emerald Glass Theme
+   Farmer Trades — Auth Modal
+   Clean dark theme · No glassmorphism · No neon glows
    ========================================================================== */
 
 .ft-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(1, 10, 6, 0.78);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(9, 14, 12, 0.82);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -23,18 +21,16 @@
 }
 
 .ft-modal-box {
-  background: rgba(4, 26, 18, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 20px;
+  background: #111815;
+  border-radius: 8px;
   width: 100%;
   max-width: 480px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(16, 185, 129, 0.12);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
   position: relative;
   padding: 2.25rem 2rem;
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  border: 1px solid #202b24;
   color: #ffffff;
 }
 
@@ -42,21 +38,21 @@
   position: absolute;
   top: 1.25rem;
   right: 1.25rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #16211c;
+  border: 1px solid #202b24;
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.7);
+  color: #8c9b91;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .ft-modal-close-btn:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: #202b24;
   color: #ffffff;
 }
 
@@ -69,24 +65,24 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  color: #34d399;
-  font-weight: 800;
+  color: #16a34a;
+  font-weight: 700;
   font-size: 0.95rem;
   margin-bottom: 0.5rem;
 }
 
 .ft-modal-header h2 {
   font-size: 1.45rem;
-  font-weight: 800;
+  font-weight: 700;
   color: #ffffff;
   margin: 0;
   letter-spacing: -0.02em;
 }
 
 .ft-intended-notice {
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  color: #fbbf24;
+  background: rgba(217, 119, 6, 0.12);
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  color: #d97706;
   font-size: 0.8rem;
   font-weight: 600;
   padding: 0.35rem 0.75rem;
@@ -96,7 +92,7 @@
 
 .ft-modal-subtitle {
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.65);
+  color: #8c9b91;
   margin: 0.4rem 0 0;
   line-height: 1.45;
 }
@@ -106,30 +102,29 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
-  background: rgba(2, 18, 12, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #090e0c;
+  border: 1px solid #202b24;
   padding: 0.3rem;
-  border-radius: 12px;
+  border-radius: 6px;
   margin-bottom: 1.25rem;
 }
 
 .ft-role-btn {
   padding: 0.55rem;
-  border: none;
-  border-radius: 9px;
+  border: 1px solid transparent;
+  border-radius: 4px;
   font-size: 0.82rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  color: #a3b3a9;
   background: transparent;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .ft-role-btn.active {
-  background: rgba(16, 185, 129, 0.25);
-  color: #34d399;
-  border: 1px solid rgba(52, 211, 153, 0.4);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+  background: rgba(22, 163, 74, 0.15);
+  color: #16a34a;
+  border: 1px solid rgba(22, 163, 74, 0.3);
 }
 
 .ft-modal-form {
@@ -147,7 +142,7 @@
 .ft-form-field label {
   font-size: 0.82rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
+  color: #d1ded6;
 }
 
 .ft-input-wrap {
@@ -159,7 +154,7 @@
 .ft-field-icon {
   position: absolute;
   left: 0.85rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: #637368;
   pointer-events: none;
 }
 
@@ -167,28 +162,27 @@
 .ft-input-wrap select {
   width: 100%;
   padding: 0.65rem 0.85rem 0.65rem 2.4rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 0.5rem;
+  border: 1px solid #202b24;
+  border-radius: 6px;
   font-size: 0.9rem;
   outline: none;
-  background: rgba(2, 18, 12, 0.8);
+  background: #090e0c;
   color: #ffffff;
-  transition: all 0.15s ease;
+  transition: border-color 0.15s ease;
 }
 
 .ft-input-wrap input:focus,
 .ft-input-wrap select:focus {
-  border-color: #34d399;
-  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2);
+  border-color: #16a34a;
 }
 
 .ft-btn-submit-auth {
   margin-top: 0.5rem;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: #16a34a;
   color: #ffffff;
-  border: 1px solid rgba(52, 211, 153, 0.4);
+  border: 1px solid #16a34a;
   padding: 0.75rem 1.25rem;
-  border-radius: 9999px;
+  border-radius: 6px;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
@@ -196,13 +190,11 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
-  transition: all 0.2s ease;
+  transition: background 0.15s ease;
 }
 
 .ft-btn-submit-auth:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.5);
+  background: #15803d;
 }
 
 .ft-btn-submit-auth:disabled {
@@ -214,13 +206,13 @@
   margin-top: 1.25rem;
   text-align: center;
   font-size: 0.825rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #8c9b91;
 }
 
 .ft-auth-toggle-btn {
   background: none;
   border: none;
-  color: #34d399;
+  color: #16a34a;
   font-weight: 700;
   cursor: pointer;
   margin-left: 0.35rem;
@@ -228,6 +220,6 @@
 }
 
 .ft-auth-toggle-btn:hover {
-  color: #6ee7b7;
+  color: #22c55e;
   text-decoration: underline;
 }

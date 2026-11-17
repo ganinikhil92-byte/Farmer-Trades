@@ -13,7 +13,8 @@ import {
   Package,
   Calendar,
   Layers,
-  Sparkles
+  Sparkles,
+  Sprout
 } from 'lucide-react';
 import {
   ProduceListingItem,
@@ -262,7 +263,10 @@ export const BuyProducePage: React.FC = () => {
                   checked={organicOnly}
                   onChange={(e) => setOrganicOnly(e.target.checked)}
                 />
-                <span>🌿 100% Certified Organic Lots Only</span>
+                <span className="flex items-center gap-1.5">
+                  <Sprout size={14} className="text-emerald-400" />
+                  <span>Certified Organic Lots Only</span>
+                </span>
               </label>
             </div>
 
@@ -308,7 +312,12 @@ export const BuyProducePage: React.FC = () => {
                         </button>
                         <div className="ft-lot-badge-row">
                           <span className="ft-badge-grade">Grade {item.grade}</span>
-                          {item.organic && <span className="ft-badge-org">🌿 Organic</span>}
+                          {item.organic && (
+                            <span className="ft-badge-org">
+                              <Sprout size={10} className="inline mr-1" />
+                              Organic
+                            </span>
+                          )}
                         </div>
                       </div>
 
@@ -322,11 +331,11 @@ export const BuyProducePage: React.FC = () => {
                         <p className="ft-lot-variety">Variety: {item.variety}</p>
 
                         <div className="ft-lot-price-box">
-                          <div className="ft-lot-price">
+                          <div className="ft-lot-price ft-tabular">
                             ₹{item.pricePerQuintal.toLocaleString('en-IN')}
                             <span className="ft-lot-unit">/ qtl</span>
                           </div>
-                          <div className="ft-lot-perkg">
+                          <div className="ft-lot-perkg ft-tabular">
                             ~₹{(item.pricePerQuintal / 100).toFixed(1)}/kg
                           </div>
                         </div>
@@ -334,11 +343,11 @@ export const BuyProducePage: React.FC = () => {
                         <div className="ft-lot-metrics-grid">
                           <div>
                             <span className="ft-metric-lbl">Available Stock</span>
-                            <span className="ft-metric-val">{item.quantityAvailableQuintals} Qtl</span>
+                            <span className="ft-metric-val ft-tabular">{item.quantityAvailableQuintals} Qtl</span>
                           </div>
                           <div>
                             <span className="ft-metric-lbl">Min. Order</span>
-                            <span className="ft-metric-val">{item.minOrderQuintals} Qtl</span>
+                            <span className="ft-metric-val ft-tabular">{item.minOrderQuintals} Qtl</span>
                           </div>
                         </div>
 
@@ -346,9 +355,12 @@ export const BuyProducePage: React.FC = () => {
                           <div className="ft-farmer-micro">
                             <div className="ft-farmer-avatar-sm">{item.farmerName[0]}</div>
                             <span className="ft-farmer-name-sm">{item.farmerName}</span>
-                            {item.verifiedFarmer && <ShieldCheck size={13} className="text-emerald-600" />}
+                            {item.verifiedFarmer && <ShieldCheck size={13} className="text-emerald-400" />}
                           </div>
-                          <span className="ft-lot-date">📅 {item.harvestDate}</span>
+                          <span className="ft-lot-date flex items-center gap-1">
+                            <Calendar size={11} className="text-gray-400" />
+                            <span>{item.harvestDate}</span>
+                          </span>
                         </div>
 
                         <div className="ft-lot-actions">

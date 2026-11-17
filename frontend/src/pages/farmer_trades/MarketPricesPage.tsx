@@ -228,25 +228,25 @@ export const MarketPricesPage: React.FC = () => {
           <div className="ft-chart-canvas-wrap">
             <ResponsiveContainer width="100%" height={380}>
               <LineChart data={chartData} margin={{ top: 20, right: 30, left: 10, bottom: 10 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#202b24" vertical={false} />
                 <XAxis
                   dataKey="date"
-                  stroke="#94a3b8"
-                  tick={{ fontSize: 12, fill: '#64748b' }}
+                  stroke="#202b24"
+                  tick={{ fontSize: 11, fill: '#8c9b91' }}
                   dy={10}
                 />
                 <YAxis
-                  stroke="#94a3b8"
-                  tick={{ fontSize: 12, fill: '#64748b' }}
+                  stroke="#202b24"
+                  tick={{ fontSize: 11, fill: '#8c9b91' }}
                   tickFormatter={(val) => `₹${val.toLocaleString('en-IN')}`}
                   domain={['auto', 'auto']}
                   dx={-10}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#1e293b',
-                    borderColor: '#334155',
-                    borderRadius: '8px',
+                    backgroundColor: '#111815',
+                    borderColor: '#202b24',
+                    borderRadius: '6px',
                     color: '#ffffff',
                     fontSize: '12px'
                   }}
@@ -287,13 +287,13 @@ export const MarketPricesPage: React.FC = () => {
                     <span className="ft-comp-dot" style={{ backgroundColor: cfg.color }}></span>
                     <h4 className="ft-comp-crop-name">{cfg.label}</h4>
                   </div>
-                  <div className={`ft-comp-change-pill ${isPositive ? 'positive' : 'negative'}`}>
+                  <div className={`ft-comp-change-pill ${isPositive ? 'positive' : 'negative'} ft-tabular`}>
                     {isPositive ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
                     <span>{isPositive ? `+${changePercent}%` : `${changePercent}%`}</span>
                   </div>
                 </div>
 
-                <div className="ft-comp-current-price">
+                <div className="ft-comp-current-price ft-tabular">
                   ₹{currentPrice.toLocaleString('en-IN')}
                   <span className="ft-comp-unit">/ qtl</span>
                 </div>
@@ -301,11 +301,11 @@ export const MarketPricesPage: React.FC = () => {
                 <div className="ft-comp-details-list">
                   <div className="ft-comp-detail-row">
                     <span>Govt MSP Benchmark:</span>
-                    <strong>₹{cfg.msp.toLocaleString('en-IN')}/qtl</strong>
+                    <strong className="ft-tabular">₹{cfg.msp.toLocaleString('en-IN')}/qtl</strong>
                   </div>
                   <div className="ft-comp-detail-row">
                     <span>Spread over MSP:</span>
-                    <strong className={currentPrice >= cfg.msp ? 'text-emerald-700' : 'text-amber-700'}>
+                    <strong className={`${currentPrice >= cfg.msp ? 'text-emerald-400' : 'text-amber-400'} ft-tabular`}>
                       {currentPrice >= cfg.msp ? `+₹${currentPrice - cfg.msp}/qtl` : `-₹${cfg.msp - currentPrice}/qtl`}
                     </strong>
                   </div>
@@ -348,14 +348,14 @@ export const MarketPricesPage: React.FC = () => {
               <tbody>
                 {filteredTableRecords.map((rec) => (
                   <tr key={rec.id}>
-                    <td>{rec.date}</td>
-                    <td><strong>{rec.commodity}</strong></td>
-                    <td>{rec.mandi}</td>
-                    <td>₹{rec.minPrice.toLocaleString('en-IN')}</td>
-                    <td className="ft-td-modal font-bold text-emerald-800">
+                    <td className="ft-tabular text-gray-300">{rec.date}</td>
+                    <td><strong className="text-white">{rec.commodity}</strong></td>
+                    <td className="text-gray-300">{rec.mandi}</td>
+                    <td className="ft-tabular text-gray-300">₹{rec.minPrice.toLocaleString('en-IN')}</td>
+                    <td className="ft-td-modal font-semibold text-emerald-400 ft-tabular">
                       ₹{rec.modalPrice.toLocaleString('en-IN')}
                     </td>
-                    <td>₹{rec.maxPrice.toLocaleString('en-IN')}</td>
+                    <td className="ft-tabular text-gray-300">₹{rec.maxPrice.toLocaleString('en-IN')}</td>
                     <td>
                       <span className={`ft-trend-tag ${rec.trend}`}>
                         {rec.trend === 'up' ? '▲ Bullish' : '▼ Bearish'}

@@ -843,20 +843,28 @@ def generate_ai_produce_image(crop_name: str, crop_type: str = "") -> Optional[s
 
 @router.post("/listings")
 def create_listing(listing: ListingCreate, db: Session = Depends(get_db)):
-    # Subscription verification: farmer must hold an active produce trading subscription
+    # Freemium gate: first 2 listings are free, after that subscription required
+    FREE_LISTING_LIMIT = 2
     farmer_email = (listing.farmer_id or "").strip()
     if farmer_email and farmer_email not in ["admin@agro.com", "nikhilgani987@gmail.com"]:
-        today_str = datetime.utcnow().strftime("%Y-%m-%d")
-        active_sub = db.query(db_models.FarmerSubscription).filter(
-            db_models.FarmerSubscription.farmer_id == farmer_email,
-            db_models.FarmerSubscription.status == "ACTIVE",
-            db_models.FarmerSubscription.end_date >= today_str
-        ).first()
-        if not active_sub:
-            raise HTTPException(
-                status_code=403,
-                detail="Produce trading subscription required. Please activate an annual trading pass (1 Year: ₹500, 3 Years: ₹1,300, 5 Years: ₹2,000) to publish produce listings."
-            )
+        # Count how many listings this farmer has already published
+        existing_count = db.query(db_models.Listing).filter(
+            db_models.Listing.farmer_id == farmer_email
+        ).count()
+
+        if existing_count >= FREE_LISTING_LIMIT:
+            # Beyond free tier — check for active subscription
+            today_str = datetime.utcnow().strftime("%Y-%m-%d")
+            active_sub = db.query(db_models.FarmerSubscription).filter(
+                db_models.FarmerSubscription.farmer_id == farmer_email,
+                db_models.FarmerSubscription.status == "ACTIVE",
+                db_models.FarmerSubscription.end_date >= today_str
+            ).first()
+            if not active_sub:
+                raise HTTPException(
+                    status_code=403,
+                    detail=f"You have used all {FREE_LISTING_LIMIT} free listings. To publish more produce, please activate a trading subscription (1 Year: ₹500, 3 Years: ₹1,300, 5 Years: ₹2,000)."
+                )
     final_image_url = (listing.image_url or "").strip()
     prod_name = (listing.produce_name or listing.crop_name or "").strip()
     var_name = (listing.variety or listing.crop_type or "").strip()
@@ -1211,11 +1219,13 @@ def get_farmer_subscription_status(
     db: Session = Depends(get_db),
     user_payload: Optional[dict] = Depends(auth.get_current_user_payload)
 ):
-    """Retrieve active subscription details and available plans for the farmer."""
+    """Retrieve active subscription details, free listing usage, and available plans for the farmer."""
+    FREE_LISTING_LIMIT = 2
     email = (farmer_id or (user_payload.get("email") if user_payload else "") or "").strip()
     today_str = datetime.utcnow().strftime("%Y-%m-%d")
 
     active_sub = None
+    listings_published = 0
     if email:
         active_sub = db.query(db_models.FarmerSubscription).filter(
             db_models.FarmerSubscription.farmer_id == email,
@@ -1223,10 +1233,21 @@ def get_farmer_subscription_status(
             db_models.FarmerSubscription.end_date >= today_str
         ).order_by(db_models.FarmerSubscription.id.desc()).first()
 
+        listings_published = db.query(db_models.Listing).filter(
+            db_models.Listing.farmer_id == email
+        ).count()
+
+    free_remaining = max(0, FREE_LISTING_LIMIT - listings_published)
+    needs_subscription = listings_published >= FREE_LISTING_LIMIT and active_sub is None
+
     return {
         "has_active_subscription": active_sub is not None,
         "subscription": active_sub.to_dict() if active_sub else None,
-        "plans": list(SUBSCRIPTION_PLANS.values())
+        "plans": list(SUBSCRIPTION_PLANS.values()),
+        "free_listing_limit": FREE_LISTING_LIMIT,
+        "listings_published": listings_published,
+        "free_listings_remaining": free_remaining,
+        "needs_subscription": needs_subscription,
     }
 
 @router.post("/farmer/subscription/create-order")

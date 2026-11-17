@@ -23,6 +23,9 @@ import {
 } from '../../data/farmerTradesData';
 import { addProduceListing, addNotification } from '../../utils/farmerTradesStore';
 import { matchOfficialFruitPhoto } from '../../utils/producePhoto';
+import { useAuth } from '../../context/AuthContext';
+import SubscriptionModal from '../../components/SubscriptionModal';
+import api from '../../utils/api';
 import './SellProducePage.css';
 
 const DRAFT_STORAGE_KEY = 'farmer_trades_sell_draft';
@@ -41,6 +44,7 @@ const SAMPLE_IMAGE_OPTIONS = [
 
 export const SellProducePage: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   // Wizard Step (1 to 4)
   const [currentStep, setCurrentStep] = useState(1);
@@ -48,6 +52,12 @@ export const SellProducePage: React.FC = () => {
   const [createdListingId, setCreatedListingId] = useState<string | null>(null);
   const [draftSavedMsg, setDraftSavedMsg] = useState(false);
   const [formError, setFormError] = useState('');
+
+  // Subscription & Free Tier State
+  const [showSubModal, setShowSubModal] = useState(false);
+  const [hasSub, setHasSub] = useState(false);
+  const [freeRemaining, setFreeRemaining] = useState(2);
+  const [subNeeded, setSubNeeded] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -87,7 +97,30 @@ export const SellProducePage: React.FC = () => {
         setFormData(JSON.parse(savedDraft));
       }
     } catch (e) {}
-  }, []);
+
+    async function checkSubscription() {
+      if (!user?.email) return;
+      if (user.email === 'admin@agro.com' || user.email === 'nikhilgani987@gmail.com') {
+        setHasSub(true);
+        setSubNeeded(false);
+        setFreeRemaining(999);
+        return;
+      }
+      try {
+        const res = await api.get('/farmer/subscription/status', {
+          params: { farmer_id: user.email }
+        });
+        if (res.data) {
+          setHasSub(Boolean(res.data.has_active_subscription));
+          setFreeRemaining(res.data.free_listings_remaining ?? 2);
+          setSubNeeded(Boolean(res.data.needs_subscription));
+        }
+      } catch (e) {
+        console.warn('Subscription check note:', e);
+      }
+    }
+    checkSubscription();
+  }, [user]);
 
   const handleInputChange = (field: string, value: any) => {
     setFormData((prev) => {
@@ -195,6 +228,12 @@ export const SellProducePage: React.FC = () => {
     e.preventDefault();
     if (!validateStep(4)) return;
 
+    if (subNeeded && !hasSub) {
+      setFormError('You have used your 2 free listings. An active Produce Trading Subscription is required to publish more produce lots.');
+      setShowSubModal(true);
+      return;
+    }
+
     const newListing = addProduceListing({
       title: formData.title,
       cropName: formData.cropName,
@@ -269,7 +308,12 @@ export const SellProducePage: React.FC = () => {
       <div className="ft-sell-header-banner">
         <div className="ft-sell-header-inner">
           <div className="ft-sell-badge">
-            <Sparkles size={14} /> FARMER PRODUCE LISTING PORTAL
+            <Sparkles size={14} />
+            {hasSub
+              ? 'TRADING PASS ACTIVE • UNLIMITED LISTINGS'
+              : freeRemaining > 0
+              ? `FREE TRIAL • ${freeRemaining} FREE LISTING${freeRemaining > 1 ? 'S' : ''} REMAINING`
+              : '2 FREE LISTINGS USED • SUBSCRIPTION PASS REQUIRED'}
           </div>
           <h1>List Your Harvest for Direct Buyer Offers</h1>
           <p>
@@ -680,6 +724,17 @@ export const SellProducePage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Subscription Modal for beyond 2 free listings */}
+      <SubscriptionModal
+        isOpen={showSubModal}
+        onClose={() => setShowSubModal(false)}
+        onSuccess={() => {
+          setHasSub(true);
+          setSubNeeded(false);
+          setShowSubModal(false);
+        }}
+      />
     </div>
   );
 };

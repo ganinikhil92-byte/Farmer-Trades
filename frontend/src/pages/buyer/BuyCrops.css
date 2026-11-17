@@ -1,24 +1,24 @@
 /* ==========================================================================
-   Agro Trades Buyer Marketplace Styles (Scoped)
-   Forest green branding, crisp white surfaces, clean e-commerce layout
+   Farmer Trades — Buyer Marketplace
+   Clean dark theme · No glassmorphism · No neon glows
    ========================================================================== */
 
 .agro-marketplace {
-  --market-green: #10b981;
-  --market-green-dark: #059669;
-  --market-green-light: rgba(16, 185, 129, 0.15);
-  --market-green-border: rgba(52, 211, 153, 0.35);
+  --market-green: #16a34a;
+  --market-green-dark: #15803d;
+  --market-green-light: rgba(22, 163, 74, 0.1);
+  --market-green-border: rgba(22, 163, 74, 0.25);
   --market-text-primary: #ffffff;
-  --market-text-secondary: rgba(255, 255, 255, 0.82);
-  --market-text-muted: rgba(255, 255, 255, 0.55);
-  --market-border: rgba(255, 255, 255, 0.12);
-  --market-surface: rgba(6, 44, 30, 0.65);
-  --market-bg: #020f09;
-  --market-radius: 12px;
-  --market-radius-sm: 8px;
-  --market-shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.25);
-  --market-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
-  --market-shadow-hover: 0 16px 36px rgba(0, 0, 0, 0.6);
+  --market-text-secondary: #d1ded6;
+  --market-text-muted: #8c9b91;
+  --market-border: #202b24;
+  --market-surface: #16211c;
+  --market-bg: #090e0c;
+  --market-radius: 8px;
+  --market-radius-sm: 6px;
+  --market-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --market-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --market-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
 
   font-family: inherit;
   color: var(--market-text-primary);
@@ -65,7 +65,7 @@
   font-size: 1.15rem;
   font-weight: 800;
   margin: 0;
-  color: #34d399;
+  color: #16a34a;
   letter-spacing: -0.02em;
   line-height: 1.2;
 }
@@ -88,7 +88,7 @@
 .agro-market-search-icon {
   position: absolute;
   left: 0.75rem;
-  color: #34d399;
+  color: #637368;
   pointer-events: none;
 }
 
@@ -96,22 +96,20 @@
   width: 100%;
   padding: 0.55rem 2.2rem 0.55rem 2.25rem;
   font-size: 0.9rem;
-  border: 1.5px solid rgba(16, 185, 129, 0.35);
+  border: 1px solid var(--market-border);
   border-radius: var(--market-radius-sm);
-  background: rgba(3, 20, 14, 0.85);
+  background: var(--market-bg);
   color: #ffffff;
-  transition: all 180ms ease;
+  transition: border-color 180ms ease;
   outline: none;
 }
 
 .agro-market-search-input::placeholder {
-  color: #94a3b8;
+  color: #637368;
 }
 
 .agro-market-search-input:focus {
   border-color: var(--market-green);
-  background: #03140e;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
   color: #ffffff;
 }
 
@@ -126,12 +124,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: 4px;
   transition: background 150ms ease, color 150ms ease;
 }
 
 .agro-market-search-clear:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: #202b24;
   color: #ffffff;
 }
 
@@ -154,14 +152,14 @@
   color: var(--market-text-secondary);
   text-decoration: none;
   border: 1px solid transparent;
-  transition: all 180ms ease;
+  transition: background 180ms ease, color 180ms ease;
   position: relative;
 }
 
 .agro-market-action-link:hover {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border-color: rgba(16, 185, 129, 0.3);
+  background: var(--market-green-light);
+  color: #16a34a;
+  border-color: var(--market-green-border);
 }
 
 .agro-market-action-link:focus-visible {
@@ -174,8 +172,9 @@
   color: #ffffff;
   font-size: 0.72rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
   padding: 0.1rem 0.4rem;
-  border-radius: 1rem;
+  border-radius: 4px;
   min-width: 18px;
   text-align: center;
   line-height: 1.2;
@@ -191,20 +190,20 @@
   align-items: center;
   gap: 0.45rem;
   padding: 0.4rem 0.7rem;
-  background: rgba(3, 20, 14, 0.85);
-  border: 1px solid rgba(16, 185, 129, 0.35);
+  background: var(--market-bg);
+  border: 1px solid var(--market-border);
   border-radius: var(--market-radius-sm);
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: 600;
   color: #ffffff;
-  transition: all 180ms ease;
+  transition: background 180ms ease, border-color 180ms ease;
 }
 
 .agro-market-account-btn:hover {
-  background: rgba(6, 78, 59, 0.5);
-  border-color: #10b981;
-  color: #34d399;
+  background: var(--market-surface);
+  border-color: var(--market-green-border);
+  color: #ffffff;
 }
 
 .agro-market-account-btn:focus-visible {
@@ -215,9 +214,9 @@
 .agro-market-avatar {
   width: 26px;
   height: 26px;
-  border-radius: 50%;
+  border-radius: 4px;
   background: var(--market-green-light);
-  color: var(--market-green-dark);
+  color: var(--market-green);
   font-weight: 700;
   font-size: 0.8rem;
   display: flex;
@@ -231,10 +230,10 @@
   top: calc(100% + 6px);
   right: 0;
   width: 230px;
-  background: #03140e;
-  border: 1px solid rgba(16, 185, 129, 0.35);
+  background: #111815;
+  border: 1px solid var(--market-border);
   border-radius: var(--market-radius);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   padding: 0.5rem 0;
   z-index: 50;
   animation: agroFadeIn 150ms ease-out;
@@ -242,7 +241,7 @@
 
 .agro-market-menu-userinfo {
   padding: 0.5rem 0.85rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #202b24;
   margin-bottom: 0.25rem;
 }
 
@@ -257,7 +256,7 @@
 
 .agro-market-menu-email {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: #637368;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -275,7 +274,7 @@
   text-align: left;
   font-size: 0.85rem;
   font-weight: 500;
-  color: #e2e8f0;
+  color: #d1ded6;
   cursor: pointer;
   text-decoration: none;
   transition: background 150ms ease, color 150ms ease;
@@ -283,13 +282,13 @@
 }
 
 .agro-market-menu-item:hover {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
+  background: var(--market-green-light);
+  color: #16a34a;
 }
 
 .agro-market-menu-item.logout:hover {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
 }
 
 /* ── 2. Category Navigation Tabs ── */
@@ -320,13 +319,13 @@
   color: var(--market-text-secondary);
   cursor: pointer;
   white-space: nowrap;
-  transition: all 180ms ease;
+  transition: background 180ms ease, color 180ms ease;
 }
 
 .agro-market-cat-tab:hover {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border-color: rgba(16, 185, 129, 0.3);
+  background: var(--market-green-light);
+  color: #16a34a;
+  border-color: var(--market-green-border);
 }
 
 .agro-market-cat-tab.active {
@@ -354,6 +353,7 @@
 .agro-market-result-count {
   font-size: 0.9rem;
   color: var(--market-text-secondary);
+  font-variant-numeric: tabular-nums;
 }
 
 .agro-market-result-count strong {
@@ -377,7 +377,7 @@
 .agro-market-district-icon {
   position: absolute;
   left: 0.65rem;
-  color: #34d399;
+  color: #637368;
   pointer-events: none;
   z-index: 2;
 }
@@ -386,37 +386,33 @@
   padding: 0.45rem 1.8rem 0.45rem 2rem;
   font-size: 0.85rem;
   font-weight: 600;
-  border: 1.5px solid rgba(16, 185, 129, 0.4);
+  border: 1px solid var(--market-border);
   border-radius: var(--market-radius-sm);
-  background: #03140e;
+  background: var(--market-bg);
   color: #ffffff;
   cursor: pointer;
   outline: none;
-  transition: all 180ms ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: border-color 180ms ease;
 }
 
 .agro-market-district-select:hover {
-  border-color: #10b981;
-  background: #062c1e;
+  border-color: var(--market-green-border);
 }
 
 .agro-market-district-select:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
-  background: #062c1e;
+  border-color: var(--market-green);
 }
 
 .agro-market-district-select option,
 .agro-market-district-select optgroup {
-  background: #03140e;
+  background: #111815;
   color: #ffffff;
   padding: 0.4rem;
 }
 
 .agro-market-district-select optgroup {
   font-weight: 700;
-  color: #34d399;
+  color: #16a34a;
 }
 
 .agro-market-clear-btn {
@@ -424,20 +420,19 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.45rem 0.75rem;
-  background: rgba(3, 20, 14, 0.85);
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: var(--market-bg);
+  border: 1px solid rgba(239, 68, 68, 0.25);
   border-radius: var(--market-radius-sm);
   font-size: 0.8rem;
   font-weight: 600;
   color: #f87171;
   cursor: pointer;
-  transition: all 180ms ease;
+  transition: background 180ms ease, color 180ms ease;
 }
 
 .agro-market-clear-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.1);
   color: #fca5a5;
-  border-color: #ef4444;
 }
 
 .agro-market-clear-btn:focus-visible {
@@ -462,14 +457,13 @@
   box-shadow: var(--market-shadow-sm);
   display: flex;
   flex-direction: column;
-  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
   position: relative;
 }
 
 .agro-product-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 16px rgba(16, 185, 129, 0.18);
-  border-color: rgba(52, 211, 153, 0.45);
+  box-shadow: var(--market-shadow-hover);
+  border-color: #2f3e35;
 }
 
 /* Card Image Area */
@@ -477,7 +471,7 @@
   position: relative;
   width: 100%;
   height: 180px;
-  background: #03140e;
+  background: var(--market-bg);
   overflow: hidden;
 }
 
@@ -486,20 +480,18 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 250ms ease;
 }
 
 .agro-product-card:hover .agro-card-img {
-  transform: scale(1.03);
+  /* no zoom — clean static display */
 }
 
 .agro-badge-category {
   position: absolute;
   top: 0.6rem;
   left: 0.6rem;
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(4px);
-  color: #ffffff;
+  background: rgba(9, 14, 12, 0.8);
+  color: #d1ded6;
   padding: 0.2rem 0.55rem;
   border-radius: 4px;
   font-size: 0.68rem;
@@ -516,20 +508,19 @@
   border-radius: 4px;
   font-size: 0.72rem;
   font-weight: 700;
-  backdrop-filter: blur(4px);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  font-variant-numeric: tabular-nums;
 }
 
 .agro-badge-stock.in-stock {
-  background: rgba(3, 20, 14, 0.9);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.4);
+  background: rgba(22, 163, 74, 0.15);
+  color: #16a34a;
+  border: 1px solid var(--market-green-border);
 }
 
 .agro-badge-stock.low-stock {
-  background: rgba(3, 20, 14, 0.9);
-  color: #f97316;
-  border: 1px solid rgba(249, 115, 22, 0.4);
+  background: rgba(217, 119, 6, 0.12);
+  color: #d97706;
+  border: 1px solid rgba(217, 119, 6, 0.3);
 }
 
 .agro-badge-photo-source {
@@ -540,16 +531,15 @@
   border-radius: 4px;
   font-size: 0.65rem;
   font-weight: 600;
-  backdrop-filter: blur(4px);
 }
 
 .agro-badge-photo-source.seller {
-  background: rgba(21, 128, 61, 0.9);
+  background: rgba(22, 163, 74, 0.85);
   color: #ffffff;
 }
 
 .agro-badge-photo-source.placeholder {
-  background: rgba(71, 85, 105, 0.85);
+  background: rgba(99, 115, 104, 0.75);
   color: #ffffff;
 }
 
@@ -586,9 +576,9 @@
 }
 
 .agro-card-variety {
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(52, 211, 153, 0.3);
-  color: #34d399;
+  background: var(--market-green-light);
+  border: 1px solid var(--market-green-border);
+  color: #16a34a;
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
   font-weight: 600;
@@ -611,7 +601,7 @@
   align-items: center;
   gap: 0.2rem;
   font-size: 0.74rem;
-  color: var(--market-green-dark);
+  color: #637368;
   font-weight: 600;
   margin-top: 0.2rem;
 }
@@ -623,13 +613,14 @@
   justify-content: space-between;
   margin-top: 0.75rem;
   padding-top: 0.6rem;
-  border-top: 1px dashed var(--market-border);
+  border-top: 1px solid var(--market-border);
 }
 
 .agro-card-price {
   font-size: 1.25rem;
   font-weight: 800;
-  color: var(--market-green-dark);
+  color: #d97706;
+  font-variant-numeric: tabular-nums;
 }
 
 .agro-card-price-unit {
@@ -642,6 +633,7 @@
 .agro-card-stock-label {
   font-size: 0.75rem;
   color: var(--market-text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Quantity selector */
@@ -649,8 +641,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(3, 20, 14, 0.85);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: var(--market-bg);
+  border: 1px solid var(--market-border);
   border-radius: var(--market-radius-sm);
   padding: 0.35rem 0.6rem;
   margin: 0.75rem 0 0.5rem 0;
@@ -659,27 +651,27 @@
 .agro-qty-btn {
   width: 28px;
   height: 28px;
-  border-radius: 6px;
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
+  border-radius: 4px;
+  border: 1px solid var(--market-border);
+  background: var(--market-surface);
+  color: #a3b3a9;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: background 150ms ease, color 150ms ease;
 }
 
 .agro-qty-btn:hover:not(:disabled) {
-  background: #10b981;
-  border-color: #10b981;
+  background: var(--market-green);
+  border-color: var(--market-green);
   color: #ffffff;
 }
 
 .agro-qty-btn:disabled {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.3);
+  background: transparent;
+  border-color: #202b24;
+  color: #637368;
   cursor: not-allowed;
 }
 
@@ -687,12 +679,13 @@
   font-size: 0.95rem;
   font-weight: 700;
   color: #ffffff;
+  font-variant-numeric: tabular-nums;
 }
 
 .agro-qty-display span {
   font-size: 0.75rem;
   font-weight: 500;
-  color: #94a3b8;
+  color: #8c9b91;
   margin-left: 2px;
 }
 
@@ -701,6 +694,7 @@
   color: var(--market-text-muted);
   text-align: center;
   margin-bottom: 0.6rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .agro-card-subtotal strong {
@@ -722,7 +716,7 @@
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 180ms ease;
+  transition: background 180ms ease;
 }
 
 .agro-btn-add:hover:not(:disabled) {
@@ -747,8 +741,8 @@
 
 /* ── 5. Skeleton Loading State ── */
 .agro-skeleton-card {
-  background: rgba(3, 20, 14, 0.85);
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: var(--market-surface);
+  border: 1px solid var(--market-border);
   border-radius: var(--market-radius);
   overflow: hidden;
 }
@@ -756,7 +750,7 @@
 .agro-skeleton-img {
   width: 100%;
   height: 180px;
-  background: rgba(6, 78, 59, 0.3);
+  background: #202b24;
   animation: agroPulse 1.5s infinite ease-in-out;
 }
 
@@ -766,7 +760,7 @@
 
 .agro-skeleton-line {
   height: 12px;
-  background: rgba(6, 78, 59, 0.3);
+  background: #202b24;
   border-radius: 4px;
   margin-bottom: 0.6rem;
   animation: agroPulse 1.5s infinite ease-in-out;
@@ -774,8 +768,8 @@
 
 /* ── 6. Empty / Error States ── */
 .agro-market-notice {
-  background: rgba(3, 20, 14, 0.85);
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: var(--market-surface);
+  border: 1px solid var(--market-border);
   border-radius: var(--market-radius);
   padding: 3rem 1.5rem;
   text-align: center;
@@ -785,7 +779,7 @@
 }
 
 .agro-notice-icon {
-  color: #94a3b8;
+  color: #637368;
   margin-bottom: 1rem;
 }
 
@@ -835,13 +829,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  background: rgba(120, 53, 15, 0.25);
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: rgba(217, 119, 6, 0.1);
+  border: 1px solid rgba(217, 119, 6, 0.3);
   border-radius: var(--market-radius-sm);
   padding: 0.6rem 1rem;
   margin-bottom: 0.75rem;
   font-size: 0.85rem;
-  color: #fde68a;
+  color: #d97706;
   animation: agroFadeIn 0.2s ease-out;
 }
 
@@ -855,19 +849,19 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  background: rgba(245, 158, 11, 0.2);
-  border: 1px solid rgba(245, 158, 11, 0.5);
-  color: #fbbf24;
+  background: rgba(217, 119, 6, 0.12);
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  color: #d97706;
   font-size: 0.8rem;
   font-weight: 600;
   padding: 0.3rem 0.65rem;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease;
 }
 
 .agro-market-cache-reconnect-btn:hover {
-  background: rgba(245, 158, 11, 0.35);
+  background: rgba(217, 119, 6, 0.2);
   color: #ffffff;
 }
 

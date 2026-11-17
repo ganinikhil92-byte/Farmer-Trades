@@ -1,29 +1,34 @@
 /* ==========================================================================
    Farmer Trades — Global Top Navigation Styles
-   Dark Botanical Glassmorphism Navigation
+   Utilitarian Agricultural Commodity Exchange Design
    ========================================================================== */
 
 .ft-navbar {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: rgba(4, 26, 18, 0.85);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  background: rgba(9, 14, 12, 0.94);
+  border-bottom: 1px solid #202b24;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   width: 100%;
 }
 
 .ft-nav-container {
-  max-width: 1280px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 0 1.5rem;
-  height: 72px;
+  padding: 0 1.25rem;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .ft-nav-container {
+    padding: 0 2rem;
+  }
 }
 
 /* ── Brand Logo ── */
@@ -37,16 +42,15 @@
 }
 
 .ft-brand-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.25) 0%, rgba(16, 185, 129, 0.1) 100%);
-  color: #34d399;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background: #111815;
+  color: #16a34a;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(52, 211, 153, 0.35);
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+  border: 1px solid #202b24;
 }
 
 .ft-brand-text {
@@ -55,149 +59,147 @@
 }
 
 .ft-brand-title {
-  font-family: var(--font-heading);
-  font-size: 1.35rem;
-  font-weight: 800;
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  font-weight: 700;
   color: #ffffff;
   line-height: 1.15;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
 }
 
 .ft-brand-title span {
-  color: #34d399;
+  color: #16a34a;
   margin-left: 2px;
 }
 
 .ft-brand-subtitle {
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: #a7f3d0;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #8c9b91;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
 }
 
 /* ── Navigation Links ── */
 .ft-nav-links {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.25rem;
 }
 
 .ft-nav-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.5rem 0.95rem;
-  font-size: 0.92rem;
+  gap: 0.35rem;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.84rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
+  color: #a3b3a9;
   text-decoration: none;
-  border-radius: 9999px;
-  transition: all 0.2s ease;
+  border-radius: 6px;
+  transition: all 0.15s ease;
 }
 
 .ft-nav-link:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: #111815;
   color: #ffffff;
 }
 
 .ft-nav-link.active {
-  background: rgba(16, 185, 129, 0.18);
-  color: #34d399;
+  background: #16211c;
+  color: #ffffff;
   font-weight: 600;
-  border: 1px solid rgba(52, 211, 153, 0.3);
+  border: 1px solid #202b24;
 }
 
 /* ── Right Actions ── */
 .ft-nav-actions {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.625rem;
 }
 
 .ft-action-btn {
   position: relative;
-  width: 40px;
-  height: 40px;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.85);
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid #202b24;
+  background: #111815;
+  color: #a3b3a9;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .ft-action-btn:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: #16211c;
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
+  border-color: #2f3e35;
 }
 
 .ft-badge-count {
   position: absolute;
-  top: -3px;
-  right: -3px;
-  min-width: 18px;
-  height: 18px;
-  border-radius: 9px;
-  background: #f59e0b;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: #d97706;
   color: #ffffff;
-  font-size: 0.68rem;
-  font-weight: 800;
+  font-size: 0.65rem;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 4px;
-  border: 2px solid #041a12;
+  padding: 0 3px;
+  border: 1px solid #090e0c;
+  font-variant-numeric: tabular-nums;
 }
 
 .ft-btn-sell {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.55rem 1.25rem;
-  border-radius: 9999px;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  gap: 0.375rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  background: #d97706;
   color: #ffffff;
-  font-size: 0.88rem;
-  font-weight: 700;
+  font-size: 0.8125rem;
+  font-weight: 600;
   text-decoration: none;
-  border: 1px solid rgba(251, 191, 36, 0.4);
+  border: 1px solid #d97706;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
-  transition: all 0.2s ease;
+  transition: background-color 0.15s ease;
 }
 
 .ft-btn-sell:hover {
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(217, 119, 6, 0.5);
+  background: #b45309;
+  border-color: #b45309;
 }
 
 .ft-btn-login {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 1.15rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
-  font-size: 0.88rem;
-  font-weight: 600;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  border: 1px solid #202b24;
+  background: #111815;
+  color: #d1ded6;
+  font-size: 0.8125rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .ft-btn-login:hover {
-  background: rgba(255, 255, 255, 0.18);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-1px);
+  background: #16211c;
+  border-color: #2f3e35;
+  color: #ffffff;
 }
 
 /* User Dropdown */
@@ -208,77 +210,77 @@
 .ft-user-btn {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 0.32rem 0.85rem 0.32rem 0.4rem;
-  border-radius: 9999px;
+  gap: 0.5rem;
+  background: #111815;
+  border: 1px solid #202b24;
+  padding: 0.3rem 0.65rem 0.3rem 0.35rem;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #ffffff;
-  backdrop-filter: blur(10px);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #e6ede9;
+  transition: border-color 0.15s ease;
+}
+
+.ft-user-btn:hover {
+  border-color: #2f3e35;
 }
 
 .ft-user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  background: #16a34a;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .ft-user-dropdown {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 6px);
   right: 0;
-  width: 240px;
-  background: rgba(4, 26, 18, 0.96);
-  border: 1px solid rgba(52, 211, 153, 0.25);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65);
-  padding: 0.5rem;
+  width: 220px;
+  background: #111815;
+  border: 1px solid #202b24;
+  border-radius: 6px;
+  padding: 0.35rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.15rem;
   z-index: 1100;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  animation: ftFadeIn 0.15s ease-out;
 }
 
 .ft-dropdown-header {
-  padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.5rem 0.65rem;
+  border-bottom: 1px solid #202b24;
   margin-bottom: 0.25rem;
 }
 
 .ft-dropdown-header strong {
   display: block;
-  font-size: 0.88rem;
+  font-size: 0.8125rem;
   color: #ffffff;
 }
 
 .ft-dropdown-header span {
-  font-size: 0.75rem;
-  color: #34d399;
+  font-size: 0.6875rem;
+  color: #10b981;
+  text-transform: capitalize;
 }
 
 .ft-dropdown-item {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.6rem 0.75rem;
-  border-radius: var(--radius-md);
-  font-size: 0.85rem;
+  gap: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 4px;
+  font-size: 0.8125rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
+  color: #a3b3a9;
   text-decoration: none;
   background: none;
   border: none;
@@ -289,41 +291,30 @@
 }
 
 .ft-dropdown-item:hover {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
+  background: #16211c;
+  color: #ffffff;
 }
 
 .ft-dropdown-item.logout {
   color: #f87171;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid #202b24;
   margin-top: 0.25rem;
 }
 
 .ft-dropdown-item.logout:hover {
-  background: rgba(239, 68, 68, 0.15);
+  background: #201315;
   color: #fca5a5;
 }
 
 /* Mobile Toggle */
 .ft-mobile-toggle {
   display: none;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
+  background: #111815;
+  border: 1px solid #202b24;
+  border-radius: 6px;
   padding: 0.4rem;
-  color: #ffffff;
+  color: #e6ede9;
   cursor: pointer;
-}
-
-@keyframes ftFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 @media (max-width: 960px) {
@@ -331,6 +322,8 @@
     display: none;
   }
   .ft-mobile-toggle {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }

@@ -30,6 +30,8 @@ export default function FarmerDashboard() {
   const [loading, setLoading] = useState(true);
   const [hasSub, setHasSub] = useState<boolean>(false);
   const [subDetails, setSubDetails] = useState<any | null>(null);
+  const [freeListingsRemaining, setFreeListingsRemaining] = useState<number>(2);
+  const [listingsPublished, setListingsPublished] = useState<number>(0);
 
   // Time-based greeting
   const hour = new Date().getHours();
@@ -47,6 +49,8 @@ export default function FarmerDashboard() {
         if (subRes.data) {
           setHasSub(Boolean(subRes.data.has_active_subscription));
           setSubDetails(subRes.data.subscription || null);
+          setFreeListingsRemaining(subRes.data.free_listings_remaining ?? 2);
+          setListingsPublished(subRes.data.listings_published ?? 0);
         }
 
         const rawListings = Array.isArray(listingsRes.data) ? listingsRes.data : [];
@@ -113,6 +117,11 @@ export default function FarmerDashboard() {
               <Crown size={15} style={{ color: '#4ade80' }} />
               <span>Trading Pass Active • {subDetails?.plan_tier ? subDetails.plan_tier.replace('_', ' ') : 'Annual'}</span>
             </div>
+          ) : freeListingsRemaining > 0 ? (
+            <div className="farmer-hero-badge" style={{ background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#a7f3d0' }}>
+              <Package size={15} style={{ color: '#34d399' }} />
+              <span>Free Tier • {freeListingsRemaining} listing{freeListingsRemaining > 1 ? 's' : ''} left</span>
+            </div>
           ) : (
             <Link
               to="/farmer/trade"
@@ -151,30 +160,38 @@ export default function FarmerDashboard() {
             <Crown size={22} style={{ color: '#fbbf24', flexShrink: 0 }} />
             <div>
               <p style={{ margin: 0, fontWeight: 700, fontSize: '0.92rem', color: '#fef3c7' }}>
-                Produce Trading Membership Required
+                {freeListingsRemaining > 0
+                  ? `${freeListingsRemaining} Free Listing${freeListingsRemaining > 1 ? 's' : ''} Remaining`
+                  : 'Free Listings Used — Subscription Required'
+                }
               </p>
               <p style={{ margin: 0, fontSize: '0.82rem', color: '#cbd5e1' }}>
-                Activate your trading pass (1 Year: ₹500, 3 Years: ₹1,300, 5 Years: ₹2,000) to list produce directly for Karnataka bulk buyers.
+                {freeListingsRemaining > 0
+                  ? `You can publish ${freeListingsRemaining} more produce listing${freeListingsRemaining > 1 ? 's' : ''} for free to explore the platform. After that, activate a trading pass (from ₹500/yr).`
+                  : `You've published ${listingsPublished} listings. Activate your trading pass (1 Year: ₹500, 3 Years: ₹1,300, 5 Years: ₹2,000) to continue listing produce.`
+                }
               </p>
             </div>
           </div>
-          <Link
-            to="/farmer/trade"
-            className="btn btn-sm"
-            style={{
-              background: '#16a34a',
-              color: '#ffffff',
-              fontWeight: 700,
-              textDecoration: 'none',
-              padding: '0.45rem 1rem',
-              borderRadius: '0.5rem',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.35rem'
-            }}
-          >
-            Activate Subscription →
-          </Link>
+          {freeListingsRemaining <= 0 && (
+            <Link
+              to="/farmer/trade"
+              className="btn btn-sm"
+              style={{
+                background: '#16a34a',
+                color: '#ffffff',
+                fontWeight: 700,
+                textDecoration: 'none',
+                padding: '0.45rem 1rem',
+                borderRadius: '0.5rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem'
+              }}
+            >
+              Activate Subscription →
+            </Link>
+          )}
         </section>
       )}
 

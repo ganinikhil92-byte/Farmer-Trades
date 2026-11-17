@@ -1,6 +1,6 @@
 /* ==========================================================================
-   Farmer Trades — Executive Farmer Command Center Styling
-   Dark Botanical Glassmorphism Design
+   Farmer Trades — Farmer Dashboard
+   Clean Design System — No glassmorphism, no neon, no pills
    ========================================================================== */
 
 .farmer-dashboard {
@@ -21,7 +21,6 @@
 }
 
 .farmer-hero-text h1 {
-  font-family: var(--font-heading);
   font-size: 1.85rem;
   font-weight: 800;
   color: #ffffff;
@@ -31,7 +30,7 @@
 }
 
 .farmer-hero-text p {
-  color: var(--color-text-secondary);
+  color: #8c9b91;
   margin: 0.35rem 0 0;
   font-size: 0.95rem;
 }
@@ -41,29 +40,23 @@
   align-items: center;
   gap: 0.55rem;
   padding: 0.45rem 1rem;
-  border-radius: 9999px;
-  background: rgba(6, 44, 30, 0.65);
-  border: 1px solid rgba(52, 211, 153, 0.3);
-  color: #a7f3d0;
+  border-radius: 6px;
+  background: #16211c;
+  border: 1px solid #202b24;
+  color: #a3b3a9;
   font-size: 0.82rem;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
-/* ── 2. Executive Agronomic Briefing Banner ── */
+/* ── 2. Agronomic Briefing Banner ── */
 .farmer-ai-briefing-card {
-  background: linear-gradient(135deg, rgba(6, 44, 30, 0.85) 0%, rgba(3, 24, 16, 0.95) 100%);
+  background: #111815;
   color: #ffffff;
-  border-radius: var(--radius-xl);
+  border-radius: 8px;
   padding: 1.85rem 2.25rem;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(52, 211, 153, 0.25);
-  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid #202b24;
 }
 
 .farmer-ai-briefing-card::before {
@@ -73,8 +66,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(rgba(52, 211, 153, 0.08) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-image: none;
   pointer-events: none;
 }
 
@@ -93,19 +85,18 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background: rgba(52, 211, 153, 0.15);
-  border: 1px solid rgba(52, 211, 153, 0.35);
+  background: #16211c;
+  border: 1px solid #202b24;
   padding: 0.3rem 0.85rem;
-  border-radius: 9999px;
+  border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #34d399;
+  color: #16a34a;
 }
 
 .farmer-ai-briefing-body h2 {
-  font-family: var(--font-heading);
   font-size: 1.45rem;
   font-weight: 800;
   color: #ffffff;
@@ -114,7 +105,7 @@
 }
 
 .farmer-ai-briefing-body p {
-  color: rgba(255, 255, 255, 0.82);
+  color: #d1ded6;
   line-height: 1.6;
   font-size: 0.96rem;
   max-width: 920px;
@@ -122,7 +113,7 @@
 }
 
 .farmer-ai-briefing-body strong {
-  color: #34d399;
+  color: #16a34a;
 }
 
 .farmer-ai-cta-row {
@@ -138,43 +129,39 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: #16a34a;
   color: #ffffff;
   padding: 0.6rem 1.35rem;
-  border-radius: 9999px;
+  border-radius: 6px;
   font-size: 0.88rem;
   font-weight: 700;
   text-decoration: none;
-  border: 1px solid rgba(52, 211, 153, 0.4);
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
-  transition: all 0.2s ease;
+  border: none;
+  transition: background 0.15s ease;
 }
 
 .farmer-ai-btn-primary:hover {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+  background: #15803d;
 }
 
 .farmer-ai-btn-secondary {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  background: transparent;
+  color: #d1ded6;
   padding: 0.6rem 1.25rem;
-  border-radius: 9999px;
+  border-radius: 6px;
   font-size: 0.88rem;
   font-weight: 600;
   text-decoration: none;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  transition: all 0.2s ease;
+  border: 1px solid #202b24;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .farmer-ai-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
+  background: #16211c;
+  color: #ffffff;
 }
 
 /* ── 3. Executive Metrics Grid ── */
@@ -185,24 +172,19 @@
 }
 
 .farmer-stat-card {
-  background: rgba(6, 44, 30, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-lg);
+  background: #111815;
+  border: 1px solid #202b24;
+  border-radius: 8px;
   padding: 1.5rem;
   text-decoration: none;
   color: #ffffff;
   display: flex;
   flex-direction: column;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: var(--shadow-card);
-  transition: all var(--transition-fast);
+  transition: border-color 0.15s ease;
 }
 
 .farmer-stat-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(52, 211, 153, 0.4);
-  box-shadow: var(--shadow-card-hover);
+  border-color: #2f3e35;
 }
 
 .farmer-stat-top {
@@ -215,70 +197,65 @@
 .farmer-stat-icon {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid #202b24;
 }
 
 .farmer-stat-icon.green {
-  background: rgba(16, 185, 129, 0.2);
-  color: #34d399;
-  border-color: rgba(52, 211, 153, 0.3);
+  background: #16211c;
+  color: #16a34a;
 }
 
 .farmer-stat-icon.blue {
-  background: rgba(14, 165, 233, 0.2);
+  background: rgba(14, 165, 233, 0.12);
   color: #38bdf8;
-  border-color: rgba(56, 189, 248, 0.3);
 }
 
 .farmer-stat-icon.amber {
-  background: rgba(245, 158, 11, 0.2);
-  color: #fbbf24;
-  border-color: rgba(251, 191, 36, 0.3);
+  background: rgba(217, 119, 6, 0.12);
+  color: #d97706;
 }
 
 .farmer-stat-icon.purple {
-  background: rgba(168, 85, 247, 0.2);
+  background: rgba(168, 85, 247, 0.12);
   color: #c084fc;
-  border-color: rgba(192, 132, 252, 0.3);
 }
 
 .farmer-stat-tag {
   font-size: 0.72rem;
   font-weight: 700;
   padding: 0.2rem 0.65rem;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  background: #16211c;
+  color: #a3b3a9;
+  border: 1px solid #202b24;
 }
 
 .farmer-stat-tag.positive {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border-color: rgba(52, 211, 153, 0.3);
+  background: #16211c;
+  color: #16a34a;
+  border-color: #202b24;
 }
 
 .farmer-stat-num {
-  font-family: var(--font-heading);
   font-size: 1.85rem;
   font-weight: 800;
   color: #ffffff;
   line-height: 1.2;
+  font-variant-numeric: tabular-nums;
 }
 
 .farmer-stat-label {
   font-size: 0.82rem;
-  color: var(--color-text-muted);
+  color: #8c9b91;
   margin-top: 0.35rem;
 }
 
 /* ── 4. Quick Actions Hub ── */
 .farmer-section-title {
-  font-family: var(--font-heading);
   font-size: 1.35rem;
   font-weight: 800;
   color: #ffffff;
@@ -295,33 +272,28 @@
 }
 
 .farmer-action-card {
-  background: rgba(6, 44, 30, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-lg);
+  background: #111815;
+  border: 1px solid #202b24;
+  border-radius: 8px;
   padding: 1.4rem;
   text-decoration: none;
   display: flex;
   align-items: flex-start;
   gap: 1.15rem;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: all var(--transition-fast);
+  transition: border-color 0.15s ease;
 }
 
 .farmer-action-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(52, 211, 153, 0.35);
-  background: rgba(6, 44, 30, 0.8);
-  box-shadow: var(--shadow-card-hover);
+  border-color: #2f3e35;
 }
 
 .farmer-action-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(52, 211, 153, 0.3);
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: #16211c;
+  color: #16a34a;
+  border: 1px solid #202b24;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -329,7 +301,6 @@
 }
 
 .farmer-action-card h3 {
-  font-family: var(--font-heading);
   font-size: 1.05rem;
   font-weight: 700;
   color: #ffffff;
@@ -337,7 +308,7 @@
 }
 
 .farmer-action-card p {
-  color: var(--color-text-secondary);
+  color: #8c9b91;
   font-size: 0.84rem;
   line-height: 1.45;
   margin: 0;
@@ -351,13 +322,10 @@
 }
 
 .farmer-panel {
-  background: rgba(6, 44, 30, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-lg);
+  background: #111815;
+  border: 1px solid #202b24;
+  border-radius: 8px;
   padding: 1.75rem;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: var(--shadow-card);
 }
 
 .farmer-panel-header {
@@ -365,12 +333,11 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.35rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid #202b24;
   padding-bottom: 0.85rem;
 }
 
 .farmer-panel-header h3 {
-  font-family: var(--font-heading);
   font-size: 1.15rem;
   font-weight: 800;
   color: #ffffff;
@@ -383,13 +350,13 @@
 .farmer-panel-link {
   font-size: 0.82rem;
   font-weight: 600;
-  color: #34d399;
+  color: #16a34a;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 0.15s ease;
 }
 
 .farmer-panel-link:hover {
-  color: #6ee7b7;
+  color: #22c55e;
 }
 
 .farmer-mandi-list {
@@ -403,40 +370,40 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.85rem 1rem;
-  border-radius: var(--radius-md);
-  background: rgba(2, 20, 14, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  transition: all var(--transition-fast);
+  border-radius: 6px;
+  background: #16211c;
+  border: 1px solid #202b24;
+  transition: border-color 0.15s ease;
 }
 
 .farmer-mandi-item:hover {
-  background: rgba(16, 185, 129, 0.1);
-  border-color: rgba(52, 211, 153, 0.25);
+  border-color: #2f3e35;
 }
 
 .farmer-mandi-info strong {
   display: block;
   font-size: 0.9rem;
-  color: #ffffff;
+  color: #e6ede9;
 }
 
 .farmer-mandi-info span {
   font-size: 0.75rem;
-  color: var(--color-text-muted);
+  color: #8c9b91;
 }
 
 .farmer-mandi-price {
   text-align: right;
   font-weight: 800;
   font-size: 0.96rem;
-  color: #34d399;
+  color: #16a34a;
+  font-variant-numeric: tabular-nums;
 }
 
 .farmer-mandi-price span {
   display: block;
   font-size: 0.7rem;
   font-weight: 600;
-  color: #fbbf24;
+  color: #d97706;
 }
 
 /* Responsive */
