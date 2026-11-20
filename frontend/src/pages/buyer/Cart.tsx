@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getCart, clearCart } from './cartStore';
+import { getCart, clearCart, saveCart } from './cartStore';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
 import { resolveProduceImage, handleImageError, saveOrderImageRef } from '../../utils/producePhoto';
@@ -35,9 +35,9 @@ export default function Cart() {
   const [lastPayment, setLastPayment] = useState<{ paymentId: string; orderId: string; total: number } | null>(null);
 
   function removeItem(listingId: number | string) {
-    const idx = cartItems.findIndex((c) => c.listing.id === listingId);
-    if (idx !== -1) cartItems.splice(idx, 1);
-    setCartItems([...cartItems]);
+    const updated = cartItems.filter((c) => c.listing.id !== listingId);
+    saveCart(updated);
+    setCartItems(updated);
   }
 
   const total = cartItems.reduce((sum, c) => sum + c.qty * c.listing.price_per_kg, 0);

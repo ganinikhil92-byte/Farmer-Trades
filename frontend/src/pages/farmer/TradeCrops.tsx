@@ -36,7 +36,7 @@ import {
   getVarietiesByProduce,
   getProduceById
 } from '../../data/produceMaster';
-import { matchOfficialFruitPhoto } from '../../utils/producePhoto';
+import { matchOfficialFruitPhoto, matchOfficialVegetablePhoto } from '../../utils/producePhoto';
 
 const DRAFT_KEY = 'agro_trade_draft_v2';
 
@@ -149,7 +149,7 @@ export default function TradeCrops() {
         setCheckingSub(false);
         return;
       }
-      if (user.email === 'admin@agro.com' || user.email === 'nikhilgani987@gmail.com') {
+      if (user.email === 'admin@agro.com' || user.email === 'nikhilgani987@gmail.com' || user.email === 'ganinikhil92@gmail.com') {
         if (isMounted) {
           setHasSubscription(true);
           setNeedsSubscription(false);
@@ -240,12 +240,17 @@ export default function TradeCrops() {
       setProduceName(found.name);
       setProduceNameKn(found.nameKn);
 
-      // Automatically attach and preview official fruit photo whenever a farmer publishes fruits
+      // Automatically attach and preview official fruit or vegetable photo
       const fruitPhoto = matchOfficialFruitPhoto(found.name, found.categoryId || category || 'FRUITS');
+      const vegPhoto = matchOfficialVegetablePhoto(found.name, found.categoryId || category || 'VEGETABLES');
       if (fruitPhoto) {
         setPhoto(null);
         setPhotoPreview(fruitPhoto);
         setAiGeneratedUrl(fruitPhoto);
+      } else if (vegPhoto) {
+        setPhoto(null);
+        setPhotoPreview(vegPhoto);
+        setAiGeneratedUrl(vegPhoto);
       }
     } else {
       setProduceName('');
@@ -415,10 +420,13 @@ export default function TradeCrops() {
         }
       }
 
-      // Whenever a farmer publishes fruits, automatically use only these official photos
+      // Whenever a farmer publishes fruits or vegetables, automatically use only these official photos
       const officialFruitPhoto = matchOfficialFruitPhoto(produceName, category || 'FRUITS');
+      const officialVegetablePhoto = matchOfficialVegetablePhoto(produceName, category || 'VEGETABLES');
       if (officialFruitPhoto) {
         durableImageUrl = officialFruitPhoto;
+      } else if (officialVegetablePhoto) {
+        durableImageUrl = officialVegetablePhoto;
       } else if (!durableImageUrl && aiGeneratedUrl) {
         durableImageUrl = aiGeneratedUrl;
       }

@@ -9,6 +9,9 @@ interface Order {
   quantity: number;
   total_price: number;
   buyer_id: string;
+  status?: string;
+  payment_id?: string;
+  created_at?: string;
 }
 
 export default function SellingHistory() {
@@ -59,19 +62,35 @@ export default function SellingHistory() {
                 <tr>
                   <th>Order Ref</th>
                   <th>Crop Sold</th>
-                  <th>Quantity (KG)</th>
+                  <th>Quantity</th>
                   <th>Total Amount</th>
-                  <th>Buyer</th>
+                  <th>Buyer Account</th>
+                  <th>Transaction ID</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {orders.map((o) => (
                   <tr key={o.id}>
-                    <td>#ORD-KA-{o.id}</td>
+                    <td><strong style={{ fontFamily: 'monospace', color: '#166534' }}>#ORD-KA-{o.id}</strong></td>
                     <td><strong>{o.crop_name}</strong></td>
                     <td>{o.quantity} KG</td>
-                    <td><strong>₹{o.total_price.toLocaleString()}</strong></td>
-                    <td>{o.buyer_id}</td>
+                    <td><strong style={{ color: '#047857' }}>₹{o.total_price.toLocaleString('en-IN')}</strong></td>
+                    <td><span style={{ fontSize: '0.85rem', color: '#475569' }}>{o.buyer_id}</span></td>
+                    <td><code style={{ fontSize: '0.78rem', background: '#f1f5f9', padding: '0.2rem 0.4rem', borderRadius: 4 }}>{o.payment_id || 'pay_online'}</code></td>
+                    <td>
+                      <span style={{
+                        display: 'inline-block',
+                        padding: '0.25rem 0.65rem',
+                        borderRadius: '999px',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        background: o.status === 'Delivered' ? '#dcfce7' : o.status === 'In Transit' ? '#fef3c7' : '#e0f2fe',
+                        color: o.status === 'Delivered' ? '#15803d' : o.status === 'In Transit' ? '#b45309' : '#0369a1'
+                      }}>
+                        {o.status || 'Confirmed'}
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>

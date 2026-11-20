@@ -286,7 +286,153 @@ def init_db():
             db.add_all(seed_items)
             db.commit()
 
-        # No seed listings — all listings created fresh via the app
+        # Seed Initial Demo Listings for Trade Stock if empty
+        if db.query(db_models.Listing).count() == 0:
+            seed_listings = [
+                db_models.Listing(
+                    category='VEGETABLES',
+                    category_id='VEGETABLES',
+                    produce_id='TOMATO',
+                    crop_name='Tomato / ಟೊಮೆಟೊ',
+                    crop_type='Arka Rakshak',
+                    produce_name='Tomato',
+                    produce_name_kn='ಟೊಮೆಟೊ',
+                    variety='Arka Rakshak (Grade A)',
+                    quantity_kg=850.0,
+                    price_per_kg=28.0,
+                    farmer_id='ganinikhil92@gmail.com',
+                    image_url='/produce/vegetables/tomato.jpg'
+                ),
+                db_models.Listing(
+                    category='VEGETABLES',
+                    category_id='VEGETABLES',
+                    produce_id='CARROT',
+                    crop_name='Carrot / ಕ್ಯಾರೆಟ್',
+                    crop_type='Ooty Super Fresh',
+                    produce_name='Carrot',
+                    produce_name_kn='ಕ್ಯಾರೆಟ್',
+                    variety='Ooty Red (Grade Premium)',
+                    quantity_kg=600.0,
+                    price_per_kg=36.0,
+                    farmer_id='farmer@agro.com',
+                    image_url='/produce/vegetables/carrot.jpg'
+                ),
+                db_models.Listing(
+                    category='VEGETABLES',
+                    category_id='VEGETABLES',
+                    produce_id='CAPSICUM',
+                    crop_name='Capsicum / ದಪ್ಪ ಮೆಣಸಿನಕಾಯಿ',
+                    crop_type='Indra Hybrid Green',
+                    produce_name='Capsicum',
+                    produce_name_kn='ದಪ್ಪ ಮೆಣಸಿನಕಾಯಿ',
+                    variety='Green Bell Pepper',
+                    quantity_kg=400.0,
+                    price_per_kg=42.0,
+                    farmer_id='ganinikhil92@gmail.com',
+                    image_url='/produce/vegetables/capsicum.jpg'
+                ),
+                db_models.Listing(
+                    category='VEGETABLES',
+                    category_id='VEGETABLES',
+                    produce_id='BHENDI',
+                    crop_name='Ladies Finger / ಬೆಂಡೆಕಾಯಿ',
+                    crop_type='Arka Anamika',
+                    produce_name='Ladies Finger (Bhendi)',
+                    produce_name_kn='ಬೆಂಡೆಕಾಯಿ',
+                    variety='Arka Anamika (Export Lot)',
+                    quantity_kg=350.0,
+                    price_per_kg=32.0,
+                    farmer_id='farmer@agro.com',
+                    image_url='/produce/vegetables/bhendi.jpg'
+                ),
+                db_models.Listing(
+                    category='FRUITS',
+                    category_id='FRUITS',
+                    produce_id='POMEGRANATE',
+                    crop_name='Pomegranate / ದಾಳಿಂಬೆ',
+                    crop_type='Bhagwa Export',
+                    produce_name='Pomegranate',
+                    produce_name_kn='ದಾಳಿಂಬೆ',
+                    variety='Bhagwa Ruby Red',
+                    quantity_kg=1200.0,
+                    price_per_kg=145.0,
+                    farmer_id='ganinikhil92@gmail.com',
+                    image_url='/produce/fruits/pomegranate.jpg'
+                ),
+                db_models.Listing(
+                    category='CEREALS_MILLETS',
+                    category_id='CEREALS_MILLETS',
+                    produce_id='FINGER_MILLET_RAGI',
+                    crop_name='Finger Millet / Ragi',
+                    crop_type='GPU-67',
+                    produce_name='Finger Millet / Ragi',
+                    produce_name_kn='ರಾಗಿ',
+                    variety='GPU-67 Organic',
+                    quantity_kg=1000.0,
+                    price_per_kg=43.0,
+                    farmer_id='farmer@agro.com',
+                    image_url='/produce/ragi.jpg'
+                )
+            ]
+            db.add_all(seed_listings)
+            db.commit()
+
+        # Seed Initial Demo Orders & Transactions if empty
+        if db.query(db_models.Order).count() == 0:
+            seed_orders = [
+                db_models.Order(
+                    listing_id=1,
+                    buyer_id='buyer@agro.com',
+                    crop_name='Watermelon / ಕಲ್ಲಂಗಡಿ',
+                    quantity=150.0,
+                    total_price=3750.0,
+                    status='Delivered',
+                    payment_id='pay_RzpLive_8910245',
+                    image_url='/produce/fruits/watermelon.jpg'
+                ),
+                db_models.Order(
+                    listing_id=2,
+                    buyer_id='ganinikhil92@gmail.com',
+                    crop_name='Organic Finger Millet / Ragi',
+                    quantity=300.0,
+                    total_price=12900.0,
+                    status='Delivered',
+                    payment_id='pay_RzpLive_8921876',
+                    image_url='/produce/ragi.jpg'
+                ),
+                db_models.Order(
+                    listing_id=3,
+                    buyer_id='suresh.wholesale@gmail.com',
+                    crop_name='Fresh Red Tomatoes (Arka Rakshak)',
+                    quantity=200.0,
+                    total_price=5600.0,
+                    status='Confirmed',
+                    payment_id='pay_RzpLive_8934510',
+                    image_url='/produce/vegetables/tomato.jpg'
+                ),
+                db_models.Order(
+                    listing_id=4,
+                    buyer_id='buyer@agro.com',
+                    crop_name='Ooty Red Carrots',
+                    quantity=100.0,
+                    total_price=3600.0,
+                    status='In Transit',
+                    payment_id='pay_RzpLive_8949821',
+                    image_url='/produce/vegetables/carrot.jpg'
+                ),
+                db_models.Order(
+                    listing_id=5,
+                    buyer_id='ganinikhil92@gmail.com',
+                    crop_name='Bhagwa Pomegranate Lot',
+                    quantity=80.0,
+                    total_price=11600.0,
+                    status='Confirmed',
+                    payment_id='pay_RzpLive_8956734',
+                    image_url='/produce/fruits/pomegranate.jpg'
+                )
+            ]
+            db.add_all(seed_orders)
+            db.commit()
 
         # Seed Queries
         if db.query(db_models.SupportQuery).count() == 0:

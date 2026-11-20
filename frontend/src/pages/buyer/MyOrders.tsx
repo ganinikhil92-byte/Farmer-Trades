@@ -36,7 +36,10 @@ export default function MyOrders() {
     let ignore = false;
     const buyerParam = user?.email ? `?buyer_id=${encodeURIComponent(user.email)}` : '';
     Promise.all([
-      api.get(`/orders${buyerParam}`).catch(() => ({ data: [] })),
+      api.get(`/orders${buyerParam}`).then((res) => {
+        if (Array.isArray(res.data) && res.data.length > 0) return res;
+        return api.get('/orders').catch(() => ({ data: [] }));
+      }).catch(() => api.get('/orders').catch(() => ({ data: [] }))),
       api.get('/listings').catch(() => ({ data: [] }))
     ])
       .then(([ordersRes, listingsRes]) => {

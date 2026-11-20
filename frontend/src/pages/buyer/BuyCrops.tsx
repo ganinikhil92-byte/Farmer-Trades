@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
-import { Listing, getCart } from './cartStore';
+import { Listing, getCart, saveCart } from './cartStore';
 import { resolveProduceImage, handleImageError } from '../../utils/producePhoto';
 import {
   PRODUCE_CATEGORIES,
@@ -351,6 +351,7 @@ export default function BuyCrops() {
     } else {
       cart.push({ listing, qty });
     }
+    saveCart(cart);
     setCartCount(cart.length);
     setAddedId(listing.id);
     setTimeout(() => setAddedId(null), 1500);

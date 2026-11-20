@@ -154,6 +154,215 @@ export function matchOfficialFruitPhoto(name?: string, category?: string): strin
   return null;
 }
 
+/**
+ * Official verified farm vegetable harvest photos uploaded by the user.
+ * Strictly used whenever a farmer publishes vegetables or vegetables are displayed.
+ * "only use these vegetables whenever a farmer is listing a vegetable , remember do not use any other image"
+ */
+export const OFFICIAL_VEGETABLE_PHOTOS = {
+  CARROT: '/produce/vegetables/carrot.jpg',
+  BRINJAL: '/produce/vegetables/brinjal.jpg',
+  POTATO: '/produce/vegetables/potato.jpg',
+  CAULIFLOWER: '/produce/vegetables/cauliflower.jpg',
+  BEANS: '/produce/vegetables/beans.jpg',
+  CUCUMBER: '/produce/vegetables/cucumber.jpg',
+  CABBAGE: '/produce/vegetables/cabbage.jpg',
+  TOMATO: '/produce/vegetables/tomato.jpg',
+  CAPSICUM: '/produce/vegetables/capsicum.jpg',
+  LADIES_FINGER: '/produce/vegetables/bhendi.jpg',
+  ONION: '/produce/vegetables/onion.jpg',
+  GREEN_CHILLI: '/produce/vegetables/green_chilli.jpg',
+} as const;
+
+/**
+ * Matches any vegetable crop or category to the exact official photo.
+ * Ensures that vegetables strictly use only these 12 authentic photos.
+ */
+export function matchOfficialVegetablePhoto(name?: string, category?: string): string | null {
+  if (!name && !category) return null;
+  const n = (name || '').toLowerCase().trim();
+  const c = (category || '').toLowerCase().trim();
+
+  // 1. Carrot (ಕ್ಯಾರೆಟ್)
+  if (n.includes('carrot') || n.includes('kyaret') || n.includes('ಕ್ಯಾರೆಟ್') || n.includes('gajar')) {
+    return OFFICIAL_VEGETABLE_PHOTOS.CARROT;
+  }
+
+  // 2. Brinjal / Eggplant (ಬದನೆಕಾಯಿ)
+  if (
+    n.includes('brinjal') ||
+    n.includes('eggplant') ||
+    n.includes('aubergine') ||
+    n.includes('badanekayi') ||
+    n.includes('badane') ||
+    n.includes('ಬದನೆ') ||
+    n.includes('mattu gulla') ||
+    n.includes('baingan')
+  ) {
+    return OFFICIAL_VEGETABLE_PHOTOS.BRINJAL;
+  }
+
+  // 3. Potato (ಆಲೂಗಡ್ಡೆ)
+  if (
+    n.includes('potato') ||
+    n.includes('aloo') ||
+    n.includes('alu') ||
+    n.includes('ಆಲೂಗಡ್ಡೆ') ||
+    n.includes('kufri')
+  ) {
+    return OFFICIAL_VEGETABLE_PHOTOS.POTATO;
+  }
+
+  // 4. Cauliflower (ಹೂಕೋಸು)
+  if (
+    n.includes('cauliflower') ||
+    n.includes('hukosu') ||
+    n.includes('hookosu') ||
+    n.includes('ಹೂಕೋಸು') ||
+    n.includes('gobhi') ||
+    n.includes('phool gobhi')
+  ) {
+    return OFFICIAL_VEGETABLE_PHOTOS.CAULIFLOWER;
+  }
+
+  // 5. Beans (ಹುರುಳಿಕಾಯಿ / ಬೀನ್ಸ್)
+  if (
+    n.includes('bean') ||
+    n.includes('beans') ||
+    n.includes('hurulikayi') ||
+    n.includes('ಹುರುಳಿಕಾಯಿ') ||
+    n.includes('ಬೀನ್ಸ್') ||
+    n.includes('french bean') ||
+    n.includes('cluster bean')
+  ) {
+    return OFFICIAL_VEGETABLE_PHOTOS.BEANS;
+  }
+
+  // 6. Cucumber (ಸೌತೆಕಾಯಿ)
+  if (
+    n.includes('cucumber') ||
+    n.includes('sauthe') ||
+    n.includes('southe') ||
+    n.includes('ಸೌತೆಕಾಯಿ') ||
+    n.includes('kheera') ||
+    n.includes('kakdi')
+  ) {
+    return OFFICIAL_VEGETABLE_PHOTOS.CUCUMBER;
+  }
+
+  // 7. Cabbage (ಎಲೆಕೋಸು)
+  if (
+    n.includes('cabbage') ||
+    n.includes('elekosu') ||
+    n.includes('ಎಲೆಕೋಸು') ||
+    n.includes('patta gobhi') ||
+    n.includes('bandh gobhi')
+  ) {
+    return OFFICIAL_VEGETABLE_PHOTOS.CABBAGE;
+  }
+
+  // 8. Tomato (ಟೊಮೆಟೊ / ಟೊಮ್ಯಾಟೊ)
+  if (
+    n.includes('tomato') ||
+    n.includes('tomoto') ||
+    n.includes('ಟೊಮೆಟೊ') ||
+    n.includes('ಟೊಮ್ಯಾಟೊ') ||
+    n.includes('tamatar') ||
+    n.includes('kashi vishesh') ||
+    n.includes('arka rakshak') ||
+    n.includes('arka saurabh')
+  ) {
+    return OFFICIAL_VEGETABLE_PHOTOS.TOMATO;
+  }
+
+  // 9. Capsicum / Bell Pepper (ದಪ್ಪ ಮೆಣಸಿನಕಾಯಿ)
+  if (
+    n.includes('capsicum') ||
+    n.includes('bell pepper') ||
+    n.includes('dappa menasina') ||
+    n.includes('ದಪ್ಪ ಮೆಣಸಿನಕಾಯಿ') ||
+    n.includes('shimla mirch')
+  ) {
+    return OFFICIAL_VEGETABLE_PHOTOS.CAPSICUM;
+  }
+
+  // 10. Ladies Finger / Bhendi / Okra (ಬೆಂಡೆಕಾಯಿ)
+  if (
+    n.includes('ladies finger') ||
+    n.includes('lady finger') ||
+    n.includes('bhendi') ||
+    n.includes('bhindi') ||
+    n.includes('okra') ||
+    n.includes('bendekayi') ||
+    n.includes('ಬೆಂಡೆಕಾಯಿ') ||
+    n.includes('arka anamika')
+  ) {
+    return OFFICIAL_VEGETABLE_PHOTOS.LADIES_FINGER;
+  }
+
+  // 11. Onion (ಈರುಳ್ಳಿ)
+  if (
+    n.includes('onion') ||
+    n.includes('eerulli') ||
+    n.includes('irulli') ||
+    n.includes('ಈರುಳ್ಳಿ') ||
+    n.includes('pyaz') ||
+    n.includes('bellary red') ||
+    n.includes('bangalore rose')
+  ) {
+    return OFFICIAL_VEGETABLE_PHOTOS.ONION;
+  }
+
+  // 12. Green Chilli / Chilli (ಹಸಿಮೆಣಸಿನಕಾಯಿ)
+  if (
+    n.includes('chilli') ||
+    n.includes('chili') ||
+    n.includes('mirchi') ||
+    n.includes('menasina') ||
+    n.includes('menasu') ||
+    n.includes('ಮೆಣಸಿನಕಾಯಿ') ||
+    n.includes('byadagi') ||
+    n.includes('guntur') ||
+    n.includes('green pepper')
+  ) {
+    return OFFICIAL_VEGETABLE_PHOTOS.GREEN_CHILLI;
+  }
+
+  // If designated under Vegetable category or general vegetable keyword:
+  // Strictly enforce only these verified vegetable images as requested:
+  if (
+    c === 'vegetable' ||
+    c === 'vegetables' ||
+    c === 'vegetable_crops' ||
+    c === 'veg' ||
+    n.includes('vegetable')
+  ) {
+    const allVegPhotos = [
+      OFFICIAL_VEGETABLE_PHOTOS.TOMATO,
+      OFFICIAL_VEGETABLE_PHOTOS.POTATO,
+      OFFICIAL_VEGETABLE_PHOTOS.ONION,
+      OFFICIAL_VEGETABLE_PHOTOS.CARROT,
+      OFFICIAL_VEGETABLE_PHOTOS.BRINJAL,
+      OFFICIAL_VEGETABLE_PHOTOS.CABBAGE,
+      OFFICIAL_VEGETABLE_PHOTOS.CAULIFLOWER,
+      OFFICIAL_VEGETABLE_PHOTOS.BEANS,
+      OFFICIAL_VEGETABLE_PHOTOS.CUCUMBER,
+      OFFICIAL_VEGETABLE_PHOTOS.CAPSICUM,
+      OFFICIAL_VEGETABLE_PHOTOS.LADIES_FINGER,
+      OFFICIAL_VEGETABLE_PHOTOS.GREEN_CHILLI,
+    ];
+    let hash = 0;
+    for (let i = 0; i < n.length; i++) {
+      hash = (hash << 5) - hash + n.charCodeAt(i);
+      hash |= 0;
+    }
+    const idx = Math.abs(hash) % allVegPhotos.length;
+    return allVegPhotos[idx];
+  }
+
+  return null;
+}
+
 export interface ProduceImageResult {
   url: string;
   source: 'seller' | 'ai_generated' | 'no_photo' | 'uploaded' | 'placeholder';
@@ -231,6 +440,19 @@ export function resolveProduceImage(options: {
       isAiGenerated: false,
       isRepresentative: false,
       label: 'Verified Farmer Harvest Photo',
+    };
+  }
+
+  // 2. Strict Vegetable Check: Whenever a vegetable is published or shown, use ONLY these 12 photos!
+  const vegPhoto = matchOfficialVegetablePhoto(name, category);
+  if (vegPhoto) {
+    return {
+      url: toAbsoluteImageUrl(vegPhoto),
+      source: 'seller',
+      isSellerProvided: true,
+      isAiGenerated: false,
+      isRepresentative: false,
+      label: 'Verified Farmer Vegetable Photo',
     };
   }
 
